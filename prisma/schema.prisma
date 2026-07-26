@@ -1,0 +1,71 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   // "ADMIN" | "STAFF"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Table {
+  id       String    @id @default(cuid())
+  number   String    @unique // e.g. "T1", "O1", "S1"
+  zone     String    // "INDOOR" | "OUTDOOR" | "STAGE"
+  capacity Int
+  status   String    @default("AVAILABLE") // "AVAILABLE" | "OCCUPIED"
+  bookings Booking[]
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  customerName  String
+  customerPhone String
+  date          String   // YYYY-MM-DD
+  timeSlot      String   // e.g. "18:00", "19:00", "20:00"
+  pax           Int
+  tableId       String?
+  table         Table?   @relation(fields: [tableId], references: [id])
+  status        String   // "PENDING" | "CONFIRMED" | "CANCELLED"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Promotion {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  offer       String  // e.g., "15% OFF", "BUY 1 GET 1"
+  period      String  // e.g., "Daily • 5PM - 7PM"
+  image       String  // Image URL
+  active      Boolean @default(true)
+}
+
+model LiveMusic {
+  id          String  @id @default(cuid())
+  day         String  // "Mon", "Tue", "Wed", etc.
+  time        String  // e.g., "8:00 PM"
+  artist      String
+  description String
+  status      String  // "REGULAR" | "HOT" | "DAYSET" | "NONE"
+}
+
+model Beer {
+  id          String  @id @default(cuid())
+  tapNumber   String  @unique // e.g., "01", "02"
+  name        String
+  type        String  // e.g., "West Coast IPA"
+  abv         String  // e.g., "6.5%"
+  ibu         String  // e.g., "60"
+  description String
+  price       Float
+  active      Boolean @default(true)
+}
