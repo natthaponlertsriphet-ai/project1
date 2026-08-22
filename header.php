@@ -1,0 +1,149 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// 1. Language Handler
+if (isset($_GET['lang'])) {
+    $lang = $_GET['lang'] === 'th' ? 'th' : 'en';
+    $_SESSION['lang'] = $lang;
+} elseif (isset($_SESSION['lang'])) {
+    $lang = $_SESSION['lang'];
+} else {
+    $lang = 'en'; // default
+    $_SESSION['lang'] = $lang;
+}
+
+// 2. Translate helper function
+if (!function_exists('t')) {
+    function t($en, $th) {
+        global $lang;
+        return $lang === 'th' ? $th : $en;
+    }
+}
+
+// 3. Helper to build URL preserving other query params but modifying 'lang'
+function getLangUrl($target_lang) {
+    $params = $_GET;
+    $params['lang'] = $target_lang;
+    return '?' . http_build_query($params);
+}
+
+// 4. Check active page class
+$current_page = basename($_SERVER['PHP_SELF']);
+function is_active($page) {
+    global $current_page;
+    return ($current_page === $page) ? 'text-warning border-bottom border-warning border-2' : 'text-light';
+}
+?>
+<!DOCTYPE html>
+<html lang="<?php echo $lang; ?>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHIT HOLE - Chiang Mai Brewing</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@300;400;600;700&family=Work+Sans:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Work Sans', 'Outfit', sans-serif;
+            overflow-x: hidden;
+        }
+        .font-anton {
+            font-family: 'Anton', sans-serif;
+        }
+        /* Custom navbar styles */
+        .navbar-custom {
+            background-color: rgba(19, 19, 19, 0.9) !important;
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-custom-gold {
+            background-color: #ffd782;
+            color: #3f2e00;
+            font-family: 'Anton', sans-serif;
+            border: none;
+            transition: all 0.3s;
+            border-radius: 4px;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+        .btn-custom-gold:hover {
+            background-color: #fff6df;
+            box-shadow: 0 0 20px rgba(255, 215, 130, 0.4);
+            color: #3f2e00;
+        }
+        .hover-gold:hover {
+            color: #ffd782 !important;
+            transition: color 0.2s ease-in-out;
+        }
+        /* Glassmorphism containers */
+        .glass-card {
+            background: rgba(32, 31, 31, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top py-3">
+        <div class="container px-4 px-lg-5">
+            <!-- Brand Logo -->
+            <a href="index.php" class="navbar-brand d-flex align-items-center gap-3">
+                <div class="rounded overflow-hidden border border-warning-subtle shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="d-flex flex-column">
+                    <span class="font-anton text-warning text-uppercase tracking-wider fs-4 lh-1">CHIT HOLE</span>
+                    <span class="text-uppercase text-secondary tracking-widest" style="font-size: 9px; font-weight: bold;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์เชียงใหม่"); ?></span>
+                </div>
+            </a>
+            
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto gap-2 text-uppercase font-anton">
+                    <li class="nav-item">
+                        <a class="nav-link px-3 <?php echo is_active('reservation.php'); ?>" href="reservation.php"><?php echo t("Home & Booking", "จองโต๊ะ / หน้าหลัก"); ?></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 <?php echo is_active('tap-list.php'); ?>" href="tap-list.php"><?php echo t("Beer Menu", "เมนูเบียร์สด"); ?></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 <?php echo is_active('promotions.php'); ?>" href="promotions.php"><?php echo t("Promotions", "โปรโมชัน"); ?></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 <?php echo is_active('live-music.php'); ?>" href="live-music.php"><?php echo t("Live Music", "ดนตรีสด"); ?></a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Language Selection Toggle Link -->
+                    <a href="<?php echo getLangUrl($lang === 'en' ? 'th' : 'en'); ?>" class="text-warning text-decoration-none font-anton tracking-wider text-uppercase" style="font-size: 13px;">
+                        <?php echo $lang === 'en' ? 'TH 🇹🇭' : 'EN 🇺🇸'; ?>
+                    </a>
+                    
+                    <!-- Admin Login/Console Button -->
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="admin/index.php" class="btn btn-outline-warning btn-sm font-anton text-uppercase px-3"><?php echo t("Console", "แดชบอร์ด"); ?></a>
+                    <?php else: ?>
+                        <a href="login.php" class="btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Admin", "แอดมิน"); ?></a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div style="height: 80px;"></div>
