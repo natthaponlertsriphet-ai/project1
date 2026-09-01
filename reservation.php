@@ -369,8 +369,8 @@ require_once 'header.php';
     }
 
     #search-query-input::placeholder {
-        color: #ffffff !important;
-        opacity: 0.9 !important;
+        color: #a1a1aa !important;
+        opacity: 0.75 !important;
     }
     #search-query-input {
         color: #ffffff !important;
