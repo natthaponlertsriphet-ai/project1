@@ -14,6 +14,29 @@ if (!function_exists('t')) {
     }
 }
 
+// AJAX Live Polling Endpoint for Real-time Dashboard Counts
+if (isset($_GET['action']) && $_GET['action'] === 'get_live_dashboard_counts') {
+    header('Content-Type: application/json');
+    try {
+        $p_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'PENDING'")->fetchColumn();
+        $c_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'CONFIRMED'")->fetchColumn();
+        $comp_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'COMPLETED'")->fetchColumn();
+        $cr_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'CANCEL_REQUESTED'")->fetchColumn();
+        $cl_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'CANCELLED'")->fetchColumn();
+
+        echo json_encode([
+            'p_count' => $p_count,
+            'c_count' => $c_count,
+            'comp_count' => $comp_count,
+            'cr_count' => $cr_count,
+            'cl_count' => $cl_count
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 // Handle Quick Toggle table status (AVAILABLE / OCCUPIED)
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
     $toggle_id = $_GET['id'];
@@ -856,59 +879,29 @@ foreach ($chart_monthly as $m) {
     ?>
 
     <!-- Pending Requests Tab -->
-    <?php if ($is_admin && $p_count === 0): ?>
-        <span class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 border-transparent text-zinc-600 cursor-not-allowed opacity-50">
-            <?php echo t("Pending Requests", "รายการส่งคำขอรออนุมัติ"); ?> (0)
-        </span>
-    <?php else: ?>
-        <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-warning border-warning' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
-            <?php echo t("Pending Requests", "รายการส่งคำขอรออนุมัติ"); ?> (<?php echo $p_count; ?>)
-        </a>
-    <?php endif; ?>
+    <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-warning border-warning' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+        <?php echo t("Pending Requests", "รายการส่งคำขอรออนุมัติ"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
+    </a>
 
     <!-- Confirmed Bookings Tab -->
-    <?php if ($is_admin && $c_count === 0): ?>
-        <span class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 border-transparent text-zinc-600 cursor-not-allowed opacity-50">
-            <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (0)
-        </span>
-    <?php else: ?>
-        <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-500 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
-            <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (<?php echo $c_count; ?>)
-        </a>
-    <?php endif; ?>
+    <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-500 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+        <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (<span id="count-confirmed"><?php echo $c_count; ?></span>)
+    </a>
 
     <!-- Completed Bookings Tab -->
-    <?php if ($is_admin && $comp_count === 0): ?>
-        <span class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 border-transparent text-zinc-600 cursor-not-allowed opacity-50">
-            <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (0)
-        </span>
-    <?php else: ?>
-        <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-zinc-300 border-zinc-400' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
-            <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (<?php echo $comp_count; ?>)
-        </a>
-    <?php endif; ?>
+    <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+        <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (<span id="count-completed"><?php echo $comp_count; ?></span>)
+    </a>
 
     <!-- Cancel Requests Tab -->
-    <?php if ($is_admin && $cr_count === 0): ?>
-        <span class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 border-transparent text-zinc-600 cursor-not-allowed opacity-50">
-            <?php echo t("Cancel Requests", "คำขอยกเลิกการจอง"); ?> (0)
-        </span>
-    <?php else: ?>
-        <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-500 border-sky-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
-            <?php echo t("Cancel Requests", "คำขอยกเลิกการจอง"); ?> (<?php echo $cr_count; ?>)
-        </a>
-    <?php endif; ?>
+    <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-500 border-sky-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+        <?php echo t("Cancel Requests", "คำขอยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
+    </a>
 
     <!-- Cancelled Bookings Tab -->
-    <?php if ($is_admin && $cl_count === 0): ?>
-        <span class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 border-transparent text-zinc-600 cursor-not-allowed opacity-50">
-            <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (0)
-        </span>
-    <?php else: ?>
-        <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-500 border-rose-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
-            <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (<?php echo $cl_count; ?>)
-        </a>
-    <?php endif; ?>
+    <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-500 border-rose-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+        <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (<span id="count-cancelled"><?php echo $cl_count; ?></span>)
+    </a>
 </div>
 
 <!-- Reservations Table Container -->
@@ -1776,5 +1769,32 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
     </div>
 </div>
+
+<script>
+    // Live Dashboard Counter Auto-Poller (Updates tab numbers in real-time without page refresh)
+    function pollLiveDashboardCounts() {
+        fetch('index.php?action=get_live_dashboard_counts')
+            .then(res => res.json())
+            .then(data => {
+                if (data && typeof data.p_count !== 'undefined') {
+                    const elP = document.getElementById('count-pending');
+                    const elC = document.getElementById('count-confirmed');
+                    const elComp = document.getElementById('count-completed');
+                    const elCR = document.getElementById('count-cancel_requests');
+                    const elCL = document.getElementById('count-cancelled');
+
+                    if (elP && elP.innerText !== String(data.p_count)) elP.innerText = data.p_count;
+                    if (elC && elC.innerText !== String(data.c_count)) elC.innerText = data.c_count;
+                    if (elComp && elComp.innerText !== String(data.comp_count)) elComp.innerText = data.comp_count;
+                    if (elCR && elCR.innerText !== String(data.cr_count)) elCR.innerText = data.cr_count;
+                    if (elCL && elCL.innerText !== String(data.cl_count)) elCL.innerText = data.cl_count;
+                }
+            })
+            .catch(err => console.log('Live poller:', err));
+    }
+
+    // Auto update tab counts every 4 seconds dynamically
+    setInterval(pollLiveDashboardCounts, 4000);
+</script>
 
 <?php require_once 'admin_footer.php'; ?>
