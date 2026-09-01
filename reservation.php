@@ -638,7 +638,7 @@ require_once 'header.php';
                         <div class="d-flex align-items-start gap-2.5">
                             <span id="form-alert-icon" class="material-symbols-outlined text-warning fs-5 mt-0.5 shrink-0 me-2">warning</span>
                             <div>
-                                <h5 id="form-alert-title" class="font-anton text-warning text-uppercase tracking-wider fs-6 mb-1 m-0">
+                                <h5 id="form-alert-title" class="font-anton text-black text-uppercase tracking-wider fs-6 mb-1 m-0">
                                     <?php echo t("Table Selection Required", "กรุณาเลือกโต๊ะนั่ง"); ?>
                                 </h5>
                                 <div id="form-alert-msg" class="small text-black font-sans font-bold leading-relaxed">
@@ -816,12 +816,12 @@ require_once 'header.php';
 
         if (type === 'danger' || type === 'error') {
             alertBox.className = "mb-3 p-3 bg-danger bg-opacity-20 border border-danger border-opacity-90 rounded-3 text-danger font-sans transition-all shadow-sm";
-            alertTitle.className = "font-anton text-danger text-uppercase tracking-wider fs-6 mb-1 m-0";
+            alertTitle.className = "font-anton text-black text-uppercase tracking-wider fs-6 mb-1 m-0";
             alertIcon.className = "material-symbols-outlined text-danger fs-5 mt-0.5 shrink-0 me-2";
             alertIcon.innerText = "error";
         } else {
             alertBox.className = "mb-3 p-3 bg-warning bg-opacity-15 border border-warning border-opacity-70 rounded-3 text-warning font-sans transition-all";
-            alertTitle.className = "font-anton text-warning text-uppercase tracking-wider fs-6 mb-1 m-0";
+            alertTitle.className = "font-anton text-black text-uppercase tracking-wider fs-6 mb-1 m-0";
             alertIcon.className = "material-symbols-outlined text-warning fs-5 mt-0.5 shrink-0 me-2";
             alertIcon.innerText = "warning";
         }
