@@ -1,13 +1,39 @@
 <?php
-// LINE Messaging API Configuration
-define('LINE_CHANNEL_ID', '2011291021');
-define('LINE_CHANNEL_SECRET', 'ddd183a683b9d210560032f4a041e667');
+// LINE Messaging API Configuration (Environment Loader)
 
-// Please replace this placeholder with your long-lived Channel Access Token from the LINE Developers Console
-define('LINE_CHANNEL_ACCESS_TOKEN', 'CBiJaan5sPCRbvW6tXLDeW4Dtzfpv6kvIz4EuHBoF40X82Mi1kI86eoWEiMJbCRE4Z8I04xnPFB5oJAXuZk2J1wpLNKsEQ7lhnL0Bzwqmem9C4+Kf1iA0eFAM0ASKiE2vtkeVj2d7SjV08MefT3G6wdB04t89/1O/w1cDnyilFU=');
+if (!function_exists('loadEnv')) {
+    function loadEnv($path) {
+        if (!file_exists($path)) {
+            return;
+        }
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (strpos($line, '#') === 0 || empty($line)) {
+                continue;
+            }
+            if (strpos($line, '=') !== false) {
+                list($name, $value) = explode('=', $line, 2);
+                $name = trim($name);
+                $value = trim($value, " \t\n\r\0\x0B\"'");
+                if (!array_key_exists($name, $_SERVER) && !array_key_exists($name, $_ENV)) {
+                    putenv("{$name}={$value}");
+                    $_ENV[$name] = $value;
+                    $_SERVER[$name] = $value;
+                }
+            }
+        }
+    }
+}
 
-// Paste your personal LINE User ID here to receive store alerts when a customer books a table
-define('LINE_ADMIN_USER_ID', 'Ub31b624096f005348877004618e72421');
+// Load environment variables from local .env file
+loadEnv(__DIR__ . '/.env');
 
-// Paste your LINE Group ID here to send alerts to the group chat (if configured)
-define('LINE_GROUP_ID', 'C7b73a97a58b091f6d2d9f789d688da84');
+// Define constants using environment variables
+define('LINE_CHANNEL_ID', getenv('LINE_CHANNEL_ID') ?: '');
+define('LINE_CHANNEL_SECRET', getenv('LINE_CHANNEL_SECRET') ?: '');
+define('LINE_CHANNEL_ACCESS_TOKEN', getenv('LINE_CHANNEL_ACCESS_TOKEN') ?: '');
+
+// Admin & Group notification recipients
+define('LINE_ADMIN_USER_ID', getenv('LINE_ADMIN_USER_ID') ?: '');
+define('LINE_GROUP_ID', getenv('LINE_GROUP_ID') ?: '');
