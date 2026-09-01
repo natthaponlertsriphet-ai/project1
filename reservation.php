@@ -1,5 +1,6 @@
 <?php
 require_once 'db.php';
+require_once 'line_helper.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -25,20 +26,87 @@ if (isset($_GET['action']) && $_GET['action'] === 'search_booking') {
         $search_error = t("Please enter your Booking ID, Phone Number, or Name.", "กรุณากรอกรหัสการจอง เบอร์โทรศัพท์ หรือชื่อผู้จอง");
     } else {
         try {
+            $today = date('Y-m-d');
             $stmt = $pdo->prepare("
-                SELECT b.*, t.number AS table_number, t.zone AS table_zone 
-                FROM bookings b 
-                LEFT JOIN tables t ON b.table_id = t.id 
-                WHERE b.id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ? 
-                ORDER BY b.date DESC, b.time_slot DESC
+                SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, b.updated_at, t.table_number, t.zone AS table_zone 
+                FROM reservation b 
+                LEFT JOIN `table` t ON b.table_id = t.table_id 
+                WHERE (b.reservation_id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ?)
+                  AND b.reservation_date >= ?
+                ORDER BY b.created_at DESC
             ");
             $like_query = "%" . $search_query . "%";
-            $stmt->execute([$like_query, $like_query, $like_query]);
+            $stmt->execute([$like_query, $like_query, $like_query, $today]);
             $search_bookings = $stmt->fetchAll();
         } catch (Exception $e) {
             $search_error = "Error: " . $e->getMessage();
         }
     }
+}
+
+// Handle Customer Cancel Request
+if (isset($_GET['action']) && $_GET['action'] === 'request_cancel') {
+    $booking_id = trim($_GET['booking_id'] ?? '');
+    $phone = trim($_GET['phone'] ?? '');
+    $reason = trim($_GET['reason'] ?? '');
+    
+    if (!$booking_id || !$phone || !$reason) {
+        $_SESSION['booking_error'] = t("Missing required fields for cancellation request.", "กรุณากรอกข้อมูลให้ครบถ้วนเพื่อส่งคำขอยกเลิก");
+    } else {
+        try {
+            // Check if booking exists
+            $stmt = $pdo->prepare("SELECT reservation_id, customer_phone, reservation_date, reservation_status FROM reservation WHERE reservation_id = ?");
+            $stmt->execute([$booking_id]);
+            $b = $stmt->fetch();
+            
+            if (!$b) {
+                $_SESSION['booking_error'] = t("Booking not found.", "ไม่พบข้อมูลการจอง");
+            } elseif ($b['customer_phone'] !== $phone) {
+                $_SESSION['booking_error'] = t("Incorrect phone number. Cancellation request denied.", "เบอร์โทรศัพท์ไม่ถูกต้อง ไม่สามารถส่งคำขอยกเลิกได้");
+            } elseif ($b['reservation_date'] < date('Y-m-d')) {
+                $_SESSION['booking_error'] = t("Cannot cancel a past reservation.", "ไม่สามารถขอยกเลิกรายการจองในอดีตได้");
+            } elseif ($b['reservation_status'] === 'CANCELLED' || $b['reservation_status'] === 'CANCEL_REQUESTED') {
+                $_SESSION['booking_error'] = t("This booking has already been cancelled or has a pending cancellation request.", "รายการจองนี้ถูกยกเลิกหรืออยู่ในระหว่างการขอยกเลิกแล้ว");
+            } else {
+                // Update booking status to CANCEL_REQUESTED and save reason
+                $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CANCEL_REQUESTED', cancel_reason = ? WHERE reservation_id = ?");
+                $stmt->execute([$reason, $booking_id]);
+                $_SESSION['booking_success_msg'] = t("Cancellation request sent to staff. Please wait for confirmation.", "ส่งคำขอยกเลิกการจองแล้ว กรุณารอพนักงานกดยืนยันการยกเลิก");
+            }
+        } catch (Exception $e) {
+            $_SESSION['booking_error'] = "Error: " . $e->getMessage();
+        }
+    }
+    header("Location: reservation.php?action=search_booking&q=" . urlencode($booking_id));
+    exit;
+}
+
+// AJAX Request to fetch live booking statuses for a search query
+if (isset($_GET['action']) && $_GET['action'] === 'poll_booking_statuses') {
+    header('Content-Type: application/json');
+    $q = trim($_GET['q'] ?? '');
+    if ($q === '') {
+        echo json_encode([]);
+        exit;
+    }
+    
+    try {
+        $today = date('Y-m-d');
+        $stmt = $pdo->prepare("
+            SELECT b.reservation_id AS id, b.reservation_status AS status, b.cancel_reason, b.customer_phone 
+            FROM reservation b 
+            WHERE (b.reservation_id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ?)
+              AND b.reservation_date >= ?
+            ORDER BY b.created_at DESC
+        ");
+        $like_query = "%" . $q . "%";
+        $stmt->execute([$like_query, $like_query, $like_query, $today]);
+        $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($bookings);
+    } catch (Exception $e) {
+        echo json_encode([]);
+    }
+    exit;
 }
 
 // AJAX Request to fetch booked tables for a specific date and time slot
@@ -54,12 +122,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
     
     try {
         // Fetch booked tables for this date and time slot
-        $stmt = $pdo->prepare("SELECT table_id FROM bookings WHERE date = ? AND time_slot = ? AND status IN ('PENDING', 'CONFIRMED') AND table_id IS NOT NULL");
+        $stmt = $pdo->prepare("SELECT table_id FROM reservation WHERE reservation_date = ? AND reservation_time = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED') AND table_id IS NOT NULL");
         $stmt->execute([$date, $time_slot]);
         $booked_table_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         // Fetch tables marked as OCCUPIED (unavailable) by staff
-        $stmt2 = $pdo->query("SELECT id FROM tables WHERE status = 'OCCUPIED'");
+        $stmt2 = $pdo->query("SELECT table_id AS id FROM `table` WHERE table_status = 'OCCUPIED'");
         $occupied_table_ids = $stmt2->fetchAll(PDO::FETCH_COLUMN);
 
         // Merge both booked and unavailable tables
@@ -73,7 +141,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
 
 // Handle Form Submission (Create Booking)
 $booking_success = null;
-$booking_error = null;
+$booking_error = $_SESSION['booking_error'] ?? null;
+unset($_SESSION['booking_error']);
+
+$booking_success_msg = $_SESSION['booking_success_msg'] ?? null;
+unset($_SESSION['booking_success_msg']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_booking') {
     $customer_name = trim($_POST['customer_name'] ?? '');
@@ -90,14 +162,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
         try {
             // Check double booking
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM bookings WHERE date = ? AND time_slot = ? AND table_id = ? AND status IN ('PENDING', 'CONFIRMED')");
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM reservation WHERE reservation_date = ? AND reservation_time = ? AND table_id = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED')");
             $stmt->execute([$date, $time_slot, $table_id]);
             
             if ($stmt->fetchColumn() > 0) {
                 $booking_error = "This table has already been reserved for the selected timeslot.";
             } else {
                 // Fetch table details to verify capacity and status
-                $stmt = $pdo->prepare("SELECT capacity, number, status FROM tables WHERE id = ?");
+                $stmt = $pdo->prepare("SELECT capacity, table_number AS number, table_status AS status FROM `table` WHERE table_id = ?");
                 $stmt->execute([$table_id]);
                 $table = $stmt->fetch();
                 
@@ -110,8 +182,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 } else {
                     // Create booking
                     $booking_id = 'CHITHOLECNX_' . uniqid();
-                    $stmt = $pdo->prepare("INSERT INTO bookings (id, customer_name, customer_phone, date, time_slot, pax, table_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING')");
+                    
+                    $stmt = $pdo->prepare("INSERT INTO reservation (reservation_id, customer_name, customer_phone, reservation_date, reservation_time, guest_count, table_id, reservation_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING')");
                     $stmt->execute([$booking_id, $customer_name, $customer_phone, $date, $time_slot, $pax, $table_id]);
+                    
+                    // Send LINE notification (Admin Only)
+                    $stmt = $pdo->prepare("SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, b.updated_at, t.table_number, t.zone AS table_zone FROM reservation b LEFT JOIN `table` t ON b.table_id = t.table_id WHERE b.reservation_id = ?");
+                    $stmt->execute([$booking_id]);
+                    $new_b = $stmt->fetch();
+                    if ($new_b) {
+                        notifyAdminNewBooking($new_b);
+                    }
                     
                     $booking_success = [
                         'id' => $booking_id,
@@ -131,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Fetch all tables for initial map layout render
-$stmt = $pdo->query("SELECT * FROM tables ORDER BY number");
+$stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table` ORDER BY table_number");
 $tables = $stmt->fetchAll();
 
 // Hero slider mock images (using local home-booking folder)
@@ -177,7 +258,7 @@ require_once 'header.php';
         width: 60px;
         height: 60px;
         margin: 5px;
-        font-family: 'Anton', sans-serif;
+        font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         font-size: 16px;
         border-radius: 6px;
         transition: all 0.2s;
@@ -190,7 +271,7 @@ require_once 'header.php';
     }
     .table-capacity {
         font-size: 9px;
-        font-family: sans-serif;
+        font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         opacity: 0.8;
     }
     .table-available {
@@ -260,13 +341,13 @@ require_once 'header.php';
     <?php endforeach; ?>
     <div class="absolute inset-0 z-0 bg-gradient-to-t from-[#131313] via-[#131313]/60 to-transparent" style="position:absolute; bottom:0; left:0; right:0; height:150px; background: linear-gradient(to top, #131313, transparent);"></div>
     <div class="hero-content">
-        <span class="font-anton text-warning text-uppercase tracking-wider fs-6 d-block mb-2">[ <?php echo t("TAPROOM EXPERIENCE", "ประสบการณ์แท็ปรสชาติพิเศษ"); ?> ]</span>
+        <span class="font-anton text-warning text-uppercase tracking-wider fs-6 d-block mb-2">[ <?php echo t("TAPROOM EXPERIENCE", "ค่ำคืนพิเศษกับแท็ปเบียร์คัดสรร"); ?> ]</span>
         <h1 class="font-anton text-light text-uppercase tracking-wide display-3 lh-1 mb-3">
             <?php echo t("Reserve", "จองโต๊ะ"); ?><br>
             <span class="text-warning"><?php echo t("Your spot", "ที่นั่งของคุณ"); ?></span>
         </h1>
         <p class="text-secondary fs-5">
-            <?php echo t("Secure your seat under Chiang Mai's nocturnal sky. Craft beer, workshop vibes, and uncompromising local sounds.", "จับจองพื้นที่นั่งของคุณใต้แสงดาวยามค่ำคืนของเชียงใหม่ เบียร์คราฟต์รสชาติดี บรรยากาศที่เป็นกันเอง และวงดนตรีสดสุดมันส์"); ?>
+            <?php echo t("Secure your seat under Chiang Mai's nocturnal sky. Enjoy fresh Original Thai Craft Beer, live music, and warm friendly vibes all night long.", "ล็อกมุมโปรดใต้แสงดาวเชียงใหม่ ดื่มด่ำ Original Thai Craft Beer สดใหม่หลากสไตล์ เคล้าเสียงดนตรีสดและบรรยากาศเป็นกันเองตลอดค่ำคืน"); ?>
         </p>
     </div>
 </div>
@@ -274,6 +355,15 @@ require_once 'header.php';
 <div class="container px-4 px-lg-5 py-5">
     
     <!-- Success/Error Feedback Alerts -->
+    <?php if ($booking_success_msg): ?>
+        <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5 font-sans">
+            <h4 class="font-anton text-success text-uppercase tracking-wider mb-2"><?php echo t("SUCCESS", "สำเร็จ"); ?></h4>
+            <div class="font-sans small">
+                <?php echo $booking_success_msg; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <?php if ($booking_success): ?>
         <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5">
             <h4 class="font-anton text-success text-uppercase tracking-wider mb-2"><?php echo t("BOOKING CONFIRMED (PENDING APPROVAL)", "จองโต๊ะสำเร็จ (รอแอดมินอนุมัติ)"); ?></h4>
@@ -284,9 +374,11 @@ require_once 'header.php';
                 <div><strong><?php echo t("Date & Slot", "วันและเวลา"); ?>:</strong> <?php echo $booking_success['date']; ?> @ <?php echo $booking_success['time_slot']; ?></div>
                 <div><strong><?php echo t("Table Number", "โต๊ะที่เลือก"); ?>:</strong> <?php echo $booking_success['table_number']; ?> (<?php echo $booking_success['pax']; ?> Pax)</div>
             </div>
-            <div class="mt-3 text-secondary" style="font-size: 11px;">
+            <div class="mt-3 text-black" style="font-size: 18px;">
                 <?php echo t("Please take a screenshot of this receipt. Show it to our staff upon arrival.", "กรุณาแคปหน้าจอหลักฐานชิ้นนี้เพื่อยื่นให้พนักงานร้านตรวจสอบเมื่อคุณเดินทางมาถึง"); ?>
             </div>
+            
+
         </div>
     <?php endif; ?>
 
@@ -361,6 +453,7 @@ require_once 'header.php';
                     </div>
                 </form>
 
+
                 <?php if ($searched && !$search_error): ?>
                     <div class="d-flex flex-column gap-4 mt-4">
                         <?php if (empty($search_bookings)): ?>
@@ -369,23 +462,41 @@ require_once 'header.php';
                             </div>
                         <?php else: ?>
                             <?php foreach ($search_bookings as $b): ?>
-                                <div class="p-4 bg-black bg-opacity-40 border border-secondary border-opacity-25 rounded font-mono text-sm">
+                                <div class="p-4 bg-black bg-opacity-40 border border-secondary border-opacity-25 rounded font-mono text-sm" id="booking-card-<?php echo $b['id']; ?>">
                                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-10 pb-3">
                                         <span class="text-light font-bold fs-6">Ref ID: <?php echo $b['id']; ?></span>
-                                        <div class="mt-2 mt-sm-0">
-                                            <?php if ($b['status'] === 'CONFIRMED'): ?>
-                                                <span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans">
-                                                    <?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?>
-                                                </span>
-                                            <?php elseif ($b['status'] === 'CANCELLED'): ?>
-                                                <span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans">
-                                                    <?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?>
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans">
-                                                    <?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?>
-                                                </span>
-                                            <?php endif; ?>
+                                        <div class="d-flex gap-2 align-items-center mt-2 mt-sm-0">
+                                            <div id="status-badge-<?php echo $b['id']; ?>">
+                                                <?php if ($b['status'] === 'CONFIRMED'): ?>
+                                                    <span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans">
+                                                        <?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?>
+                                                    </span>
+                                                <?php elseif ($b['status'] === 'COMPLETED'): ?>
+                                                    <span class="badge bg-secondary border border-secondary text-white px-2.5 py-1.5 rounded font-sans">
+                                                        <?php echo t("COMPLETED", "เสร็จสิ้นการใช้งานแล้ว"); ?>
+                                                    </span>
+                                                <?php elseif ($b['status'] === 'CANCELLED'): ?>
+                                                    <span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans">
+                                                        <?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?>
+                                                    </span>
+                                                <?php elseif ($b['status'] === 'CANCEL_REQUESTED'): ?>
+                                                    <span class="badge bg-info border border-info text-black px-2.5 py-1.5 rounded font-sans">
+                                                        <?php echo t("CANCEL REQUESTED (PENDING)", "ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)"); ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans">
+                                                        <?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                            
+                                            <div id="cancel-btn-container-<?php echo $b['id']; ?>">
+                                                <?php if ($b['status'] === 'PENDING' || $b['status'] === 'CONFIRMED'): ?>
+                                                    <button class="btn btn-sm btn-outline-danger font-sans px-2.5 py-1 rounded" onclick="requestCancelBooking('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_phone']); ?>')">
+                                                        <?php echo t("Cancel Booking", "ยกเลิกจอง"); ?>
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row g-3 text-secondary">
@@ -422,6 +533,11 @@ require_once 'header.php';
                                                  else echo htmlspecialchars($b['table_zone']);
                                                  ?>
                                             </span>
+                                        </div>
+                                        
+                                        <div class="col-12 mt-3 pt-3 border-top border-secondary border-opacity-10 <?php echo (($b['status'] === 'CANCELLED' || $b['status'] === 'CANCEL_REQUESTED') && !empty($b['cancel_reason'])) ? '' : 'd-none'; ?>" id="cancel-reason-container-<?php echo $b['id']; ?>">
+                                            <strong class="text-danger"><?php echo t("Cancellation Reason", "เหตุผลที่ยกเลิก/หมายเหตุ"); ?>:</strong>
+                                            <span class="text-light font-sans" id="cancel-reason-text-<?php echo $b['id']; ?>"><?php echo htmlspecialchars($b['cancel_reason'] ?? ''); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -648,6 +764,62 @@ require_once 'header.php';
         }
         return true;
     }
+
+    let cancelModalInstance = null;
+
+    function requestCancelBooking(bookingId, correctPhone) {
+        document.getElementById('cancel-modal-booking-id').value = bookingId;
+        document.getElementById('cancel-modal-correct-phone').value = correctPhone;
+        document.getElementById('cancel-modal-ref').innerText = '#' + bookingId;
+        document.getElementById('cancel-modal-phone-input').value = '';
+        document.getElementById('cancel-modal-reason-input').value = '';
+        
+        const alertBox = document.getElementById('cancel-modal-alert');
+        alertBox.classList.add('d-none');
+        alertBox.innerText = '';
+
+        if (!cancelModalInstance) {
+            const modalEl = document.getElementById('cancelModal');
+            if (modalEl) {
+                cancelModalInstance = new bootstrap.Modal(modalEl);
+            }
+        }
+        if (cancelModalInstance) {
+            cancelModalInstance.show();
+        }
+    }
+
+    function submitCancelBooking() {
+        const bookingId = document.getElementById('cancel-modal-booking-id').value;
+        const correctPhone = document.getElementById('cancel-modal-correct-phone').value;
+        const phone = document.getElementById('cancel-modal-phone-input').value.trim();
+        const reason = document.getElementById('cancel-modal-reason-input').value.trim();
+        const alertBox = document.getElementById('cancel-modal-alert');
+
+        if (!phone) {
+            alertBox.innerText = "<?php echo t('Please enter your phone number.', 'กรุณากรอกเบอร์โทรศัพท์ที่ใช้จองเพื่อยืนยันตัวตน'); ?>";
+            alertBox.classList.remove('d-none');
+            document.getElementById('cancel-modal-phone-input').focus();
+            return;
+        }
+
+        if (phone !== correctPhone) {
+            alertBox.innerText = "<?php echo t('Incorrect phone number. Action denied.', 'เบอร์โทรศัพท์ไม่ถูกต้อง ไม่ตรงกับเบอร์ที่ใช้จอง'); ?>";
+            alertBox.classList.remove('d-none');
+            document.getElementById('cancel-modal-phone-input').focus();
+            return;
+        }
+
+        if (!reason) {
+            alertBox.innerText = "<?php echo t('Reason is required.', 'กรุณาระบุเหตุผลในการขอยกเลิกการจอง'); ?>";
+            alertBox.classList.remove('d-none');
+            document.getElementById('cancel-modal-reason-input').focus();
+            return;
+        }
+
+        // Redirect to send the request
+        window.location.href = `reservation.php?action=request_cancel&booking_id=${bookingId}&phone=${encodeURIComponent(phone)}&reason=${encodeURIComponent(reason)}`;
+    }
 </script>
 
 <!-- Interactive Table Hover Tooltip Container -->
@@ -704,19 +876,18 @@ require_once 'header.php';
                 const capacity = parseInt(btn.getAttribute('data-capacity'));
                 const zone = btn.getAttribute('data-zone');
                 
-                // Formatted table name for image scanning
-                // Matches table_01.jpg, table_d1.jpg, etc.
                 const dbImage = btn.getAttribute('data-image');
                 if (dbImage) {
                     tooltipImg.src = dbImage;
+                    tooltipImg.style.display = 'block';
+                    tooltipImg.onerror = function() {
+                        this.onerror = null;
+                        this.style.display = 'none';
+                    };
                 } else {
-                    const formattedNum = number.toLowerCase();
-                    tooltipImg.src = `images/tables/table_${formattedNum}.jpg`;
+                    tooltipImg.src = '';
+                    tooltipImg.style.display = 'none';
                 }
-                tooltipImg.onerror = function() {
-                    // Fallback atmosphere image
-                    this.src = 'images/home-booking/749356007_122278964708129427_2108767678100899836_n.jpg';
-                };
 
                 // Populate content
                 tooltipTitle.innerText = isTh ? `โต๊ะ ${number}` : `Table ${number}`;
@@ -757,6 +928,132 @@ require_once 'header.php';
             });
         });
     });
+
+    // Live Polling of Booking Statuses (Real-time updates)
+    <?php if ($searched && !empty($search_bookings)): ?>
+    (function() {
+        const searchQuery = <?php echo json_encode($search_query); ?>;
+        
+        function pollBookingStatuses() {
+            fetch(`reservation.php?action=poll_booking_statuses&q=${encodeURIComponent(searchQuery)}`)
+                .then(res => res.json())
+                .then(bookings => {
+                    bookings.forEach(b => {
+                        // 1. Update status badge
+                        const badgeContainer = document.getElementById(`status-badge-${b.id}`);
+                        if (badgeContainer) {
+                            let badgeHTML = '';
+                            if (b.status === 'CONFIRMED') {
+                                badgeHTML = `<span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?></span>`;
+                            } else if (b.status === 'COMPLETED') {
+                                badgeHTML = `<span class="badge bg-secondary border border-secondary text-white px-2.5 py-1.5 rounded font-sans"><?php echo t("COMPLETED", "เสร็จสิ้นการใช้งานแล้ว"); ?></span>`;
+                            } else if (b.status === 'CANCELLED') {
+                                badgeHTML = `<span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?></span>`;
+                            } else if (b.status === 'CANCEL_REQUESTED') {
+                                badgeHTML = `<span class="badge bg-info border border-info text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CANCEL REQUESTED (PENDING)", "ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)"); ?></span>`;
+                            } else {
+                                badgeHTML = `<span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?></span>`;
+                            }
+                            badgeContainer.innerHTML = badgeHTML;
+                        }
+
+                        // 2. Update cancel button
+                        const btnContainer = document.getElementById(`cancel-btn-container-${b.id}`);
+                        if (btnContainer) {
+                            if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
+                                // Re-inject cancel button if not present
+                                if (!btnContainer.querySelector('button')) {
+                                    btnContainer.innerHTML = `<button class="btn btn-sm btn-outline-danger font-sans px-2.5 py-1 rounded" onclick="requestCancelBooking('${b.id}', '${b.customer_phone || ''}')"><?php echo t("Cancel Booking", "ยกเลิกจอง"); ?></button>`;
+                                }
+                            } else {
+                                btnContainer.innerHTML = '';
+                            }
+                        }
+
+                        // 3. Update cancel reason section
+                        const reasonContainer = document.getElementById(`cancel-reason-container-${b.id}`);
+                        const reasonText = document.getElementById(`cancel-reason-text-${b.id}`);
+                        if (reasonContainer && reasonText) {
+                            if ((b.status === 'CANCELLED' || b.status === 'CANCEL_REQUESTED') && b.cancel_reason) {
+                                reasonText.innerText = b.cancel_reason;
+                                reasonContainer.classList.remove('d-none');
+                            } else {
+                                reasonContainer.classList.add('d-none');
+                            }
+                        }
+                    });
+                })
+                .catch(err => console.error("Error polling booking status:", err));
+        }
+
+        // Run immediately, then poll every 3 seconds
+        pollBookingStatuses();
+        setInterval(pollBookingStatuses, 3000);
+    })();
+    <?php endif; ?>
 </script>
+
+<!-- Custom Cancellation Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border border-secondary border-opacity-20 shadow-lg" style="background-color: #121212 !important; border-radius: 12px; overflow: hidden;">
+            <div class="modal-header border-bottom border-secondary border-opacity-20 pb-3" style="background-color: #181818;">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-danger fs-4">event_busy</span>
+                    <h5 class="modal-title font-anton text-uppercase text-warning tracking-wide mb-0" id="cancelModalLabel">
+                        <?php echo t("Request Cancellation", "ยืนยันการขอยกเลิกการจองโต๊ะ"); ?>
+                    </h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <p class="text-secondary small mb-3">
+                    <?php echo t("Please enter your registered phone number to confirm your identity, along with the reason for cancellation.", "กรุณากรอกเบอร์โทรศัพท์ที่ใช้จองเพื่อยืนยันตัวตน และระบุเหตุผลการขอยกเลิกการจอง"); ?>
+                </p>
+
+                <!-- Target Booking Ref Badge -->
+                <div class="bg-black p-2.5 rounded border border-secondary border-opacity-20 mb-3 d-flex align-items-center justify-content-between">
+                    <span class="text-secondary small font-mono"><?php echo t("Booking Ref:", "หมายเลขการจอง:"); ?></span>
+                    <span id="cancel-modal-ref" class="font-anton text-warning tracking-wider fs-6"></span>
+                </div>
+
+                <!-- Error Notification Banner -->
+                <div id="cancel-modal-alert" class="alert alert-danger d-none py-2 px-3 small font-sans mb-3" role="alert"></div>
+
+                <form id="cancel-modal-form" onsubmit="event.preventDefault(); submitCancelBooking();">
+                    <input type="hidden" id="cancel-modal-booking-id">
+                    <input type="hidden" id="cancel-modal-correct-phone">
+
+                    <div class="mb-3">
+                        <label for="cancel-modal-phone-input" class="form-label text-warning small font-mono text-uppercase tracking-wide mb-1">
+                            <span class="material-symbols-outlined fs-6 align-middle me-1">call</span>
+                            <?php echo t("Registered Phone Number", "เบอร์โทรศัพท์ที่ใช้จอง (เพื่อยืนยันตัวตน)"); ?> *
+                        </label>
+                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="0800711996" required autocomplete="off">
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="cancel-modal-reason-input" class="form-label text-warning small font-mono text-uppercase tracking-wide mb-1">
+                            <span class="material-symbols-outlined fs-6 align-middle me-1">edit_note</span>
+                            <?php echo t("Cancellation Reason", "เหตุผลในการขอยกเลิก"); ?> *
+                        </label>
+                        <textarea id="cancel-modal-reason-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" rows="3" placeholder="<?php echo t("e.g. Change of plans, emergency schedule...", "เช่น ติดภารกิจด่วน, เลื่อนวันเดินทาง ฯลฯ"); ?>" style="resize: none;" required></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer border-top border-secondary border-opacity-20 p-3" style="background-color: #181818;">
+                <button type="button" class="btn btn-outline-secondary btn-sm px-3 font-sans" data-bs-dismiss="modal">
+                    <?php echo t("Cancel", "ยกเลิก"); ?>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm px-3 font-sans font-bold d-flex align-items-center gap-1" onclick="submitCancelBooking()">
+                    <span class="material-symbols-outlined fs-6">check_circle</span>
+                    <span><?php echo t("Confirm Cancellation", "ยืนยันส่งคำขอยกเลิก"); ?></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <?php require_once 'footer.php'; ?>

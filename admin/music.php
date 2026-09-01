@@ -12,13 +12,12 @@ $day = 'Mon';
 $time = '';
 $artist = '';
 $description = '';
-$status = 'REGULAR';
 
 // Handle Live Music Lineup DELETE
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $del_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("DELETE FROM live_music WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM music WHERE music_id = ?");
         $stmt->execute([$del_id]);
         $success = t("Performance schedule deleted successfully.", "ลบกำหนดการโชว์เรียบร้อยแล้ว.");
     } catch (Exception $e) {
@@ -29,7 +28,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 // Handle GET lineup details loader for edit
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
     $edit_id = $_GET['id'];
-    $stmt = $pdo->prepare("SELECT * FROM live_music WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT music_id AS id, show_day AS day, show_time AS time, artist, description FROM music WHERE music_id = ?");
     $stmt->execute([$edit_id]);
     $event = $stmt->fetch();
     
@@ -39,7 +38,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
         $time = $event['time'];
         $artist = $event['artist'];
         $description = $event['description'];
-        $status = $event['status'];
     }
 }
 
@@ -49,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
     $time = trim($_POST['time'] ?? '');
     $artist = trim($_POST['artist'] ?? '');
     $description = trim($_POST['description'] ?? '');
-    $status = trim($_POST['status'] ?? 'REGULAR');
     
     if (!$time || !$artist) {
         $error = "Please fill in all required fields.";
@@ -57,13 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
         if ($_POST['action'] === 'create_lineup') {
             try {
                 $id = 'music_' . uniqid();
-                $stmt = $pdo->prepare("INSERT INTO live_music (id, day, time, artist, description, status) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$id, $day, $time, $artist, $description, $status]);
+                $stmt = $pdo->prepare("INSERT INTO music (music_id, show_day, show_time, artist, description) VALUES (?, ?, ?, ?, ?)");
+                $stmt->execute([$id, $day, $time, $artist, $description]);
                 
                 // Reset fields
                 $time = $artist = $description = '';
                 $day = 'Mon';
-                $status = 'REGULAR';
                 $success = t("Live music schedule added successfully!", "เพิ่มกำหนดการดนตรีสดสำเร็จ!");
             } catch (Exception $e) {
                 $error = "Error: " . $e->getMessage();
@@ -71,14 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
         } elseif ($_POST['action'] === 'update_lineup') {
             $id = $_POST['edit_id'];
             try {
-                $stmt = $pdo->prepare("UPDATE live_music SET day = ?, time = ?, artist = ?, description = ?, status = ? WHERE id = ?");
-                $stmt->execute([$day, $time, $artist, $description, $status, $id]);
+                $stmt = $pdo->prepare("UPDATE music SET show_day = ?, show_time = ?, artist = ?, description = ? WHERE music_id = ?");
+                $stmt->execute([$day, $time, $artist, $description, $id]);
                 
                 // Reset fields
                 $is_editing = false;
                 $time = $artist = $description = '';
                 $day = 'Mon';
-                $status = 'REGULAR';
                 $success = t("Live music schedule updated successfully!", "แก้ไขกำหนดการดนตรีสดสำเร็จ!");
             } catch (Exception $e) {
                 $error = "Error: " . $e->getMessage();
@@ -90,30 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
 // Handle Gallery Photo Delete
 if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET['filename'])) {
     $filename = basename($_GET['filename']); // Prevent directory traversal
-    $photo_path = __DIR__ . '/../public/images/live-music/' . $filename;
+    $photo_path = __DIR__ . '/../images/live-music/' . $filename;
     
-    // Protect core default photos from deletion
-    $prioritized_files = [
-        "ตะวันเเดง.png",
-        "738937743_122276917376129427_8193348514824766749_n.jpg",
-        "738937745_122276917136129427_7543848296007284686_n.jpg",
-        "738954237_122276917142129427_6744998899276086597_n.jpg",
-        "738991031_122276917346129427_5053537453678874944_n.jpg",
-        "739165132_122276917202129427_2386633770452052507_n.jpg",
-        "739175342_122276917274129427_3351981840669348872_n.jpg",
-        "739451187_122276917094129427_1972973537428140580_n.jpg",
-        "750355503_122278340186129427_706892172589075451_n.jpg"
-    ];
-    
-    if (in_array($filename, $prioritized_files)) {
-        $error = "Cannot delete core default stage photos.";
+    if (file_exists($photo_path)) {
+        unlink($photo_path);
+        $success = t("Atmosphere photo deleted successfully.", "ลบรูปภาพบรรยากาศเรียบร้อยแล้ว.");
     } else {
-        if (file_exists($photo_path)) {
-            unlink($photo_path);
-            $success = t("Atmosphere photo deleted successfully.", "ลบรูปภาพบรรยากาศเรียบร้อยแล้ว.");
-        } else {
-            $error = "Photo file not found.";
-        }
+        $error = "Photo file not found.";
     }
 }
 
@@ -132,14 +110,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 mkdir($upload_dir, 0777, true);
             }
             
-            $clean_name = preg_replace("/[^a-zA-Z0-9.-]/", "_", $file_name);
-            $new_name = 'uploaded_' . time() . '_' . $clean_name;
-            $dest_path = $upload_dir . $new_name;
+            $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            $raw_filename = pathinfo($file_name, PATHINFO_FILENAME);
+            $clean_name = preg_replace("/[^a-zA-Z0-9.-]/", "_", $raw_filename);
             
-            if (move_uploaded_file($file_tmp, $dest_path)) {
-                $success = t("Photo uploaded successfully!", "อัปโหลดรูปภาพบรรยากาศสำเร็จ!");
+            if ($ext === 'heic' || $ext === 'heif') {
+                $new_name = 'uploaded_' . time() . '_' . $clean_name . '.jpg';
+                $dest_path = $upload_dir . $new_name;
+                $temp_heic = $upload_dir . 'temp_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+                
+                if (move_uploaded_file($file_tmp, $temp_heic)) {
+                    exec('sips -s format jpeg ' . escapeshellarg($temp_heic) . ' --out ' . escapeshellarg($dest_path));
+                    @unlink($temp_heic);
+                    $success = t("Photo uploaded and converted to JPG successfully!", "อัปโหลดและแปลงไฟล์รูปภาพบรรยากาศสำเร็จ!");
+                } else {
+                    $error = "Failed to save uploaded photo.";
+                }
             } else {
-                $error = "Failed to save uploaded photo.";
+                $new_name = 'uploaded_' . time() . '_' . $clean_name . '.' . $ext;
+                $dest_path = $upload_dir . $new_name;
+                
+                if (move_uploaded_file($file_tmp, $dest_path)) {
+                    $success = t("Photo uploaded successfully!", "อัปโหลดรูปภาพบรรยากาศสำเร็จ!");
+                } else {
+                    $error = "Failed to save uploaded photo.";
+                }
             }
         }
     } else {
@@ -148,8 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Fetch all live music schedules
-$stmt = $pdo->query("SELECT * FROM live_music ORDER BY 
-    CASE day
+$stmt = $pdo->query("SELECT music_id AS id, show_day AS day, show_time AS time, artist, description FROM music ORDER BY 
+    CASE show_day
         WHEN 'Mon' THEN 1
         WHEN 'Tue' THEN 2
         WHEN 'Wed' THEN 3
@@ -157,7 +152,7 @@ $stmt = $pdo->query("SELECT * FROM live_music ORDER BY
         WHEN 'Fri' THEN 5
         WHEN 'Sat' THEN 6
         WHEN 'Sun' THEN 7
-    END, time");
+    END, show_time");
 $music_events = $stmt->fetchAll();
 
 // Scan gallery photos
@@ -176,7 +171,7 @@ if (is_dir($gallery_dir)) {
 
 <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Live Music Manager", "จัดการตารางดนตรีสด"); ?></h1>
+        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Live Music Manager", "จัดการตารางเวลาการแสดงดนตรีสด"); ?></h1>
         <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Live Sessions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการวงดนตรีสดและการขึ้นโชว์"); ?></p>
     </div>
 </div>
@@ -283,7 +278,7 @@ if (is_dir($gallery_dir)) {
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="music.php?action=edit&id=<?php echo $event['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="music.php?action=delete&id=<?php echo $event['id']; ?>" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" onclick="return confirm('<?php echo t('Are you sure you want to delete this schedule?', 'คุณแน่ใจว่าต้องการลบกำหนดการแสดงนี้?'); ?>')" title="Delete"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeleteMusic('<?php echo $event['id']; ?>', '<?php echo htmlspecialchars($event['artist']); ?>', '<?php echo htmlspecialchars($event['day']); ?>', '<?php echo htmlspecialchars($event['time']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Schedule', 'ลบกำหนดการแสดง'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -301,7 +296,7 @@ if (is_dir($gallery_dir)) {
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-900 pb-4 mb-6">
         <div>
             <h3 class="font-anton text-warning text-uppercase tracking-wider m-0 text-lg"><?php echo t("Manage Stage Atmosphere Photos", "จัดการรูปภาพบรรยากาศเวทีและร้าน"); ?></h3>
-            <p class="text-zinc-500 text-xs m-0 mt-1"><?php echo t("Upload new photos to show in the live music atmosphere gallery. System default photos are protected.", "อัปโหลดรูปภาพใหม่เพื่อนำไปแสดงผลบนหน้าเว็บลูกค้า รูปภาพเริ่มต้นของระบบจะไม่สามารถลบได้"); ?></p>
+            <p class="text-zinc-500 text-xs m-0 mt-1"><?php echo t("Upload new photos to show in the live music atmosphere gallery.", "อัปโหลดรูปภาพใหม่เพื่อนำไปแสดงผลบนหน้าเว็บลูกค้า"); ?></p>
         </div>
         
         <!-- File Uploader Form Link -->
@@ -310,7 +305,7 @@ if (is_dir($gallery_dir)) {
             <label class="shadcn-btn-primary py-2 px-4 flex items-center gap-2 cursor-pointer text-xs">
                 <span class="material-symbols-outlined text-base leading-none">upload</span>
                 <span><?php echo t("Select Photo", "เลือกรูปภาพใหม่"); ?></span>
-                <input type="file" name="file" accept="image/*" class="hidden" onchange="this.form.submit()">
+                <input type="file" name="file" accept="image/*,.heic,.heif" class="hidden" onchange="this.form.submit()">
             </label>
         </form>
     </div>
@@ -319,29 +314,120 @@ if (is_dir($gallery_dir)) {
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <?php foreach ($gallery_images as $img): ?>
             <?php 
-            $is_protected = in_array($img, [
-                "ตะวันเเดง.png",
-                "738937743_122276917376129427_8193348514824766749_n.jpg",
-                "738937745_122276917136129427_7543848296007284686_n.jpg",
-                "738954237_122276917142129427_6744998899276086597_n.jpg",
-                "738991031_122276917346129427_5053537453678874944_n.jpg",
-                "739165132_122276917202129427_2386633770452052507_n.jpg",
-                "739175342_122276917274129427_3351981840669348872_n.jpg",
-                "739451187_122276917094129427_1972973537428140580_n.jpg",
-                "750355503_122278340186129427_706892172589075451_n.jpg"
-            ]);
             ?>
             <div class="relative overflow-hidden rounded-lg bg-zinc-950 border border-zinc-900 aspect-square group">
                 <img src="../images/live-music/<?php echo $img; ?>" alt="Gallery" class="w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-300">
                 <div class="absolute bottom-0 left-0 right-0 p-2 bg-zinc-950/90 flex justify-center items-center border-t border-zinc-900">
-                    <?php if ($is_protected): ?>
-                        <span class="text-zinc-500 font-mono text-[9px] font-bold"><?php echo t("Default", "เริ่มต้นระบบ"); ?></span>
-                    <?php else: ?>
-                        <a href="music.php?action=delete_photo&filename=<?php echo urlencode($img); ?>" class="shadcn-btn-destructive py-1 px-2.5 text-[10px] w-full text-center" onclick="return confirm('<?php echo t('Are you sure you want to delete this photo?', 'คุณแน่ใจว่าต้องการลบรูปภาพบรรยากาศชิ้นนี้?'); ?>')"><?php echo t("Delete", "ลบภาพ"); ?></a>
-                    <?php endif; ?>
+                    <a href="javascript:void(0)" onclick="confirmDeletePhoto('<?php echo urlencode($img); ?>')" class="shadcn-btn-destructive py-1 px-2.5 text-[10px] w-full text-center"><?php echo t("Delete", "ลบภาพ"); ?></a>
                 </div>
             </div>
         <?php endforeach; ?>
+    </div>
+</div>
+
+<script>
+    function confirmDeleteMusic(musicId, artist, day, time) {
+        document.getElementById('delete-music-artist-display').innerText = artist;
+        document.getElementById('delete-music-time-display').innerText = day + ' (' + time + ')';
+        document.getElementById('confirm-delete-music-btn').href = 'music.php?action=delete&id=' + encodeURIComponent(musicId);
+        document.getElementById('deleteMusicModal').classList.remove('hidden');
+    }
+
+    function closeDeleteMusicModal() {
+        document.getElementById('deleteMusicModal').classList.add('hidden');
+    }
+
+    function confirmDeletePhoto(filename) {
+        document.getElementById('confirm-delete-photo-btn').href = 'music.php?action=delete_photo&filename=' + filename;
+        document.getElementById('deletePhotoModal').classList.remove('hidden');
+    }
+
+    function closeDeletePhotoModal() {
+        document.getElementById('deletePhotoModal').classList.add('hidden');
+    }
+</script>
+
+<!-- Custom Delete Live Music Schedule Modal -->
+<div id="deleteMusicModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-zinc-900/90 px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-950/80 border border-red-900 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-outlined text-xl">music_off</span>
+                </div>
+                <div>
+                    <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
+                        <?php echo t("Confirm Schedule Deletion", "ยืนยันการลบกำหนดการแสดง"); ?>
+                    </h3>
+                    <span class="text-zinc-400 text-xs font-mono block mt-1">
+                        <?php echo t("Remove artist performance from timetable", "ลบโชว์ดนตรีสดออกจากตารางประจำสัปดาห์"); ?>
+                    </span>
+                </div>
+            </div>
+            <button onclick="closeDeleteMusicModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5">
+            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
+                <?php echo t("Are you sure you want to delete this live music performance schedule?", "คุณแน่ใจหรือไม่ว่าต้องการลบกำหนดการแสดงดนตรีสดนี้ออกจากตารางประจำสัปดาห์?"); ?>
+            </p>
+
+            <!-- Music Info Badge -->
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-2">
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Artist / Band:", "ศิลปิน / วงดนตรี:"); ?></span>
+                    <span id="delete-music-artist-display" class="font-semibold text-warning text-sm"></span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                    <span class="text-zinc-400"><?php echo t("Showtime Slot:", "วันและเวลาขึ้นแสดง:"); ?></span>
+                    <span id="delete-music-time-display" class="text-zinc-200"></span>
+                </div>
+            </div>
+
+            <!-- Caution Alert -->
+            <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
+                <span><?php echo t("Action cannot be undone. Customers will no longer see this session.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ กำหนดการจะถูกลบออกทันที"); ?></span>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
+            <button onclick="closeDeleteMusicModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-delete-music-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
+                <span class="material-symbols-outlined text-base">delete</span>
+                <span><?php echo t("Confirm Delete", "ยืนยันการลบกำหนดการ"); ?></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Delete Photo Modal -->
+<div id="deletePhotoModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all text-center p-6">
+        <div class="w-12 h-12 rounded-2xl bg-red-950/80 border border-red-900 mx-auto mb-3 flex items-center justify-center text-red-500">
+            <span class="material-symbols-outlined text-2xl">no_photography</span>
+        </div>
+        <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 mb-1">
+            <?php echo t("Delete Atmosphere Photo?", "ยืนยันการลบรูปภาพบรรยากาศ"); ?>
+        </h3>
+        <p class="text-zinc-400 text-xs font-sans mb-5 leading-relaxed">
+            <?php echo t("Are you sure you want to delete this photo from gallery?", "คุณแน่ใจหรือไม่ว่าต้องการลบรูปภาพบรรยากาศชิ้นนี้ออกจากแกลเลอรีร้าน?"); ?>
+        </p>
+        <div class="flex items-center justify-center gap-2">
+            <button onclick="closeDeletePhotoModal()" type="button" class="flex-1 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-delete-photo-btn" href="#" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center justify-center gap-1 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
+                <span><?php echo t("Delete Photo", "ยืนยันลบภาพ"); ?></span>
+            </a>
+        </div>
     </div>
 </div>
 

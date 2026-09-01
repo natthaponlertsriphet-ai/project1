@@ -5,7 +5,7 @@ require_once 'db.php';
 if (isset($_GET['action']) && $_GET['action'] === 'get_beers_status') {
     header('Content-Type: application/json');
     try {
-        $stmt = $pdo->query("SELECT id, tap_number, active FROM beers ORDER BY CAST(tap_number AS UNSIGNED)");
+        $stmt = $pdo->query("SELECT menu_id, tap_number, is_active FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
         $beers_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($beers_status);
     } catch (Exception $e) {
@@ -16,7 +16,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_beers_status') {
 
 // Fetch all beers (including sold out ones)
 try {
-    $stmt = $pdo->query("SELECT * FROM beers ORDER BY CAST(tap_number AS UNSIGNED)");
+    $stmt = $pdo->query("SELECT * FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
     $beers = $stmt->fetchAll();
 } catch (Exception $e) {
     $beers = [];
@@ -25,7 +25,7 @@ try {
 // Calculate active taps count
 $active_taps_count = 0;
 foreach ($beers as $b) {
-    if ($b['active']) $active_taps_count++;
+    if ($b['is_active']) $active_taps_count++;
 }
 
 // Categories list
@@ -71,7 +71,7 @@ require_once 'header.php';
     }
     .btn-style-filter {
         border-radius: 4px;
-        font-family: 'Anton', sans-serif;
+        font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         font-size: 13px;
         text-transform: uppercase;
         border: none;
@@ -92,7 +92,7 @@ require_once 'header.php';
             </span>
         </div>
         <h1 class="font-anton text-light text-uppercase tracking-wide display-4 mb-3 lh-1">
-            Chiang Mai <br>
+            CHIT HOLE CNX <br>
             <span class="text-warning"><?php echo t("Branch Pours", "แท็ปสดส่งตรงในร้าน"); ?></span>
         </h1>
         <p class="text-secondary fs-5 max-width-md m-0">
@@ -113,19 +113,24 @@ require_once 'header.php';
 
                 <!-- Live Stat Box with Background Image -->
                 <div class="glass-card overflow-hidden position-relative" style="height: 250px;">
-                    <div class="absolute inset-0 bg-dark opacity-75" style="position: absolute; inset:0; background-image: url('images/beer-menu/731808707_122276037134129427_4529653230109058386_n.jpg'); background-size:cover; background-position: center; mix-blend-mode: luminosity; opacity:0.15; z-index:0;"></div>
+                    <div class="absolute inset-0 bg-dark opacity-75" style="position: absolute; inset:0; background-image: url('images/beer-menu/481664700_122207974712129427_4846131329867806613_n.jpg'); background-size:cover; background-position: center; mix-blend-mode: luminosity; opacity:0.2; z-index:0;"></div>
                     <div class="h-100 d-flex flex-column justify-content-end p-4 relative" style="position: relative; z-index: 2;">
                         <div class="d-flex gap-4">
                             <div class="d-flex flex-column">
                                 <span id="active-taps-count" class="font-anton text-warning display-4 lh-1">
                                     <?php echo sprintf("%02d", $active_taps_count); ?>
                                 </span>
-                                <span class="text-uppercase text-secondary font-mono" style="font-size: 9px; font-weight: bold;">
+                                <span class="text-uppercase font-mono" style="font-size: 18px; font-weight: bold; color: #ffffff;">
                                     <?php echo t("Active Taps", "แท็ปที่พร้อมบริการ"); ?>
                                 </span>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- ABV Info Image Card -->
+                <div class="glass-card overflow-hidden p-0">
+                    <img src="images/beer-menu/763647029_122254452440266045_1313488753492914884_n.jpg" alt="ABV Guide" class="img-fluid w-100" style="display: block;">
                 </div>
 
             </div>
@@ -153,21 +158,21 @@ require_once 'header.php';
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($beers as $b): ?>
-                                    <tr id="beer-row-<?php echo $b['id']; ?>" class="tap-row border-bottom border-secondary border-opacity-10 <?php echo !$b['active'] ? 'opacity-40 select-none' : ''; ?>">
+                                    <tr id="beer-row-<?php echo $b['menu_id']; ?>" class="tap-row border-bottom border-secondary border-opacity-10 <?php echo !$b['is_active'] ? 'opacity-40 select-none' : ''; ?>">
                                         <!-- No (Tap Number) -->
                                         <td class="py-4 px-3 font-anton text-warning fs-5">
                                             <?php echo sprintf("%02d", $b['tap_number']); ?>
                                         </td>
                                         <!-- Brand -->
                                         <td class="py-4 px-3 text-secondary font-sans font-bold fs-6 text-uppercase">
-                                            <?php echo htmlspecialchars($b['type']); ?>
+                                            <?php echo htmlspecialchars($b['beer_type']); ?>
                                         </td>
                                         <!-- Beers (Name and description) -->
                                         <td class="py-4 px-3">
                                             <div class="d-flex flex-column">
                                                 <div class="d-flex align-items-center gap-2 beer-name-container">
-                                                    <span class="text-light font-anton text-uppercase fs-6 tracking-wide"><?php echo htmlspecialchars($b['name']); ?></span>
-                                                    <?php if (!$b['active']): ?>
+                                                    <span class="text-light font-anton text-uppercase fs-6 tracking-wide"><?php echo htmlspecialchars($b['menu_name']); ?></span>
+                                                    <?php if (!$b['is_active']): ?>
                                                         <span class="badge bg-danger text-light font-anton text-uppercase px-2 py-0.5 tracking-wider soldout-badge" style="font-size: 8.5px;"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>
                                                     <?php endif; ?>
                                                 </div>
@@ -198,11 +203,11 @@ require_once 'header.php';
                 let activeTapsCount = 0;
                 
                 beers.forEach(beer => {
-                    const row = document.getElementById(`beer-row-${beer.id}`);
+                    const row = document.getElementById(`beer-row-${beer.menu_id}`);
                     if (!row) return;
                     
                     const nameContainer = row.querySelector('.beer-name-container');
-                    const isActive = parseInt(beer.active) === 1;
+                    const isActive = parseInt(beer.is_active) === 1;
                     
                     if (isActive) {
                         activeTapsCount++;

@@ -3,8 +3,8 @@ require_once 'db.php';
 
 // Fetch all live music schedules
 try {
-    $stmt = $pdo->query("SELECT * FROM live_music ORDER BY 
-        CASE day
+    $stmt = $pdo->query("SELECT * FROM music ORDER BY 
+        CASE show_day
             WHEN 'Mon' THEN 1
             WHEN 'Tue' THEN 2
             WHEN 'Wed' THEN 3
@@ -12,7 +12,7 @@ try {
             WHEN 'Fri' THEN 5
             WHEN 'Sat' THEN 6
             WHEN 'Sun' THEN 7
-        END, time");
+        END, show_time");
     $music_events = $stmt->fetchAll();
 } catch (Exception $e) {
     $music_events = [];
@@ -23,7 +23,7 @@ $events_by_day = [
     'Mon' => [], 'Tue' => [], 'Wed' => [], 'Thu' => [], 'Fri' => [], 'Sat' => [], 'Sun' => []
 ];
 foreach ($music_events as $event) {
-    $events_by_day[$event['day']][] = $event;
+    $events_by_day[$event['show_day']][] = $event;
 }
 
 // Fetch dynamic gallery photos directly from /images/live-music/
@@ -69,7 +69,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_music_html') {
                                 <span class="text-secondary small font-sans mt-0.5"><?php echo htmlspecialchars($event['description']); ?></span>
                             </div>
                             <span class="font-anton text-light fs-5 tracking-wide bg-dark bg-opacity-70 border border-secondary border-opacity-20 px-3 py-1.5" style="border-radius: 4px;">
-                                <?php echo htmlspecialchars($event['time']); ?>
+                                <?php echo htmlspecialchars($event['show_time']); ?>
                             </span>
                         </div>
                     <?php endforeach; ?>
@@ -114,7 +114,7 @@ require_once 'header.php';
         z-index: 1;
     }
     .day-tab-btn {
-        font-family: 'Anton', sans-serif;
+        font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         text-transform: uppercase;
         font-size: 14px;
         letter-spacing: 0.05em;
@@ -223,8 +223,8 @@ require_once 'header.php';
         </h1>
         <p class="text-secondary fs-5 max-width-md m-0">
             <?php echo t(
-              "Check out our weekly live performance schedule. From raw acoustic soloists to high-octane alternative rock bands, we present the finest local talent starting from 19:00 onwards.",
-              "ตารางความมันส์ยามค่ำคืนกับวงดนตรีสดหลากสไตล์ ทั้งอคูสติกสุดชิลล์ไปจนถึงวงร็อกสุดมันส์ เริ่มตั้งแต่เวลา 19:00 น. เป็นต้นไป"
+              "Immerse yourself in our eclectic live music lineup. Handpicked every night, from chill acoustic sets to explosive rock performances ready to blow the roof off.",
+              "ปล่อยอารมณ์ไปกับไลน์อัปดนตรีสดหลากสไตล์ คืนนี้เราคัดมาให้เน้นๆ ตั้งแต่อคูสติกสุดชิลล์ ไปจนถึงวงร็อกที่พร้อมจะระเบิดความมันส์ให้สุดเหวี่ยง"
             ); ?>
         </p>
     </div>
@@ -279,7 +279,7 @@ require_once 'header.php';
                                                 <span class="text-secondary small font-sans mt-0.5"><?php echo htmlspecialchars($event['description']); ?></span>
                                             </div>
                                             <span class="font-anton text-light fs-5 tracking-wide bg-dark bg-opacity-70 border border-secondary border-opacity-20 px-3 py-1.5" style="border-radius: 4px;">
-                                                <?php echo htmlspecialchars($event['time']); ?>
+                                                <?php echo htmlspecialchars($event['show_time']); ?>
                                             </span>
                                         </div>
                                     <?php endforeach; ?>

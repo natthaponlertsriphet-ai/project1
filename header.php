@@ -41,23 +41,41 @@ function is_active($page) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHIT HOLE - Chiang Mai Brewing</title>
+    <title>CHIT HOLE CNX - โรงเบียร์ชิตโฮลเชียงใหม่</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@300;400;600;700&family=Work+Sans:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Pridi:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
     
     <style>
         body {
             background-color: #131313;
             color: #e5e2e1;
-            font-family: 'Work Sans', 'Outfit', sans-serif;
+            font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
             overflow-x: hidden;
         }
+        /* Make Thai text bolder for readability */
+        html[lang="th"] body,
+        html[lang="th"] p,
+        html[lang="th"] span,
+        html[lang="th"] a,
+        html[lang="th"] button,
+        html[lang="th"] h1,
+        html[lang="th"] h2,
+        html[lang="th"] h3,
+        html[lang="th"] h4,
+        html[lang="th"] h5,
+        html[lang="th"] h6,
+        html[lang="th"] input,
+        html[lang="th"] select,
+        html[lang="th"] textarea,
+        html[lang="th"] .font-anton {
+            font-weight: 600 !important;
+        }
         .font-anton {
-            font-family: 'Anton', sans-serif;
+            font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         }
         /* Custom navbar styles */
         .navbar-custom {
@@ -68,7 +86,7 @@ function is_active($page) {
         .btn-custom-gold {
             background-color: #ffd782;
             color: #3f2e00;
-            font-family: 'Anton', sans-serif;
+            font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
             border: none;
             transition: all 0.3s;
             border-radius: 4px;
@@ -105,8 +123,8 @@ function is_active($page) {
                     <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div class="d-flex flex-column">
-                    <span class="font-anton text-warning text-uppercase tracking-wider fs-4 lh-1">CHIT HOLE</span>
-                    <span class="text-uppercase text-secondary tracking-widest" style="font-size: 9px; font-weight: bold;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์เชียงใหม่"); ?></span>
+                    <span class="font-anton text-warning text-uppercase tracking-wider fs-4 lh-1">CHIT HOLE CNX</span>
+                    <span class="text-uppercase text-secondary tracking-widest" style="font-size: 9px; font-weight: bold;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์ชิตโฮลเชียงใหม่"); ?></span>
                 </div>
             </a>
             

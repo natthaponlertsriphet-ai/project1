@@ -7,18 +7,16 @@
 
 | ชื่อแอทริบิวต์ | ความหมาย | ชนิดข้อมูล | ขนาด (ไบต์) | รูปแบบ | รูปแบบช่วงข้อมูล | ป้อนข้อมูล (Y/N) | คีย์หลักหรือคีย์นอก | ตารางที่อ้างอิง |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id_admin` | รหัสผู้ดูแลระบบ | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | Y | PK | - |
-| `email` | อีเมลผู้ดูแลระบบ | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,@,. | Y | FK | - |
-| `password_hash` | รหัสผ่านที่เข้ารหัสแล้ว | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,สัญลักษณ์ | Y | - | - |
-| `name` | ชื่อผู้ดูแลระบบ | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ | Y | - | - |
-| `role` | บทบาทหน้าที่ | Varchar(50) | 50 | x(50) | ADMIN | Y | - | - |
-| `created_at` | วันเวลาที่สร้างบัญชี | Timestamp | 8 | YYYY-MM-DD hh:mm:ss | CURRENT_TIMESTAMP | Y | - | - |
-| `updated_at` | วันเวลาที่อัปเดตล่าสุด | Timestamp | 8 | YYYY-MM-DD hh:mm:ss | CURRENT_TIMESTAMP | Y | - | - |
+| `admin_id` | รหัสผู้ดูแลระบบ | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | N | PK | - |
+| `admin_email` | อีเมลผู้ดูแลระบบ | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,@,. | Y | - | - |
+| `admin_password_hash` | รหัสผ่านที่เข้ารหัสแล้ว | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,สัญลักษณ์ | Y | - | - |
+| `admin_name` | ชื่อผู้ดูแลระบบ | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ | Y | - | - |
+| `role` | บทบาทหน้าที่ | Varchar(50) | 50 | x(50) | ADMIN | N | - | - |
 
 ตารางที่ 3.2 แสดงตัวอย่างการเก็บข้อมูลของแฟ้มข้อมูลผู้ดูแลระบบ
 
-| id_admin | email | password_hash | name | role | created_at | updated_at |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| admin-1 | admin@chithole.com | $2y$10$abcdef... | Admin Boss | ADMIN | 2026-08-01 12:00:00 | 2026-08-01 12:00:00 |
+| admin_id | admin_email | admin_password_hash | admin_name | role |
+| :--- | :--- | :--- | :--- | :--- |
+| admin-1 | admin@chithole.com | $2y$10$abcdef... | Admin Boss | ADMIN |
 
 หมายเหตุ: บทบาทหน้าที่ (role) สำหรับแฟ้มนี้ถูกระบุค่าแบบเฉพาะเจาะจงเป็น 'ADMIN'

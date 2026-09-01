@@ -7,16 +7,19 @@
                         <div class="rounded overflow-hidden border border-secondary shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                             <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
-                        <span class="font-anton text-warning text-uppercase tracking-wider fs-5">CHIT HOLE</span>
+                        <span class="font-anton text-warning text-uppercase tracking-wider fs-5">CHIT HOLE CNX</span>
                     </div>
-                    <p class="text-secondary small" style="max-width: 300px;">
-                        Uncompromising Thai craft beer culture. High energy, workshop vibes, and nocturnal light.
+                    <p class="text-secondary small font-sans" style="max-width: 420px; line-height: 1.6;">
+                        <?php echo t(
+                            "Uncompromising Thai craft beer culture at CHIT HOLE CNX. Vibrant learning atmosphere, a creative space for fresh craft flavors, connecting beer lovers under nocturnal lights with the ultimate draft tap experience.", 
+                            "วัฒนธรรมคราฟต์เบียร์ไทยที่ไม่ยอมประนีประนอม ณ โรงเบียร์ชิตโฮลเชียงใหม่ บรรยากาศการเรียนรู้สุดคึกคัก พื้นที่ปล่อยของและสร้างสรรค์รสชาติสดใหม่ เชื่อมต่อคนรักเบียร์ใต้แสงไฟยามราตรี พร้อมสัมผัสประสบการณ์แท็ปที่ดีที่สุด"
+                        ); ?>
                     </p>
                 </div>
                 <div class="col-md-4">
                     <h5 class="font-anton text-warning text-uppercase tracking-wider mb-3"><?php echo t("San Sai Branch", "สาขาสันทราย"); ?></h5>
                     <p class="text-secondary small mb-2">
-                        <?php echo t("San Sai District, Chiang Mai", "อำเภอสันทราย, เชียงใหม่"); ?><br>
+                        <?php echo t("401 Moo 2, Ban Nong Khrai Luang, Nong Jom, San Sai, Chiang Mai 50210", "401 หมู่ 2 บ้านหนองไคร้หลวง ตำบลหนองจ๊อม อำเภอสันทราย จังหวัดเชียงใหม่ 50210"); ?><br>
                         <?php echo t("Open Daily • 17:00 - 00:00", "เปิดทุกวัน • 17:00 - 00:00 น."); ?>
                     </p>
                     <a href="https://maps.app.goo.gl/UKdfCxycHEVRGcST6" target="_blank" class="text-warning text-decoration-none small d-inline-flex align-items-center gap-1.5 hover-underline transition-all">
@@ -57,7 +60,7 @@
             </div>
             <div class="row mt-4 pt-4 border-top border-secondary border-opacity-10 text-center">
                 <div class="col-12">
-                    <span class="text-secondary small font-mono">© 2026 CHIT HOLE. All rights reserved. Crafted by Antigravity.</span>
+                    <span class="text-secondary small font-mono">© 2026 CHIT HOLE CNX. All rights reserved.</span>
                 </div>
             </div>
         </div>

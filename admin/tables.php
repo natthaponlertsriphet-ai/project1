@@ -48,13 +48,13 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') {
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
     $toggle_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("SELECT status FROM tables WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT table_status AS status FROM `table` WHERE table_id = ?");
         $stmt->execute([$toggle_id]);
         $current_status = $stmt->fetchColumn();
         
         $new_status = ($current_status === 'AVAILABLE') ? 'OCCUPIED' : 'AVAILABLE';
         
-        $stmt = $pdo->prepare("UPDATE tables SET status = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE `table` SET table_status = ? WHERE table_id = ?");
         $stmt->execute([$new_status, $toggle_id]);
         
         // Pass message via session to persist across redirect
@@ -70,7 +70,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $del_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("DELETE FROM tables WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM `table` WHERE table_id = ?");
         $stmt->execute([$del_id]);
         $_SESSION['action_success'] = t("Table deleted successfully.", "ลบโต๊ะเรียบร้อยแล้ว.");
     } catch (Exception $e) {
@@ -83,7 +83,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 // Handle GET table loader for edit
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
     $edit_id = $_GET['id'];
-    $stmt = $pdo->prepare("SELECT * FROM tables WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table` WHERE table_id = ?");
     $stmt->execute([$edit_id]);
     $table = $stmt->fetch();
     
@@ -169,13 +169,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($_POST['action'] === 'create_table') {
                 try {
                     // Check duplicate table number
-                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM tables WHERE number = ?");
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM `table` WHERE table_number = ?");
                     $stmt->execute([$number]);
                     if ($stmt->fetchColumn() > 0) {
                         $error = "This Table Number already exists.";
                     } else {
                         $id = 'tbl_' . uniqid();
-                        $stmt = $pdo->prepare("INSERT INTO tables (id, number, zone, capacity, status, image) VALUES (?, ?, ?, ?, ?, ?)");
+                        $stmt = $pdo->prepare("INSERT INTO `table` (table_id, table_number, zone, capacity, table_status, image) VALUES (?, ?, ?, ?, ?, ?)");
                         $stmt->execute([$id, $number, $zone, $capacity, $status, $image_path]);
                         
                         // Reset
@@ -194,12 +194,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $id = $_POST['edit_id'];
                 try {
                     // Check duplicate table number (excluding itself)
-                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM tables WHERE number = ? AND id != ?");
+                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM `table` WHERE table_number = ? AND table_id != ?");
                     $stmt->execute([$number, $id]);
                     if ($stmt->fetchColumn() > 0) {
                         $error = "This Table Number is already in use.";
                     } else {
-                        $stmt = $pdo->prepare("UPDATE tables SET number = ?, zone = ?, capacity = ?, status = ?, image = ? WHERE id = ?");
+                        $stmt = $pdo->prepare("UPDATE `table` SET table_number = ?, zone = ?, capacity = ?, table_status = ?, image = ? WHERE table_id = ?");
                         $stmt->execute([$number, $zone, $capacity, $status, $image_path, $id]);
                         
                         // Reset
@@ -227,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch all tables
-$stmt = $pdo->query("SELECT * FROM tables ORDER BY zone, number");
+$stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table` ORDER BY zone, table_number");
 $all_tables = $stmt->fetchAll();
 
 require_once 'admin_header.php';
@@ -235,7 +235,7 @@ require_once 'admin_header.php';
 
 <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Table Layout Manager", "จัดการผังโต๊ะนั่งในร้าน"); ?></h1>
+        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Table Layout Manager", "จัดการข้อมูลผังที่นั่งและระบบหมายเลขโต๊ะ"); ?></h1>
         <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Seat Map Control", "แผงควบคุมผู้ดูแลระบบ / จัดการโต๊ะและแผนผังที่นั่ง"); ?></p>
     </div>
 </div>
@@ -252,9 +252,13 @@ require_once 'admin_header.php';
     </div>
 <?php endif; ?>
 
+<?php 
+$show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN';
+?>
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     
-    <!-- Left Column: Add/Edit Form (Always visible, disabled for STAFF) -->
+    <?php if ($show_form): ?>
+    <!-- Left Column: Add/Edit Form (Only visible to ADMIN) -->
     <div class="lg:col-span-4">
         <div class="shadcn-card">
             <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
@@ -277,9 +281,13 @@ require_once 'admin_header.php';
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Zone / Area", "โซนที่ตั้งโต๊ะ"); ?></label>
                     <select name="zone" required class="shadcn-input bg-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
-                        <option value="INDOOR" <?php echo $zone === 'INDOOR' ? 'selected' : ''; ?>><?php echo t("INDOOR (ห้องแอร์)", "INDOOR (ห้องแอร์)"); ?></option>
+                        <option value="INDOOR_CENTER" <?php echo $zone === 'INDOOR_CENTER' ? 'selected' : ''; ?>><?php echo t("INDOOR CENTER (ตรงกลางห้องแอร์)", "INDOOR CENTER (ตรงกลางห้องแอร์)"); ?></option>
+                        <option value="INDOOR_WINDOW" <?php echo $zone === 'INDOOR_WINDOW' ? 'selected' : ''; ?>><?php echo t("INDOOR WINDOW (ติดกระจก)", "INDOOR WINDOW (ติดกระจก)"); ?></option>
+                        <option value="INDOOR" <?php echo $zone === 'INDOOR' ? 'selected' : ''; ?>><?php echo t("INDOOR GENERAL (ห้องแอร์ทั่วไป)", "INDOOR GENERAL (ห้องแอร์ทั่วไป)"); ?></option>
                         <option value="OUTDOOR" <?php echo $zone === 'OUTDOOR' ? 'selected' : ''; ?>><?php echo t("OUTDOOR (ด้านนอก)", "OUTDOOR (ด้านนอก)"); ?></option>
                         <option value="STAGE" <?php echo $zone === 'STAGE' ? 'selected' : ''; ?>><?php echo t("STAGE (หน้าเวที)", "STAGE (หน้าเวที)"); ?></option>
+                        <option value="BAR" <?php echo $zone === 'BAR' ? 'selected' : ''; ?>><?php echo t("BAR (หน้าบาร์)", "BAR (หน้าบาร์)"); ?></option>
+                        <option value="WALKWAY" <?php echo $zone === 'WALKWAY' ? 'selected' : ''; ?>><?php echo t("WALKWAY (โซนทางเดิน)", "WALKWAY (โซนทางเดิน)"); ?></option>
                     </select>
                 </div>
 
@@ -327,9 +335,10 @@ require_once 'admin_header.php';
             </form>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- Right Column: Inventory Table & Visual Map -->
-    <div class="lg:col-span-8 flex flex-col gap-6">
+    <div class="<?php echo $show_form ? 'lg:col-span-8' : 'lg:col-span-12'; ?> flex flex-col gap-6">
         
         <!-- Visual Seat Map Control Card -->
         <div class="shadcn-card border border-warning/10 shadow-lg">
@@ -440,7 +449,7 @@ require_once 'admin_header.php';
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="tables.php?action=edit&id=<?php echo $t['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="tables.php?action=delete&id=<?php echo $t['id']; ?>" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" onclick="return confirm('<?php echo t('Are you sure you want to delete this table?', 'คุณแน่ใจว่าต้องการลบโต๊ะนี้?'); ?>')" title="Delete"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeleteTable('<?php echo $t['id']; ?>', '<?php echo htmlspecialchars($t['number']); ?>', '<?php echo htmlspecialchars($t['zone']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Table', 'ลบโต๊ะ'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                     <?php endif; ?>
@@ -482,7 +491,16 @@ require_once 'admin_header.php';
         const mapBtns = document.querySelectorAll('.admin-map-btn');
         mapBtns.forEach(btn => {
             const btnZone = btn.getAttribute('data-zone');
-            if (zone === 'ALL' || btnZone === zone) {
+            let match = false;
+            if (zone === 'ALL') {
+                match = true;
+            } else if (zone === 'INDOOR') {
+                match = btnZone.startsWith('INDOOR') || btnZone === 'BAR' || btnZone === 'WALKWAY';
+            } else {
+                match = btnZone === zone;
+            }
+
+            if (match) {
                 btn.style.display = 'block';
             } else {
                 btn.style.display = 'none';
@@ -497,6 +515,78 @@ require_once 'admin_header.php';
             allBtn.classList.add('bg-zinc-900', 'text-zinc-50', 'border', 'border-zinc-800', 'shadow-sm');
         }
     });
+
+    function confirmDeleteTable(tableId, tableNum, tableZone) {
+        document.getElementById('delete-table-num-display').innerText = '<?php echo t("Table ", "โต๊ะหมายเลข "); ?>' + tableNum;
+        document.getElementById('delete-table-zone-display').innerText = tableZone;
+        document.getElementById('confirm-delete-table-btn').href = 'tables.php?action=delete&id=' + encodeURIComponent(tableId);
+        document.getElementById('deleteTableModal').classList.remove('hidden');
+    }
+
+    function closeDeleteTableModal() {
+        document.getElementById('deleteTableModal').classList.add('hidden');
+    }
 </script>
+
+<!-- Custom Delete Table Modal Dialog -->
+<div id="deleteTableModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-zinc-900/90 px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-950/80 border border-red-900 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-outlined text-xl">table_restaurant</span>
+                </div>
+                <div>
+                    <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
+                        <?php echo t("Confirm Table Deletion", "ยืนยันการลบข้อมูลผังที่นั่ง"); ?>
+                    </h3>
+                    <span class="text-zinc-400 text-xs font-mono block mt-1">
+                        <?php echo t("Remove table from system floorplan", "ลบหมายเลขโต๊ะออกจากผังร้าน"); ?>
+                    </span>
+                </div>
+            </div>
+            <button onclick="closeDeleteTableModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5">
+            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
+                <?php echo t("Are you sure you want to delete this table from the floorplan?", "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลโต๊ะนี้ออกจากผังที่นั่งของร้าน?"); ?>
+            </p>
+
+            <!-- Table Info Badge -->
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-1.5">
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Table Number:", "หมายเลขโต๊ะ:"); ?></span>
+                    <span id="delete-table-num-display" class="font-anton text-warning text-base font-bold"></span>
+                </div>
+                <div class="flex justify-between items-center pt-1">
+                    <span class="text-zinc-400"><?php echo t("Zone Location:", "โซนที่ตั้ง:"); ?></span>
+                    <span id="delete-table-zone-display" class="text-zinc-200 font-semibold"></span>
+                </div>
+            </div>
+
+            <!-- Caution Alert -->
+            <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
+                <span><?php echo t("Action cannot be undone. Any associated historical table data will be updated.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ โปรดตรวจสอบความถูกต้องก่อนยืนยัน"); ?></span>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
+            <button onclick="closeDeleteTableModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-delete-table-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
+                <span class="material-symbols-outlined text-base">delete</span>
+                <span><?php echo t("Confirm Delete", "ยืนยันการลบโต๊ะ"); ?></span>
+            </a>
+        </div>
+    </div>
+</div>
 
 <?php require_once 'admin_footer.php'; ?>

@@ -7,18 +7,15 @@
 
 | ชื่อแอทริบิวต์ | ความหมาย | ชนิดข้อมูล | ขนาด (ไบต์) | รูปแบบ | รูปแบบช่วงข้อมูล | ป้อนข้อมูล (Y/N) | คีย์หลักหรือคีย์นอก | ตารางที่อ้างอิง |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `music_id` | รหัสรอบการแสดง | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | Y | PK | - |
-| `day` | วันที่ขึ้นแสดงโชว์ | Varchar(50) | 50 | x(50) | Mon, Tue, Wed, Thu, Fri, Sat, Sun | Y | - | - |
-| `time` | ช่วงเวลาขึ้นแสดง | Varchar(50) | 50 | x(50) | hh:mm - hh:mm | Y | - | - |
+| `music_id` | รหัสรอบการแสดง | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | N | PK | - |
+| `show_day` | วันที่ขึ้นแสดงโชว์ | Varchar(50) | 50 | x(50) | Mon, Tue, Wed, Thu, Fri, Sat, Sun | N | - | - |
+| `show_time` | ช่วงเวลาขึ้นแสดง | Varchar(50) | 50 | x(50) | hh:mm - hh:mm | Y | - | - |
 | `artist` | ชื่อวงดนตรี/ศิลปิน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ,สัญลักษณ์ | Y | - | - |
 | `description` | คำบรรยาย | Text | 65535 | x(65535) | a-z,A-Z,ก-ฮ | Y | - | - |
-| `status` | ประเภทระดับความนิยม | Varchar(50) | 50 | x(50) | REGULAR, HOT | Y | - | - |
 
 ตารางที่ 3.12 แสดงตัวอย่างการเก็บข้อมูลของแฟ้มข้อมูลตารางแสดงดนตรีสด
 
-| music_id | day | time | artist | description | status |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| m-1 | Mon | 19:30 - 20:30 | วง NULL | Acoustic indie rock session. | REGULAR |
-| m-2 | Mon | 21:00 - 22:00 | วง Black Devil | Heavy rock and alternative hits. | HOT |
-
-หมายเหตุ: status ใช้ควบคุมสีของป้ายเพื่อความสวยงามดึงดูดใจ เช่น วงปกติทั่วไป REGULAR หรือ วงยอดนิยม HOT
+| music_id | show_day | show_time | artist | description |
+| :--- | :--- | :--- | :--- | :--- |
+| m-1 | Mon | 19:30 - 20:30 | วง NULL | Acoustic indie rock session. |
+| m-2 | Mon | 21:00 - 22:00 | วง Black Devil | Heavy rock and alternative hits. |

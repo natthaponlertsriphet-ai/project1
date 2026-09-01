@@ -40,21 +40,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $login_error = "Please fill in all fields.";
     } else {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+            // Check admin table first
+            $stmt = $pdo->prepare("SELECT * FROM admin WHERE admin_email = ?");
             $stmt->execute([$email]);
             $user = $stmt->fetch();
             
-            if ($user && password_verify($password, $user['password_hash'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_email'] = $user['email'];
+            if ($user && password_verify($password, $user['admin_password_hash'])) {
+                $_SESSION['user_id'] = $user['admin_id'];
+                $_SESSION['user_name'] = $user['admin_name'];
+                $_SESSION['user_email'] = $user['admin_email'];
                 $_SESSION['user_role'] = $user['role'];
                 
                 header("Location: admin/index.php");
                 exit;
-            } else {
-                $login_error = "Invalid email or password.";
             }
+            
+            // Check staff table second
+            $stmt = $pdo->prepare("SELECT * FROM staff WHERE staff_email = ?");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+            
+            if ($user && password_verify($password, $user['staff_password_hash'])) {
+                $_SESSION['user_id'] = $user['staff_id'];
+                $_SESSION['user_name'] = $user['staff_name'];
+                $_SESSION['user_email'] = $user['staff_email'];
+                $_SESSION['user_role'] = $user['role'];
+                
+                header("Location: admin/index.php");
+                exit;
+            }
+            
+            $login_error = "Invalid email or password.";
         } catch (Exception $e) {
             $login_error = "Database error: " . $e->getMessage();
         }
@@ -67,11 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHIT HOLE - Admin Login</title>
-    <!-- Google Fonts & Material Icons (IBM Plex Sans Thai & Anton) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>CHIT HOLE CNX - Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Pridi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS v4 Browser Compiler -->
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
@@ -79,14 +92,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Custom theme variables & Utilities mimicking Shadcn UI -->
     <style type="tailwindcss">
         @theme {
-            --font-sans: 'IBM Plex Sans Thai', sans-serif;
-            --font-anton: 'Anton', sans-serif;
+            --font-sans: 'Rockwell', 'Pridi', 'Arvo', serif;
+            --font-anton: 'Rockwell', 'Pridi', 'Arvo', serif;
         }
 
         body {
             background-color: #09090b; /* zinc-950 */
             color: #fafafa; /* zinc-50 */
-            font-family: 'IBM Plex Sans Thai', sans-serif;
+            font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
+        }
+
+        /* Make Thai text bolder for readability */
+        html[lang="th"] body,
+        html[lang="th"] p,
+        html[lang="th"] span,
+        html[lang="th"] a,
+        html[lang="th"] button,
+        html[lang="th"] h1,
+        html[lang="th"] h2,
+        html[lang="th"] h3,
+        html[lang="th"] h4,
+        html[lang="th"] h5,
+        html[lang="th"] h6,
+        html[lang="th"] input,
+        html[lang="th"] select,
+        html[lang="th"] textarea {
+            font-weight: 600 !important;
         }
 
         @utility shadcn-card {
@@ -141,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="rounded-lg overflow-hidden border border-zinc-800 shadow-md bg-zinc-950 flex items-center justify-center mb-4" style="width: 48px; height: 48px;">
                 <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" class="w-full h-full object-cover">
             </div>
-            <h2 class="font-anton text-warning text-2xl tracking-wider uppercase mb-1">CHIT HOLE</h2>
+            <h2 class="font-anton text-warning text-2xl tracking-wider uppercase mb-1">CHIT HOLE CNX</h2>
             <p class="text-zinc-400 text-sm"><?php echo t("Admin Portal Sign In", "เข้าสู่ระบบจัดการหลังบ้าน"); ?></p>
         </div>
 

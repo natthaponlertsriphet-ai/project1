@@ -7,18 +7,16 @@
 
 | ชื่อแอทริบิวต์ | ความหมาย | ชนิดข้อมูล | ขนาด (ไบต์) | รูปแบบ | รูปแบบช่วงข้อมูล | ป้อนข้อมูล (Y/N) | คีย์หลักหรือคีย์นอก | ตารางที่อ้างอิง |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id_staff` | รหัสพนักงาน | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | Y | PK | - |
-| `email` | อีเมลพนักงาน | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,@,. | Y | FK | - |
-| `password_hash` | รหัสผ่านที่เข้ารหัสแล้ว | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,สัญลักษณ์ | Y | - | - |
-| `name` | ชื่อพนักงาน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ | Y | - | - |
-| `role` | บทบาทหน้าที่ | Varchar(50) | 50 | x(50) | STAFF | Y | - | - |
-| `created_at` | วันเวลาที่สร้างบัญชี | Timestamp | 8 | YYYY-MM-DD hh:mm:ss | CURRENT_TIMESTAMP | Y | - | - |
-| `updated_at` | วันเวลาที่อัปเดตล่าสุด | Timestamp | 8 | YYYY-MM-DD hh:mm:ss | CURRENT_TIMESTAMP | Y | - | - |
+| `staff_id` | รหัสพนักงาน | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | N | PK | - |
+| `staff_email` | อีเมลพนักงาน | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,@,. | Y | - | - |
+| `staff_password_hash` | รหัสผ่านที่เข้ารหัสแล้ว | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,สัญลักษณ์ | Y | - | - |
+| `staff_name` | ชื่อพนักงาน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ | Y | - | - |
+| `role` | บทบาทหน้าที่ | Varchar(50) | 50 | x(50) | STAFF | N | - | - |
 
 ตารางที่ 3.4 แสดงตัวอย่างการเก็บข้อมูลของแฟ้มข้อมูลพนักงาน
 
-| id_staff | email | password_hash | name | role | created_at | updated_at |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| staff-1 | staff@chithole.com | $2y$10$xyzabc... | Staff Member | STAFF | 2026-08-01 12:05:00 | 2026-08-01 12:05:00 |
+| staff_id | staff_email | staff_password_hash | staff_name | role |
+| :--- | :--- | :--- | :--- | :--- |
+| staff-1 | staff@chithole.com | $2y$10$xyzabc... | Staff Member | STAFF |
 
 หมายเหตุ: บทบาทหน้าที่ (role) สำหรับแฟ้มนี้ถูกระบุค่าแบบเฉพาะเจาะจงเป็น 'STAFF'

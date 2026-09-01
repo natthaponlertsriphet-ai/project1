@@ -23,13 +23,13 @@ if (!function_exists('t')) {
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
     $toggle_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("SELECT active FROM beers WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT is_active AS active FROM menu WHERE menu_id = ?");
         $stmt->execute([$toggle_id]);
         $current_active = $stmt->fetchColumn();
         
         $new_active = $current_active ? 0 : 1;
         
-        $stmt = $pdo->prepare("UPDATE beers SET active = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE menu SET is_active = ? WHERE menu_id = ?");
         $stmt->execute([$new_active, $toggle_id]);
         
         $_SESSION['action_success'] = t("Beer tap availability status toggled successfully.", "สลับสถานะเปิด/ปิดขายแท็ปเบียร์สำเร็จ.");
@@ -44,7 +44,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $del_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("DELETE FROM beers WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM menu WHERE menu_id = ?");
         $stmt->execute([$del_id]);
         $_SESSION['action_success'] = t("Beer tap deleted successfully.", "ลบแท็ปเบียร์เรียบร้อยแล้ว.");
     } catch (Exception $e) {
@@ -68,14 +68,12 @@ $tap_number = '';
 $name = '';
 $type = '';
 $abv = '';
-$ibu = 'Hoppy';
-$description = '';
 $active = 1;
 
 // Handle GET edit details loader
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
     $edit_id = $_GET['id'];
-    $stmt = $pdo->prepare("SELECT * FROM beers WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT menu_id AS id, tap_number, menu_name AS name, beer_type AS type, abv, is_active AS active FROM menu WHERE menu_id = ?");
     $stmt->execute([$edit_id]);
     $beer = $stmt->fetch();
     
@@ -85,8 +83,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
         $name = $beer['name'];
         $type = $beer['type'];
         $abv = $beer['abv'];
-        $ibu = $beer['ibu'];
-        $description = $beer['description'];
         $active = (int)$beer['active'];
     }
 }
@@ -97,8 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $name = trim($_POST['name'] ?? '');
     $type = trim($_POST['type'] ?? '');
     $abv = trim($_POST['abv'] ?? '');
-    $ibu = '';
-    $description = '';
     $active = isset($_POST['active']) ? 1 : 0;
     
     if (!$tap_number || !$name || !$type || !$abv) {
@@ -107,14 +101,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if ($_POST['action'] === 'create_beer') {
             try {
                 // Check duplicate tap number
-                $stmt = $pdo->prepare("SELECT COUNT(*) FROM beers WHERE tap_number = ?");
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu WHERE tap_number = ?");
                 $stmt->execute([$tap_number]);
                 if ($stmt->fetchColumn() > 0) {
                     $error = "This Tap Number already exists.";
                 } else {
                     $id = 'beer_' . uniqid();
-                    $stmt = $pdo->prepare("INSERT INTO beers (id, tap_number, name, type, abv, ibu, description, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$id, $tap_number, $name, $type, $abv, $ibu, $description, $active]);
+                    $stmt = $pdo->prepare("INSERT INTO menu (menu_id, tap_number, menu_name, beer_type, abv, is_active) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$id, $tap_number, $name, $type, $abv, $active]);
                     
                     $_SESSION['action_success'] = t("Beer tap registered successfully!", "เพิ่มข้อมูลแท็ปเบียร์สำเร็จ!");
                     header("Location: beers.php");
@@ -127,13 +121,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $id = $_POST['edit_id'];
             try {
                 // Check duplicate tap number (excluding itself)
-                $stmt = $pdo->prepare("SELECT COUNT(*) FROM beers WHERE tap_number = ? AND id != ?");
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu WHERE tap_number = ? AND menu_id != ?");
                 $stmt->execute([$tap_number, $id]);
                 if ($stmt->fetchColumn() > 0) {
                     $error = "This Tap Number is already in use by another beer.";
                 } else {
-                    $stmt = $pdo->prepare("UPDATE beers SET tap_number = ?, name = ?, type = ?, abv = ?, ibu = ?, description = ?, active = ? WHERE id = ?");
-                    $stmt->execute([$tap_number, $name, $type, $abv, $ibu, $description, $active, $id]);
+                    $stmt = $pdo->prepare("UPDATE menu SET tap_number = ?, menu_name = ?, beer_type = ?, abv = ?, is_active = ? WHERE menu_id = ?");
+                    $stmt->execute([$tap_number, $name, $type, $abv, $active, $id]);
                     
                     $_SESSION['action_success'] = t("Beer tap configuration updated!", "แก้ไขข้อมูลแท็ปเบียร์สำเร็จ!");
                     header("Location: beers.php");
@@ -147,13 +141,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch all beers
-$stmt = $pdo->query("SELECT * FROM beers ORDER BY CAST(tap_number AS UNSIGNED)");
+$stmt = $pdo->query("SELECT menu_id AS id, tap_number, menu_name AS name, beer_type AS type, abv, is_active AS active FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
 $all_beers = $stmt->fetchAll();
 ?>
 
 <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Draft Beer Manager", "จัดการเมนูเบียร์สด"); ?></h1>
+        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Draft Beer Manager", "จัดการข้อมูลรายการเครื่องดื่ม"); ?></h1>
         <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Live Beer Control", "แผงควบคุมผู้ดูแลระบบ / จัดการเบียร์สดหน้าร้าน"); ?></p>
     </div>
 </div>
@@ -273,7 +267,7 @@ $all_beers = $stmt->fetchAll();
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="beers.php?action=edit&id=<?php echo $b['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="beers.php?action=delete&id=<?php echo $b['id']; ?>" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" onclick="return confirm('<?php echo t('Are you sure you want to delete this beer tap?', 'คุณแน่ใจว่าต้องการลบเบียร์แท็ปนี้?'); ?>')" title="Delete"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeleteBeer('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['tap_number']); ?>', '<?php echo htmlspecialchars($b['name']); ?>', '<?php echo htmlspecialchars($b['abv']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Beer Tap', 'ลบเบียร์แท็ป'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -285,6 +279,85 @@ $all_beers = $stmt->fetchAll();
         </div>
     </div>
 
+</div>
+
+<script>
+    function confirmDeleteBeer(beerId, tapNum, beerName, abv) {
+        document.getElementById('delete-beer-tap-display').innerText = '<?php echo t("TAP #", "แท็ปหมายเลข "); ?>' + tapNum;
+        document.getElementById('delete-beer-name-display').innerText = beerName;
+        document.getElementById('delete-beer-abv-display').innerText = 'ABV: ' + abv;
+        document.getElementById('confirm-delete-beer-btn').href = 'beers.php?action=delete&id=' + encodeURIComponent(beerId);
+        document.getElementById('deleteBeerModal').classList.remove('hidden');
+    }
+
+    function closeDeleteBeerModal() {
+        document.getElementById('deleteBeerModal').classList.add('hidden');
+    }
+</script>
+
+<!-- Custom Delete Beer Tap Modal Dialog -->
+<div id="deleteBeerModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-zinc-900/90 px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-950/80 border border-red-900 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-outlined text-xl">sports_bar</span>
+                </div>
+                <div>
+                    <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
+                        <?php echo t("Confirm Beer Tap Deletion", "ยืนยันการลบข้อมูลเบียร์แท็ป"); ?>
+                    </h3>
+                    <span class="text-zinc-400 text-xs font-mono block mt-1">
+                        <?php echo t("Remove craft beer tap from taplist", "ลบรายการคราฟต์เบียร์ออกจากเมนูร้าน"); ?>
+                    </span>
+                </div>
+            </div>
+            <button onclick="closeDeleteBeerModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5">
+            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
+                <?php echo t("Are you sure you want to delete this craft beer tap from the system?", "คุณแน่ใจหรือไม่ว่าต้องการลบเบียร์แท็ปนี้ออกจากรายการเมนูของร้าน?"); ?>
+            </p>
+
+            <!-- Beer Info Badge -->
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-2">
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Tap Number:", "หมายเลขแท็ป:"); ?></span>
+                    <span id="delete-beer-tap-display" class="font-anton text-warning text-base font-bold"></span>
+                </div>
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Beer Name:", "ชื่อคราฟต์เบียร์:"); ?></span>
+                    <span id="delete-beer-name-display" class="font-semibold text-zinc-100 text-sm"></span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                    <span class="text-zinc-400"><?php echo t("Alcohol Strength:", "ความเข้มแอลกอฮอล์:"); ?></span>
+                    <span id="delete-beer-abv-display" class="text-zinc-300"></span>
+                </div>
+            </div>
+
+            <!-- Caution Alert -->
+            <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
+                <span><?php echo t("Action cannot be undone. Customers will no longer see this tap on the menu.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ รายการจะถูกถอนออกจากเมนูทันที"); ?></span>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
+            <button onclick="closeDeleteBeerModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-delete-beer-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
+                <span class="material-symbols-outlined text-base">delete</span>
+                <span><?php echo t("Confirm Delete", "ยืนยันการลบแท็ป"); ?></span>
+            </a>
+        </div>
+    </div>
 </div>
 
 <?php require_once 'admin_footer.php'; ?>

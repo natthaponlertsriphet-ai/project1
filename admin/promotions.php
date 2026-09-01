@@ -19,7 +19,7 @@ $active = 1;
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $del_id = $_GET['id'];
     try {
-        $stmt = $pdo->prepare("DELETE FROM promotions WHERE id = ?");
+        $stmt = $pdo->prepare("DELETE FROM promotion WHERE promo_id = ?");
         $stmt->execute([$del_id]);
         $success = t("Promotion offer deleted successfully.", "ลบโปรโมชันเรียบร้อยแล้ว.");
     } catch (Exception $e) {
@@ -30,7 +30,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 // Handle GET edit details loader
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
     $edit_id = $_GET['id'];
-    $stmt = $pdo->prepare("SELECT * FROM promotions WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT promo_id AS id, promo_title AS title, description, offer, promo_period AS period, image_path AS image, is_active AS active FROM promotion WHERE promo_id = ?");
     $stmt->execute([$edit_id]);
     $promo = $stmt->fetch();
     
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($_POST['action'] === 'create_promo') {
                 try {
                     $id = 'promo_' . uniqid();
-                    $stmt = $pdo->prepare("INSERT INTO promotions (id, title, description, offer, period, image, active) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    $stmt = $pdo->prepare("INSERT INTO promotion (promo_id, promo_title, description, offer, promo_period, image_path, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)");
                     $stmt->execute([$id, $title, $description, $offer, $period, $image_path, $active]);
                     
                     // Reset
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             } elseif ($_POST['action'] === 'update_promo') {
                 $id = $_POST['edit_id'];
                 try {
-                    $stmt = $pdo->prepare("UPDATE promotions SET title = ?, description = ?, offer = ?, period = ?, image = ?, active = ? WHERE id = ?");
+                    $stmt = $pdo->prepare("UPDATE promotion SET promo_title = ?, description = ?, offer = ?, promo_period = ?, image_path = ?, is_active = ? WHERE promo_id = ?");
                     $stmt->execute([$title, $description, $offer, $period, $image_path, $active, $id]);
                     
                     // Reset
@@ -148,13 +148,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch all promotions
-$stmt = $pdo->query("SELECT * FROM promotions ORDER BY active DESC, id");
+$stmt = $pdo->query("SELECT promo_id AS id, promo_title AS title, description, offer, promo_period AS period, image_path AS image, is_active AS active FROM promotion ORDER BY is_active DESC, promo_id");
 $all_promos = $stmt->fetchAll();
 ?>
 
 <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Promotions Manager", "จัดการโปรโมชัน"); ?></h1>
+        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Promotions Manager", "จัดการรายการโปรโมชัน"); ?></h1>
         <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Promotions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการข้อเสนอและกิจกรรม"); ?></p>
     </div>
 </div>
@@ -271,7 +271,7 @@ $all_promos = $stmt->fetchAll();
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="promotions.php?action=edit&id=<?php echo $promo['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="promotions.php?action=delete&id=<?php echo $promo['id']; ?>" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" onclick="return confirm('<?php echo t('Are you sure you want to delete this promotion?', 'คุณแน่ใจว่าต้องการลบโปรโมชันนี้?'); ?>')" title="Delete"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeletePromo('<?php echo $promo['id']; ?>', '<?php echo htmlspecialchars($promo['title']); ?>', '<?php echo htmlspecialchars($promo['period']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Promotion', 'ลบโปรโมชัน'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -283,6 +283,80 @@ $all_promos = $stmt->fetchAll();
         </div>
     </div>
 
+</div>
+
+<script>
+    function confirmDeletePromo(promoId, promoTitle, promoPeriod) {
+        document.getElementById('delete-promo-title-display').innerText = promoTitle;
+        document.getElementById('delete-promo-period-display').innerText = promoPeriod;
+        document.getElementById('confirm-delete-promo-btn').href = 'promotions.php?action=delete&id=' + encodeURIComponent(promoId);
+        document.getElementById('deletePromoModal').classList.remove('hidden');
+    }
+
+    function closeDeletePromoModal() {
+        document.getElementById('deletePromoModal').classList.add('hidden');
+    }
+</script>
+
+<!-- Custom Delete Promotion Modal Dialog -->
+<div id="deletePromoModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-zinc-900/90 px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-950/80 border border-red-900 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-outlined text-xl">local_offer</span>
+                </div>
+                <div>
+                    <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
+                        <?php echo t("Confirm Promotion Deletion", "ยืนยันการลบรายการโปรโมชัน"); ?>
+                    </h3>
+                    <span class="text-zinc-400 text-xs font-mono block mt-1">
+                        <?php echo t("Remove promotion campaign from store", "ลบสิทธิพิเศษออกจากหน้าร้าน"); ?>
+                    </span>
+                </div>
+            </div>
+            <button onclick="closeDeletePromoModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5">
+            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
+                <?php echo t("Are you sure you want to delete this promotion campaign?", "คุณแน่ใจหรือไม่ว่าต้องการลบรายการโปรโมชันนี้ออกจากระบบ?"); ?>
+            </p>
+
+            <!-- Promo Info Badge -->
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-2">
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Campaign Title:", "ชื่อโปรโมชัน:"); ?></span>
+                    <span id="delete-promo-title-display" class="font-semibold text-zinc-100 text-sm"></span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                    <span class="text-zinc-400"><?php echo t("Promo Period:", "ระยะเวลาสิทธิพิเศษ:"); ?></span>
+                    <span id="delete-promo-period-display" class="text-zinc-300"></span>
+                </div>
+            </div>
+
+            <!-- Caution Alert -->
+            <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
+                <span><?php echo t("Action cannot be undone. Customers will no longer see this offer.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ โปรโมชันจะถูกยกเลิกทันที"); ?></span>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
+            <button onclick="closeDeletePromoModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-delete-promo-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
+                <span class="material-symbols-outlined text-base">delete</span>
+                <span><?php echo t("Confirm Delete", "ยืนยันการลบโปรโมชัน"); ?></span>
+            </a>
+        </div>
+    </div>
 </div>
 
 <?php require_once 'admin_footer.php'; ?>

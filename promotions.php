@@ -3,7 +3,7 @@ require_once 'db.php';
 
 // Fetch active promotions
 try {
-    $stmt = $pdo->query("SELECT * FROM promotions WHERE active = 1");
+    $stmt = $pdo->query("SELECT * FROM promotion WHERE is_active = 1");
     $promotions = $stmt->fetchAll();
 } catch (Exception $e) {
     $promotions = [];
@@ -61,8 +61,8 @@ require_once 'header.php';
         </h1>
         <p class="mt-4 text-secondary fs-5 m-0" style="max-width: 600px;">
             <?php echo t(
-              "Stay hydrated, stay energized. From our signature Lady Night to fitness rewards, discover what's pouring this week at Chiang Mai's premier craft taproom.",
-              "เติมพลังและความสดชื่น พบข้อเสนอพิเศษในร้านตั้งแต่แคมเปญเลดี้ไนท์ไปจนถึงรางวัลสำหรับสายเฮลตี้ และตารางดนตรีสดสุดมันส์ประจำสัปดาห์นี้"
+              "Taste fresh craft flavors at even better value. Explore our latest special privileges and promotions listed below.",
+              "ลิ้มลองรสชาติสดใหม่ในราคาที่คุ้มค่ากว่า เลือกดูสิทธิพิเศษและโปรโมชันล่าสุดได้ที่รายการด้านล่าง"
             ); ?>
         </p>
     </div>
@@ -85,12 +85,12 @@ require_once 'header.php';
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
                                 <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
+                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image_path']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
                                     <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to right, transparent, #201f1f); opacity: 1;"></div>
                                 </div>
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10">
-                                    <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
-                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['title']); ?></h2>
+                                    <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['promo_period']); ?></span>
+                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['promo_title']); ?></h2>
                                     <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                     <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
                                         <span class="material-symbols-outlined fs-6">local_bar</span>
@@ -105,12 +105,12 @@ require_once 'header.php';
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
                             <div class="position-relative overflow-hidden" style="height: 200px;">
-                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
+                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image_path']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
                                 <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to bottom, transparent, #201f1f); opacity: 1;"></div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
-                                <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
-                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['title']); ?></h2>
+                                <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['promo_period']); ?></span>
+                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['promo_title']); ?></h2>
                                 <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                 <div class="mt-auto">
                                     <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">

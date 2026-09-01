@@ -7,18 +7,18 @@
 
 | ชื่อแอทริบิวต์ | ความหมาย | ชนิดข้อมูล | ขนาด (ไบต์) | รูปแบบ | รูปแบบช่วงข้อมูล | ป้อนข้อมูล (Y/N) | คีย์หลักหรือคีย์นอก | ตารางที่อ้างอิง |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `promo_id` | รหัสโปรโมชัน | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | Y | PK | - |
-| `title` | หัวข้อโปรโมชัน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ,สัญลักษณ์ | Y | - | - |
+| `promo_id` | รหัสโปรโมชัน | Varchar(50) | 50 | x(50) | A-Z,0-9,a-z,- | N | PK | - |
+| `promo_title` | หัวข้อโปรโมชัน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ,สัญลักษณ์ | Y | - | - |
 | `description` | รายละเอียดโปรโมชัน | Text | 65535 | x(65535) | a-z,A-Z,ก-ฮ,สัญลักษณ์ | Y | - | - |
 | `offer` | ข้อเสนอเด่น | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ,0-9,% | Y | - | - |
-| `period` | ระยะเวลาโปรโมชัน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ,0-9 | Y | - | - |
-| `image` | พาร์ทไฟล์ภาพโฆษณา | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,/,. | Y | - | - |
-| `active` | สถานะการใช้งาน | Boolean | 1 | 0, 1 | 0-1 | Y | - | - |
+| `promo_period` | ระยะเวลาโปรโมชัน | Varchar(255) | 255 | x(255) | a-z,A-Z,ก-ฮ,0-9 | Y | - | - |
+| `image_path` | พาร์ทไฟล์ภาพโฆษณา | Varchar(255) | 255 | x(255) | a-z,A-Z,0-9,/,. | N | - | - |
+| `is_active` | สถานะการใช้งาน | Boolean | 1 | 0, 1 | 0-1 | N | - | - |
 
 ตารางที่ 3.10 แสดงตัวอย่างการเก็บข้อมูลของแฟ้มข้อมูลโปรโมชัน
 
-| promo_id | title | description | offer | period | image | active |
+| promo_id | promo_title | description | offer | promo_period | image_path | is_active |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | p-1 | Happy Hour: Buy 1 Get 1 | Double the impact. Buy any pint and receive second free. | BUY 1 GET 1 | Daily • 5PM - 7PM | images/promotions/banner.jpg | 1 |
 
-หมายเหตุ: active 1 = แสดงผลแบนเนอร์/เปิดใช้คูปอง, 0 = ปิดการแสดงผล
+หมายเหตุ: is_active 1 = แสดงผลแบนเนอร์/เปิดใช้คูปอง, 0 = ปิดการแสดงผล
