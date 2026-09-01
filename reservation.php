@@ -367,6 +367,14 @@ require_once 'header.php';
         font-size: 16px;
         color: #ffd782;
     }
+
+    #search-query-input::placeholder {
+        color: #ffffff !important;
+        opacity: 0.9 !important;
+    }
+    #search-query-input {
+        color: #ffffff !important;
+    }
 </style>
 
 <!-- Hero Slider Section -->
@@ -474,12 +482,12 @@ require_once 'header.php';
             <div class="glass-card p-4 p-md-5 border border-secondary border-opacity-25 mt-4 relative overflow-hidden">
                 <div class="absolute top-0 start-0 end-0 bg-warning" style="height: 3px; position:absolute;"></div>
                 <h3 class="font-anton text-warning text-uppercase tracking-wider mb-2 mt-1"><?php echo t("Check Booking Status", "ตรวจสอบสถานะการจองโต๊ะ"); ?></h3>
-                <p class="text-secondary small mb-4"><?php echo t("Enter your Booking Ref ID or Phone Number to verify your reservation status.", "กรอกรหัสการจองหรือเบอร์โทรศัพท์ของคุณเพื่อตรวจสอบสถานะการอนุมัติโต๊ะนั่ง"); ?></p>
+                <p class="text-white small mb-4 opacity-90"><?php echo t("Enter your Booking Ref ID or Phone Number to verify your reservation status.", "กรอกรหัสการจองหรือเบอร์โทรศัพท์ของคุณเพื่อตรวจสอบสถานะการอนุมัติโต๊ะนั่ง"); ?></p>
                 
                 <form id="search-booking-form" onsubmit="performBookingSearch(event)" action="reservation.php" method="GET" class="row g-2 mb-3">
                     <input type="hidden" name="action" value="search_booking">
                     <div class="col-sm-9">
-                        <input type="text" id="search-query-input" name="q" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0 py-2.5" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
+                        <input type="text" id="search-query-input" name="q" required class="form-control bg-dark border-secondary border-opacity-50 text-white rounded-0 py-2.5 font-sans" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
                     </div>
                     <div class="col-sm-3">
                         <button type="submit" id="search-submit-btn" class="btn btn-custom-gold w-100 py-2.5 text-uppercase font-anton">
