@@ -815,7 +815,7 @@ require_once 'header.php';
         alertMsg.innerText = message;
 
         if (type === 'danger' || type === 'error') {
-            alertBox.className = "mb-3 p-3 bg-danger bg-opacity-20 border border-danger border-opacity-70 rounded-3 text-danger font-sans transition-all";
+            alertBox.className = "mb-3 p-3 bg-danger bg-opacity-20 border border-danger border-opacity-90 rounded-3 text-danger font-sans transition-all shadow-sm";
             alertTitle.className = "font-anton text-danger text-uppercase tracking-wider fs-6 mb-1 m-0";
             alertIcon.className = "material-symbols-outlined text-danger fs-5 mt-0.5 shrink-0 me-2";
             alertIcon.innerText = "error";
@@ -844,7 +844,7 @@ require_once 'header.php';
             showInlineFormAlert(
                 "<?php echo t('Please enter customer name.', 'กรุณากรอกชื่อลูกค้าผู้ทำการจอง'); ?>",
                 "<?php echo t('Customer Name Required', 'กรุณากรอกชื่อลูกค้า'); ?>",
-                'warning'
+                'error'
             );
             if (nameInput) nameInput.focus();
             return false;
@@ -857,7 +857,7 @@ require_once 'header.php';
             showInlineFormAlert(
                 "<?php echo t('Please enter phone number.', 'กรุณากรอกเบอร์โทรศัพท์สำหรับติดต่อกลับ'); ?>",
                 "<?php echo t('Phone Number Required', 'กรุณากรอกเบอร์โทรศัพท์'); ?>",
-                'warning'
+                'error'
             );
             if (phoneInput) phoneInput.focus();
             return false;
@@ -880,7 +880,7 @@ require_once 'header.php';
             showInlineFormAlert(
                 "<?php echo t('Please select a table from the layout map on the left first.', 'กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง'); ?>",
                 "<?php echo t('Table Selection Required', 'กรุณาเลือกโต๊ะนั่ง'); ?>",
-                'warning'
+                'error'
             );
             return false;
         }
