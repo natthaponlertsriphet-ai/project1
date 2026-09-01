@@ -121,17 +121,20 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
     }
     
     try {
-        // Fetch booked tables for this date and time slot
+        // Fetch booked tables for this specific date and time slot
         $stmt = $pdo->prepare("SELECT table_id FROM reservation WHERE reservation_date = ? AND reservation_time = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED') AND table_id IS NOT NULL");
         $stmt->execute([$date, $time_slot]);
         $booked_table_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-        // Fetch tables marked as OCCUPIED (unavailable) by staff
-        $stmt2 = $pdo->query("SELECT table_id AS id FROM `table` WHERE table_status = 'OCCUPIED'");
-        $occupied_table_ids = $stmt2->fetchAll(PDO::FETCH_COLUMN);
+        // Include physically OCCUPIED tables ONLY if the target booking date is TODAY
+        if ($date === date('Y-m-d')) {
+            $stmt2 = $pdo->query("SELECT table_id AS id FROM `table` WHERE table_status = 'OCCUPIED'");
+            $occupied_table_ids = $stmt2->fetchAll(PDO::FETCH_COLUMN);
+            $reserved_ids = array_unique(array_merge($booked_table_ids, $occupied_table_ids));
+        } else {
+            $reserved_ids = $booked_table_ids;
+        }
 
-        // Merge both booked and unavailable tables
-        $reserved_ids = array_unique(array_merge($booked_table_ids, $occupied_table_ids));
         echo json_encode(array_values($reserved_ids));
     } catch (Exception $e) {
         echo json_encode([]);

@@ -97,8 +97,8 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CONFIRMED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
                 
-                // Update table status to OCCUPIED for confirmed table
-                if (!empty($b_details['table_id'])) {
+                // Update live physical table status to OCCUPIED ONLY if booking is for TODAY
+                if ($b_details['date'] === date('Y-m-d') && !empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'OCCUPIED' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
@@ -110,8 +110,8 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CANCELLED', cancel_reason = ? WHERE reservation_id = ?");
                 $stmt->execute([$reason, $b_id]);
                 
-                // Update table status to AVAILABLE for cancelled table
-                if (!empty($b_details['table_id'])) {
+                // Update live physical table status to AVAILABLE ONLY if booking was for TODAY
+                if ($b_details['date'] === date('Y-m-d') && !empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'AVAILABLE' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
@@ -122,8 +122,8 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CANCELLED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
                 
-                // Update table status to AVAILABLE for cancelled table
-                if (!empty($b_details['table_id'])) {
+                // Update live physical table status to AVAILABLE ONLY if booking was for TODAY
+                if ($b_details['date'] === date('Y-m-d') && !empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'AVAILABLE' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
@@ -134,8 +134,8 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CONFIRMED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
 
-                // Ensure table status is OCCUPIED
-                if (!empty($b_details['table_id'])) {
+                // Ensure live physical table status is OCCUPIED ONLY if booking is for TODAY
+                if ($b_details['date'] === date('Y-m-d') && !empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'OCCUPIED' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
