@@ -116,6 +116,13 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
         
         if ($b_details) {
             if ($act === 'confirm') {
+                // Prevent re-confirming past cancelled bookings
+                if ($b_details['status'] === 'CANCELLED' && $b_details['date'] < date('Y-m-d')) {
+                    $_SESSION['action_error'] = t("Cannot re-approve past reservations. Re-approval is allowed day-by-day or for future dates only.", "ไม่สามารถอนุมัติรายการจองที่ผ่านมาแล้วใหม่ได้ การอนุมัติใหม่ทำได้เฉพาะวันต่อวันหรือวันล่วงหน้าเท่านั้น");
+                    header("Location: index.php?tab=" . urlencode($target_tab));
+                    exit;
+                }
+
                 // Confirm booking
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CONFIRMED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
@@ -1275,7 +1282,9 @@ foreach ($chart_monthly as $m) {
                                             <a href="index.php?action=reject_cancel&booking_id=<?php echo $b['id']; ?>&tab=cancel_requests" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Reject Request", "คงสิทธิ์การจอง"); ?></a>
                                         <?php else: ?>
                                             <span class="badge bg-rose-950 text-rose-400 border border-rose-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></span>
-                                            <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=cancelled" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Re-confirm", "อนุมัติใหม่"); ?></a>
+                                            <?php if (isset($b['date']) && $b['date'] >= date('Y-m-d')): ?>
+                                                <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=cancelled" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Re-confirm", "อนุมัติใหม่"); ?></a>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
