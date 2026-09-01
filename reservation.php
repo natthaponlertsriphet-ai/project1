@@ -739,11 +739,66 @@ require_once 'header.php';
         }, 5000);
     });
 
-    // Form Validator
+    // Toast Notification System
+    function showBookingToast(message, title = '', type = 'warning') {
+        const toast = document.getElementById('bookingToast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastMsg = document.getElementById('toast-msg');
+        const toastIcon = document.getElementById('toast-icon');
+        const toastIconBg = document.getElementById('toast-icon-bg');
+
+        if (!toast) return;
+
+        toastTitle.innerText = title || "<?php echo t('Notice', 'แจ้งเตือนระบบ'); ?>";
+        toastMsg.innerText = message;
+
+        if (type === 'danger' || type === 'error') {
+            toast.className = "fixed top-5 right-5 z-50 max-w-md w-full bg-zinc-950/95 border border-red-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0";
+            toastIconBg.className = "w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center shrink-0 text-red-400";
+            toastIcon.innerText = "error";
+        } else if (type === 'success') {
+            toast.className = "fixed top-5 right-5 z-50 max-w-md w-full bg-zinc-950/95 border border-emerald-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0";
+            toastIconBg.className = "w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 text-emerald-400";
+            toastIcon.innerText = "check_circle";
+        } else {
+            toast.className = "fixed top-5 right-5 z-50 max-w-md w-full bg-zinc-950/95 border border-amber-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0";
+            toastIconBg.className = "w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400";
+            toastIcon.innerText = "warning";
+        }
+
+        toast.classList.remove('hidden');
+
+        // Auto hide after 4.5 seconds
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => {
+            closeBookingToast();
+        }, 4500);
+    }
+
+    function closeBookingToast() {
+        const toast = document.getElementById('bookingToast');
+        if (toast) toast.classList.add('hidden');
+    }
+
+    // Form Validator with Custom Toast and Map Highlight
     function validateBookingForm() {
         const tableId = document.getElementById('form-table-id').value;
         if (!tableId) {
-            alert("<?php echo t('Please select a table from the layout map first.', 'กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังด้านซ้ายก่อนส่งจอง'); ?>");
+            showBookingToast(
+                "<?php echo t('Please select a table from the layout map on the left first.', 'กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง'); ?>",
+                "<?php echo t('Table Selection Required', 'กรุณาเลือกโต๊ะนั่ง'); ?>",
+                'warning'
+            );
+
+            // Smooth scroll & pulse animation to floorplan map
+            const mapSection = document.getElementById('tables-container') || document.querySelector('.table-zone-container');
+            if (mapSection) {
+                mapSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                mapSection.classList.add('ring-2', 'ring-amber-500', 'shadow-amber-500/30');
+                setTimeout(() => {
+                    mapSection.classList.remove('ring-2', 'ring-amber-500', 'shadow-amber-500/30');
+                }, 3000);
+            }
             return false;
         }
         
@@ -751,19 +806,29 @@ require_once 'header.php';
         const phone = phoneInput ? phoneInput.value.trim() : '';
         const phonePattern = /^\+?[0-9\s\-()]+$/;
         if (!phonePattern.test(phone)) {
-            alert("<?php echo t('Invalid phone number format.', 'เบอร์โทรไม่ถูกต้อง'); ?>");
+            showBookingToast(
+                "<?php echo t('Please enter a valid phone number format.', 'เบอร์โทรไม่ถูกต้อง กรุณากรอกเบอร์โทรศัพท์ใหม่อีกครั้ง'); ?>",
+                "<?php echo t('Invalid Phone Number', 'เบอร์โทรศัพท์ไม่ถูกต้อง'); ?>",
+                'error'
+            );
             if (phoneInput) phoneInput.focus();
             return false;
         }
         
         // Check capacity
         const selectedBtn = document.querySelector('.table-selected');
-        const capacity = parseInt(selectedBtn.getAttribute('data-capacity'));
-        const pax = parseInt(document.getElementById('booking-pax').value);
-        
-        if (pax > capacity) {
-            alert("<?php echo t('Error: The selected table capacity is smaller than your group size.', 'ข้อผิดพลาด: จำนวนคนที่จองมากกว่าขนาดความจุสูงสุดของโต๊ะนี้'); ?>");
-            return false;
+        if (selectedBtn) {
+            const capacity = parseInt(selectedBtn.getAttribute('data-capacity'));
+            const pax = parseInt(document.getElementById('booking-pax').value);
+            
+            if (pax > capacity) {
+                showBookingToast(
+                    "<?php echo t('Error: The selected table capacity is smaller than your group size.', 'ข้อผิดพลาด: จำนวนคนที่จองมากกว่าขนาดความจุสูงสุดของโต๊ะนี้'); ?>",
+                    "<?php echo t('Capacity Exceeded', 'ความจุโต๊ะไม่เพียงพอ'); ?>",
+                    'error'
+                );
+                return false;
+            }
         }
         return true;
     }
@@ -1056,6 +1121,26 @@ require_once 'header.php';
                 </button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modern Toast Notification Container -->
+<div id="bookingToast" class="fixed top-5 right-5 z-50 hidden max-w-md w-full bg-zinc-950/95 border border-amber-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0">
+    <div class="flex items-start gap-3">
+        <div id="toast-icon-bg" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400">
+            <span id="toast-icon" class="material-symbols-outlined text-2xl">warning</span>
+        </div>
+        <div class="flex-1 min-w-0">
+            <h4 id="toast-title" class="font-anton text-warning text-base uppercase tracking-wider m-0 leading-tight">
+                <?php echo t("Table Required", "กรุณาเลือกโต๊ะนั่งก่อนทำการจอง"); ?>
+            </h4>
+            <p id="toast-msg" class="text-zinc-300 text-xs mt-1 font-sans leading-relaxed">
+                <?php echo t("Please select a table from the layout map first.", "กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งก่อนส่งจอง"); ?>
+            </p>
+        </div>
+        <button onclick="closeBookingToast()" type="button" class="text-zinc-400 hover:text-white transition-colors p-1">
+            <span class="material-symbols-outlined text-lg">close</span>
+        </button>
     </div>
 </div>
 
