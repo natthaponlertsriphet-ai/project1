@@ -1260,7 +1260,7 @@ foreach ($chart_monthly as $m) {
                                         <?php elseif ($active_tab === 'confirmed'): ?>
                                             <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Approved", "อนุมัติแล้ว"); ?></span>
                                         <?php elseif ($active_tab === 'completed'): ?>
-                                            <span class="badge bg-zinc-950 text-zinc-400 border border-zinc-900 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
+                                            <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
                                         <?php elseif ($active_tab === 'cancel_requests'): ?>
                                             <span class="badge bg-sky-950 text-sky-400 border border-sky-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancel Requested", "ส่งคำขอยกเลิกแล้ว"); ?></span>
                                         <?php else: ?>
@@ -1276,7 +1276,7 @@ foreach ($chart_monthly as $m) {
                                             <a href="javascript:void(0)" onclick="confirmClearTable('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['table_number'] ?? $b['table_id'] ?? '-'); ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-success py-1.5 px-3 text-xs uppercase font-anton tracking-wider me-2"><?php echo t("Clear Table", "เคลียร์โต๊ะ"); ?></a>
                                             <a href="javascript:void(0)" onclick="cancelBooking('<?php echo $b['id']; ?>', 'confirmed')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Cancel", "ยกเลิก"); ?></a>
                                         <?php elseif ($active_tab === 'completed'): ?>
-                                            <span class="badge bg-zinc-950 text-zinc-400 border border-zinc-900 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
+                                            <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
                                         <?php elseif ($active_tab === 'cancel_requests'): ?>
                                             <a href="javascript:void(0)" onclick="confirmApproveCancel('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Approve Cancel", "ยืนยันยกเลิก"); ?></a>
                                             <a href="index.php?action=reject_cancel&booking_id=<?php echo $b['id']; ?>&tab=cancel_requests" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Reject Request", "คงสิทธิ์การจอง"); ?></a>
