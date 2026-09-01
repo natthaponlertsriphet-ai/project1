@@ -1332,7 +1332,7 @@ require_once 'header.php';
                             <span class="material-symbols-outlined fs-6 align-middle me-1">call</span>
                             <?php echo t("Registered Phone Number", "เบอร์โทรศัพท์ที่ใช้จอง (เพื่อยืนยันตัวตน)"); ?> *
                         </label>
-                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="0800711996" required autocomplete="off">
+                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="<?php echo t('e.g. 0812345678', 'เช่น 0812345678'); ?>" required autocomplete="off">
                     </div>
 
                     <div class="mb-2">
