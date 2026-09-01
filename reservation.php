@@ -590,6 +590,21 @@ require_once 'header.php';
                         <input type="tel" name="customer_phone" required placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
                     </div>
 
+                    <!-- Beautiful Inline Form Validation Alert Box -->
+                    <div id="form-inline-alert" class="d-none mb-3 p-3 bg-warning bg-opacity-15 border border-warning border-opacity-70 rounded-3 text-warning font-sans transition-all">
+                        <div class="d-flex align-items-start gap-2.5">
+                            <span id="form-alert-icon" class="material-symbols-outlined text-warning fs-5 mt-0.5 shrink-0 me-2">warning</span>
+                            <div>
+                                <h5 id="form-alert-title" class="font-anton text-warning text-uppercase tracking-wider fs-6 mb-1 m-0">
+                                    <?php echo t("Table Selection Required", "กรุณาเลือกโต๊ะนั่ง"); ?>
+                                </h5>
+                                <div id="form-alert-msg" class="small text-light font-sans opacity-90 leading-relaxed">
+                                    <?php echo t("Please select a table from the layout map on the left first.", "กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง"); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-4 p-3 bg-black bg-opacity-50 border border-secondary border-opacity-25 rounded">
                         <div class="small text-secondary text-uppercase font-anton tracking-wider mb-1"><?php echo t("Selected Spot", "โต๊ะที่คุณเลือก"); ?>:</div>
                         <div id="selection-summary" class="fs-5 font-anton text-warning text-uppercase">
@@ -670,6 +685,7 @@ require_once 'header.php';
         const zoneText = langSummary === 'th' ? zoneTh : zone;
         
         document.getElementById('selection-summary').innerText = `Table ${number} (${zoneText} - Max ${capacity} Guests)`;
+        hideInlineFormAlert();
     }
 
     // 3. Zone Filters
@@ -721,7 +737,11 @@ require_once 'header.php';
                             selectedTableBtn = null;
                             document.getElementById('form-table-id').value = '';
                             document.getElementById('selection-summary').innerText = "<?php echo t('NONE SELECT', 'กรุณาเลือกโต๊ะด้านซ้าย'); ?>";
-                            alert("<?php echo t('The table you selected has just been marked as occupied/booked. Please select another table.', 'ขออภัย โต๊ะที่คุณเลือกเพิ่งถูกเปลี่ยนสถานะเป็นไม่ว่าง/ปิดบริการ กรุณาเลือกโต๊ะอื่น'); ?>");
+                            showInlineFormAlert(
+                                "<?php echo t('The table you selected has just been marked as occupied/booked. Please select another table.', 'ขออภัย โต๊ะที่คุณเลือกเพิ่งถูกเปลี่ยนสถานะเป็นไม่ว่าง/ปิดบริการ กรุณาเลือกโต๊ะอื่น'); ?>",
+                                "<?php echo t('Table Unavailable', 'โต๊ะไม่ว่าง'); ?>",
+                                'error'
+                            );
                         }
                     } else {
                         btn.classList.remove('table-reserved');
@@ -739,66 +759,48 @@ require_once 'header.php';
         }, 5000);
     });
 
-    // Toast Notification System
-    function showBookingToast(message, title = '', type = 'warning') {
-        const toast = document.getElementById('bookingToast');
-        const toastTitle = document.getElementById('toast-title');
-        const toastMsg = document.getElementById('toast-msg');
-        const toastIcon = document.getElementById('toast-icon');
-        const toastIconBg = document.getElementById('toast-icon-bg');
+    // Inline Form Alert System
+    function showInlineFormAlert(message, title = '', type = 'warning') {
+        const alertBox = document.getElementById('form-inline-alert');
+        const alertTitle = document.getElementById('form-alert-title');
+        const alertMsg = document.getElementById('form-alert-msg');
+        const alertIcon = document.getElementById('form-alert-icon');
 
-        if (!toast) return;
+        if (!alertBox) return;
 
-        toastTitle.innerText = title || "<?php echo t('Notice', 'แจ้งเตือนระบบ'); ?>";
-        toastMsg.innerText = message;
+        alertTitle.innerText = title || "<?php echo t('Notice', 'แจ้งเตือนระบบ'); ?>";
+        alertMsg.innerText = message;
 
         if (type === 'danger' || type === 'error') {
-            toast.className = "fixed top-5 right-5 z-50 max-w-md w-full bg-zinc-950/95 border border-red-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0";
-            toastIconBg.className = "w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/40 flex items-center justify-center shrink-0 text-red-400";
-            toastIcon.innerText = "error";
-        } else if (type === 'success') {
-            toast.className = "fixed top-5 right-5 z-50 max-w-md w-full bg-zinc-950/95 border border-emerald-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0";
-            toastIconBg.className = "w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 text-emerald-400";
-            toastIcon.innerText = "check_circle";
+            alertBox.className = "mb-3 p-3 bg-danger bg-opacity-20 border border-danger border-opacity-70 rounded-3 text-danger font-sans transition-all";
+            alertTitle.className = "font-anton text-danger text-uppercase tracking-wider fs-6 mb-1 m-0";
+            alertIcon.className = "material-symbols-outlined text-danger fs-5 mt-0.5 shrink-0 me-2";
+            alertIcon.innerText = "error";
         } else {
-            toast.className = "fixed top-5 right-5 z-50 max-w-md w-full bg-zinc-950/95 border border-amber-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0";
-            toastIconBg.className = "w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400";
-            toastIcon.innerText = "warning";
+            alertBox.className = "mb-3 p-3 bg-warning bg-opacity-15 border border-warning border-opacity-70 rounded-3 text-warning font-sans transition-all";
+            alertTitle.className = "font-anton text-warning text-uppercase tracking-wider fs-6 mb-1 m-0";
+            alertIcon.className = "material-symbols-outlined text-warning fs-5 mt-0.5 shrink-0 me-2";
+            alertIcon.innerText = "warning";
         }
 
-        toast.classList.remove('hidden');
-
-        // Auto hide after 4.5 seconds
-        clearTimeout(window.toastTimer);
-        window.toastTimer = setTimeout(() => {
-            closeBookingToast();
-        }, 4500);
+        alertBox.classList.remove('d-none');
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    function closeBookingToast() {
-        const toast = document.getElementById('bookingToast');
-        if (toast) toast.classList.add('hidden');
+    function hideInlineFormAlert() {
+        const alertBox = document.getElementById('form-inline-alert');
+        if (alertBox) alertBox.classList.add('d-none');
     }
 
-    // Form Validator with Custom Toast and Map Highlight
+    // Form Validator with Inline Alert
     function validateBookingForm() {
         const tableId = document.getElementById('form-table-id').value;
         if (!tableId) {
-            showBookingToast(
+            showInlineFormAlert(
                 "<?php echo t('Please select a table from the layout map on the left first.', 'กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง'); ?>",
                 "<?php echo t('Table Selection Required', 'กรุณาเลือกโต๊ะนั่ง'); ?>",
                 'warning'
             );
-
-            // Smooth scroll & pulse animation to floorplan map
-            const mapSection = document.getElementById('tables-container') || document.querySelector('.table-zone-container');
-            if (mapSection) {
-                mapSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                mapSection.classList.add('ring-2', 'ring-amber-500', 'shadow-amber-500/30');
-                setTimeout(() => {
-                    mapSection.classList.remove('ring-2', 'ring-amber-500', 'shadow-amber-500/30');
-                }, 3000);
-            }
             return false;
         }
         
@@ -806,7 +808,7 @@ require_once 'header.php';
         const phone = phoneInput ? phoneInput.value.trim() : '';
         const phonePattern = /^\+?[0-9\s\-()]+$/;
         if (!phonePattern.test(phone)) {
-            showBookingToast(
+            showInlineFormAlert(
                 "<?php echo t('Please enter a valid phone number format.', 'เบอร์โทรไม่ถูกต้อง กรุณากรอกเบอร์โทรศัพท์ใหม่อีกครั้ง'); ?>",
                 "<?php echo t('Invalid Phone Number', 'เบอร์โทรศัพท์ไม่ถูกต้อง'); ?>",
                 'error'
@@ -822,7 +824,7 @@ require_once 'header.php';
             const pax = parseInt(document.getElementById('booking-pax').value);
             
             if (pax > capacity) {
-                showBookingToast(
+                showInlineFormAlert(
                     "<?php echo t('Error: The selected table capacity is smaller than your group size.', 'ข้อผิดพลาด: จำนวนคนที่จองมากกว่าขนาดความจุสูงสุดของโต๊ะนี้'); ?>",
                     "<?php echo t('Capacity Exceeded', 'ความจุโต๊ะไม่เพียงพอ'); ?>",
                     'error'
@@ -830,6 +832,7 @@ require_once 'header.php';
                 return false;
             }
         }
+        hideInlineFormAlert();
         return true;
     }
 
@@ -1121,26 +1124,6 @@ require_once 'header.php';
                 </button>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Modern Toast Notification Container -->
-<div id="bookingToast" class="fixed top-5 right-5 z-50 hidden max-w-md w-full bg-zinc-950/95 border border-amber-500/60 rounded-2xl p-4 shadow-2xl backdrop-blur-md transition-all duration-300 transform translate-y-0">
-    <div class="flex items-start gap-3">
-        <div id="toast-icon-bg" class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400">
-            <span id="toast-icon" class="material-symbols-outlined text-2xl">warning</span>
-        </div>
-        <div class="flex-1 min-w-0">
-            <h4 id="toast-title" class="font-anton text-warning text-base uppercase tracking-wider m-0 leading-tight">
-                <?php echo t("Table Required", "กรุณาเลือกโต๊ะนั่งก่อนทำการจอง"); ?>
-            </h4>
-            <p id="toast-msg" class="text-zinc-300 text-xs mt-1 font-sans leading-relaxed">
-                <?php echo t("Please select a table from the layout map first.", "กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งก่อนส่งจอง"); ?>
-            </p>
-        </div>
-        <button onclick="closeBookingToast()" type="button" class="text-zinc-400 hover:text-white transition-colors p-1">
-            <span class="material-symbols-outlined text-lg">close</span>
-        </button>
     </div>
 </div>
 
