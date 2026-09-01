@@ -97,13 +97,11 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CONFIRMED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
                 
-                // Update table status to OCCUPIED if booking is for today
-                if ($b_details['date'] === date('Y-m-d')) {
+                // Update table status to OCCUPIED for confirmed table
+                if (!empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'OCCUPIED' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
-                
-
                 
                 $_SESSION['action_success'] = t("Booking confirmed successfully!", "ยืนยันรายการจองเรียบร้อยแล้ว!");
             } elseif ($act === 'cancel') {
@@ -112,13 +110,11 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CANCELLED', cancel_reason = ? WHERE reservation_id = ?");
                 $stmt->execute([$reason, $b_id]);
                 
-                // Update table status to AVAILABLE if booking was today
-                if ($b_details['date'] === date('Y-m-d')) {
+                // Update table status to AVAILABLE for cancelled table
+                if (!empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'AVAILABLE' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
-                
-
                 
                 $_SESSION['action_success'] = t("Booking cancelled successfully.", "ยกเลิกรายการจองเรียบร้อยแล้ว.");
             } elseif ($act === 'approve_cancel') {
@@ -126,23 +122,24 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CANCELLED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
                 
-                // Update table status to AVAILABLE if booking was today
-                if ($b_details['date'] === date('Y-m-d')) {
+                // Update table status to AVAILABLE for cancelled table
+                if (!empty($b_details['table_id'])) {
                     $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'AVAILABLE' WHERE table_id = ?");
                     $stmt->execute([$b_details['table_id']]);
                 }
                 
-
-                
                 $_SESSION['action_success'] = t("Booking cancellation confirmed successfully.", "ยืนยันการยกเลิกการจองเรียบร้อยแล้ว.");
-
-                
-
-                
             } elseif ($act === 'reject_cancel') {
                 // Reject cancel request (keep the booking confirmed)
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CONFIRMED' WHERE reservation_id = ?");
                 $stmt->execute([$b_id]);
+
+                // Ensure table status is OCCUPIED
+                if (!empty($b_details['table_id'])) {
+                    $stmt = $pdo->prepare("UPDATE `table` SET table_status = 'OCCUPIED' WHERE table_id = ?");
+                    $stmt->execute([$b_details['table_id']]);
+                }
+
                 $_SESSION['action_success'] = t("Cancellation request rejected. Booking is kept confirmed.", "ปฏิเสธคำขอยกเลิกแล้ว และคงสถานะการจองตามเดิม");
             }
         } else {
