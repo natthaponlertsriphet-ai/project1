@@ -1631,4 +1631,150 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
 </div>
 
+<script>
+    function confirmClearTable(bookingId, tableNum, customerName) {
+        document.getElementById('clear-table-num-display').innerText = '<?php echo t("Table ", "โต๊ะหมายเลข "); ?>' + tableNum;
+        document.getElementById('clear-table-customer-display').innerText = customerName;
+        document.getElementById('confirm-clear-table-btn').href = 'index.php?action=clear_table&booking_id=' + encodeURIComponent(bookingId);
+        document.getElementById('clearTableModal').classList.remove('hidden');
+    }
+
+    function closeClearTableModal() {
+        document.getElementById('clearTableModal').classList.add('hidden');
+    }
+
+    function confirmApproveCancel(bookingId, customerName) {
+        document.getElementById('approve-cancel-customer-display').innerText = customerName;
+        document.getElementById('approve-cancel-ref-display').innerText = '#' + bookingId;
+        document.getElementById('confirm-approve-cancel-btn').href = 'index.php?action=approve_cancel&booking_id=' + encodeURIComponent(bookingId) + '&tab=cancel_requests';
+        document.getElementById('approveCancelModal').classList.remove('hidden');
+    }
+
+    function closeApproveCancelModal() {
+        document.getElementById('approveCancelModal').classList.add('hidden');
+    }
+</script>
+
+<!-- Custom Clear Table Modal Dialog -->
+<div id="clearTableModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-zinc-900/90 px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-900 flex items-center justify-center text-emerald-400">
+                    <span class="material-symbols-outlined text-xl">table_restaurant</span>
+                </div>
+                <div>
+                    <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
+                        <?php echo t("Confirm Clear Table", "ยืนยันการเคลียร์โต๊ะเพื่อรับลูกค้าใหม่"); ?>
+                    </h3>
+                    <span class="text-zinc-400 text-xs font-mono block mt-1">
+                        <?php echo t("Release table & set status to Completed", "เสร็จสิ้นการใช้งานคิวปัจจุบันและคืนสถานะโต๊ะว่าง"); ?>
+                    </span>
+                </div>
+            </div>
+            <button onclick="closeClearTableModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5">
+            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
+                <?php echo t("Are you sure you want to clear this table for new customer bookings?", "คุณแน่ใจหรือไม่ว่าต้องการเคลียร์โต๊ะนี้เพื่อรับลูกค้ากลุ่มใหม่? สถานะคิวเดิมจะเปลี่ยนเป็นเสร็จสิ้นทันที"); ?>
+            </p>
+
+            <!-- Table & Booking Info Badge -->
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-2">
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Table Number:", "หมายเลขโต๊ะ:"); ?></span>
+                    <span id="clear-table-num-display" class="font-anton text-warning text-base font-bold"></span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                    <span class="text-zinc-400"><?php echo t("Current Guest:", "ชื่อลูกค้าผู้เข้าใช้:"); ?></span>
+                    <span id="clear-table-customer-display" class="font-semibold text-zinc-100 text-sm"></span>
+                </div>
+            </div>
+
+            <!-- Status Alert -->
+            <div class="bg-emerald-950/40 border border-emerald-900/60 text-emerald-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-emerald-400">check_circle</span>
+                <span><?php echo t("Booking status will be set to COMPLETED and the table will become AVAILABLE immediately.", "สถานะคิวจองจะถูกเปลี่ยนเป็นเสร็จสิ้น (COMPLETED) และโต๊ะจะกลับมาเป็นโต๊ะว่างทันที"); ?></span>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
+            <button onclick="closeClearTableModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-clear-table-btn" href="#" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 text-decoration-none">
+                <span class="material-symbols-outlined text-base">cleaning_services</span>
+                <span><?php echo t("Confirm Clear Table", "ยืนยันเคลียร์โต๊ะ"); ?></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Approve Cancel Modal Dialog -->
+<div id="approveCancelModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <!-- Modal Header -->
+        <div class="bg-zinc-900/90 px-5 py-4 border-b border-zinc-800 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-950/80 border border-red-900 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-outlined text-xl">event_busy</span>
+                </div>
+                <div>
+                    <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
+                        <?php echo t("Confirm Cancellation Approval", "ยืนยันการอนุมัติยกเลิกการจอง"); ?>
+                    </h3>
+                    <span class="text-zinc-400 text-xs font-mono block mt-1">
+                        <?php echo t("Approve customer cancellation request", "อนุมัติคำขอยกเลิกจากลูกค้าและคืนสถานะโต๊ะว่าง"); ?>
+                    </span>
+                </div>
+            </div>
+            <button onclick="closeApproveCancelModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-5">
+            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
+                <?php echo t("Are you sure you want to approve this customer cancellation request?", "คุณแน่ใจหรือไม่ว่าต้องการอนุมัติคำขอยกเลิกการจองคิวรายการนี้?"); ?>
+            </p>
+
+            <!-- Info Badge -->
+            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-2">
+                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
+                    <span class="text-zinc-400"><?php echo t("Customer Name:", "ชื่อลูกค้า:"); ?></span>
+                    <span id="approve-cancel-customer-display" class="font-semibold text-zinc-100 text-sm"></span>
+                </div>
+                <div class="flex justify-between items-center pt-0.5">
+                    <span class="text-zinc-400"><?php echo t("Booking Ref:", "รหัสการจอง:"); ?></span>
+                    <span id="approve-cancel-ref-display" class="text-warning font-bold"></span>
+                </div>
+            </div>
+
+            <!-- Caution Alert -->
+            <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
+                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
+                <span><?php echo t("Action cannot be undone. Booking status will become CANCELLED.", "การอนุมัติจะเปลี่ยนสถานะคิวจองเป็นยกเลิกแล้ว (CANCELLED) และเปิดโต๊ะให้ว่างทันที"); ?></span>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
+            <button onclick="closeApproveCancelModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+                <?php echo t("Cancel", "ยกเลิก"); ?>
+            </button>
+            <a id="confirm-approve-cancel-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
+                <span class="material-symbols-outlined text-base">cancel</span>
+                <span><?php echo t("Approve Cancel", "ยืนยันอนุมัติยกเลิก"); ?></span>
+            </a>
+        </div>
+    </div>
+</div>
+
 <?php require_once 'admin_footer.php'; ?>
