@@ -81,6 +81,38 @@ if (isset($_GET['action']) && $_GET['action'] === 'request_cancel') {
     exit;
 }
 
+// AJAX Request for Instant Live Booking Search
+if (isset($_GET['action']) && $_GET['action'] === 'ajax_search_booking') {
+    header('Content-Type: application/json');
+    $q = trim($_GET['q'] ?? '');
+    if ($q === '') {
+        echo json_encode(['error' => t('Please enter a Booking Ref ID or Phone Number', 'กรุณากรอกรหัสการจอง หรือ เบอร์โทรศัพท์'), 'bookings' => []]);
+        exit;
+    }
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, t.table_number, t.zone AS table_zone 
+            FROM reservation b 
+            LEFT JOIN `table` t ON b.table_id = t.table_id 
+            WHERE (b.reservation_id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ?)
+            ORDER BY b.created_at DESC
+        ");
+        $like_query = "%" . $q . "%";
+        $stmt->execute([$like_query, $like_query, $like_query]);
+        $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode([
+            'success' => true,
+            'query' => $q,
+            'bookings' => $bookings
+        ]);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage(), 'bookings' => []]);
+    }
+    exit;
+}
+
 // AJAX Request to fetch live booking statuses for a search query
 if (isset($_GET['action']) && $_GET['action'] === 'poll_booking_statuses') {
     header('Content-Type: application/json');
@@ -444,17 +476,19 @@ require_once 'header.php';
                 <h3 class="font-anton text-warning text-uppercase tracking-wider mb-2 mt-1"><?php echo t("Check Booking Status", "ตรวจสอบสถานะการจองโต๊ะ"); ?></h3>
                 <p class="text-secondary small mb-4"><?php echo t("Enter your Booking Ref ID or Phone Number to verify your reservation status.", "กรอกรหัสการจองหรือเบอร์โทรศัพท์ของคุณเพื่อตรวจสอบสถานะการอนุมัติโต๊ะนั่ง"); ?></p>
                 
-                <form action="reservation.php" method="GET" class="row g-2 mb-3">
+                <form id="search-booking-form" onsubmit="performBookingSearch(event)" action="reservation.php" method="GET" class="row g-2 mb-3">
                     <input type="hidden" name="action" value="search_booking">
                     <div class="col-sm-9">
-                        <input type="text" name="q" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0 py-2.5" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
+                        <input type="text" id="search-query-input" name="q" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0 py-2.5" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
                     </div>
                     <div class="col-sm-3">
-                        <button type="submit" class="btn btn-custom-gold w-100 py-2.5 text-uppercase font-anton">
+                        <button type="submit" id="search-submit-btn" class="btn btn-custom-gold w-100 py-2.5 text-uppercase font-anton">
                             <?php echo t("Search", "ค้นหาข้อมูล"); ?>
                         </button>
                     </div>
                 </form>
+
+                <div id="search-results-container">
 
 
                 <?php if ($searched && !$search_error): ?>
@@ -552,6 +586,7 @@ require_once 'header.php';
                         [ERROR]: <?php echo $search_error; ?>
                     </div>
                 <?php endif; ?>
+                </div><!-- end #search-results-container -->
             </div>
         </div>
 
@@ -834,6 +869,153 @@ require_once 'header.php';
         }
         hideInlineFormAlert();
         return true;
+    }
+
+    // Instant Live AJAX Booking Search (No Page Refresh Required)
+    function performBookingSearch(event) {
+        if (event) event.preventDefault();
+        
+        const queryInput = document.getElementById('search-query-input');
+        const query = queryInput ? queryInput.value.trim() : '';
+        const resultsContainer = document.getElementById('search-results-container');
+        const submitBtn = document.getElementById('search-submit-btn');
+        
+        if (!query) return;
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + "<?php echo t('Searching...', 'กำลังค้นหา...'); ?>";
+        }
+
+        fetch('reservation.php?action=ajax_search_booking&q=' + encodeURIComponent(query))
+            .then(res => res.json())
+            .then(data => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = "<?php echo t('Search', 'ค้นหาข้อมูล'); ?>";
+                }
+
+                if (!data || data.error) {
+                    resultsContainer.innerHTML = `
+                        <div class="alert alert-danger bg-danger bg-opacity-10 border border-danger text-light p-3 rounded-0 font-mono mt-3">
+                            [ERROR]: ${data ? data.error : 'Failed to fetch search results'}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const bookings = data.bookings || [];
+                if (bookings.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="text-center py-5 bg-black bg-opacity-30 border border-secondary border-opacity-10 rounded mt-4">
+                            <p class="text-secondary small m-0">${"<?php echo t('No reservations found matching your query.', 'ไม่พบประวัติการจองที่ตรงกับข้อมูลดังกล่าว'); ?>"}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<div class="d-flex flex-column gap-4 mt-4">';
+                bookings.forEach(b => {
+                    let statusBadgeHtml = '';
+                    if (b.status === 'CONFIRMED') {
+                        statusBadgeHtml = `<span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans">${"<?php echo t('CONFIRMED (APPROVED)', 'ยืนยันแล้ว (ได้รับอนุมัติ)'); ?>"}</span>`;
+                    } else if (b.status === 'COMPLETED') {
+                        statusBadgeHtml = `<span class="badge bg-secondary border border-secondary text-white px-2.5 py-1.5 rounded font-sans">${"<?php echo t('COMPLETED', 'เสร็จสิ้นการใช้งานแล้ว'); ?>"}</span>`;
+                    } else if (b.status === 'CANCELLED') {
+                        statusBadgeHtml = `<span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans">${"<?php echo t('CANCELLED (REJECTED)', 'ยกเลิกแล้ว'); ?>"}</span>`;
+                    } else if (b.status === 'CANCEL_REQUESTED') {
+                        statusBadgeHtml = `<span class="badge bg-info border border-info text-black px-2.5 py-1.5 rounded font-sans">${"<?php echo t('CANCEL REQUESTED (PENDING)', 'ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)'); ?>"}</span>`;
+                    } else {
+                        statusBadgeHtml = `<span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans">${"<?php echo t('PENDING APPROVAL', 'รอการอนุมัติ'); ?>"}</span>`;
+                    }
+
+                    let cancelBtnHtml = '';
+                    if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
+                        cancelBtnHtml = `<button class="btn btn-sm btn-outline-danger font-sans px-2.5 py-1 rounded" onclick="requestCancelBooking('${b.id}', '${escapeHtml(b.customer_phone)}')">${"<?php echo t('Cancel Booking', 'ยกเลิกจอง'); ?>"}</button>`;
+                    }
+
+                    let phoneMasked = escapeHtml(b.customer_phone);
+                    if (phoneMasked.length > 3) {
+                        phoneMasked = phoneMasked.substring(0, phoneMasked.length - 3) + 'xxx';
+                    }
+
+                    let zoneText = escapeHtml(b.table_zone || '');
+                    if (b.table_zone === 'INDOOR') zoneText = "<?php echo t('Indoor AC', 'ห้องแอร์'); ?>";
+                    else if (b.table_zone === 'OUTDOOR') zoneText = "<?php echo t('Outdoor Breeze', 'โซนด้านนอก'); ?>";
+                    else if (b.table_zone === 'STAGE') zoneText = "<?php echo t('Stage Front', 'หน้าเวที'); ?>";
+                    else if (b.table_zone === 'INDOOR_WINDOW') zoneText = "<?php echo t('Indoor Window', 'ติดกระจก'); ?>";
+                    else if (b.table_zone === 'INDOOR_CENTER') zoneText = "<?php echo t('Indoor Center', 'ตรงกลาง'); ?>";
+                    else if (b.table_zone === 'BAR') zoneText = "<?php echo t('Bar Front', 'หน้าบาร์'); ?>";
+                    else if (b.table_zone === 'WALKWAY') zoneText = "<?php echo t('Walkway Zone', 'โซนทางเดิน'); ?>";
+
+                    let reasonDisplayClass = ((b.status === 'CANCELLED' || b.status === 'CANCEL_REQUESTED') && b.cancel_reason) ? '' : 'd-none';
+
+                    html += `
+                        <div class="p-4 bg-black bg-opacity-40 border border-secondary border-opacity-25 rounded font-mono text-sm" id="booking-card-${b.id}">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-10 pb-3">
+                                <span class="text-light font-bold fs-6">Ref ID: ${b.id}</span>
+                                <div class="d-flex gap-2 align-items-center mt-2 mt-sm-0">
+                                    <div id="status-badge-${b.id}">
+                                        ${statusBadgeHtml}
+                                    </div>
+                                    <div id="cancel-btn-container-${b.id}">
+                                        ${cancelBtnHtml}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 text-secondary">
+                                <div class="col-sm-6">
+                                    <strong>${"<?php echo t('Customer Name', 'ชื่อผู้จอง'); ?>"}:</strong> 
+                                    <span class="text-light font-sans">${escapeHtml(b.customer_name)}</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>${"<?php echo t('Phone', 'เบอร์โทร'); ?>"}:</strong> 
+                                    <span class="text-light font-sans">${phoneMasked}</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>${"<?php echo t('Reservation Date & Time', 'วันเวลาจอง'); ?>"}:</strong> 
+                                    <span class="text-warning">${b.date} @ ${b.time_slot}</span>
+                                </div>
+                                <div class="col-sm-6">
+                                    <strong>${"<?php echo t('Table & Size', 'โต๊ะและจำนวนที่นั่ง'); ?>"}:</strong> 
+                                    <span class="text-light font-sans">
+                                        Table ${escapeHtml(b.table_number || 'N/A')} (${b.pax} Pax) - ${zoneText}
+                                    </span>
+                                </div>
+                                <div class="col-12 mt-3 pt-3 border-top border-secondary border-opacity-10 ${reasonDisplayClass}" id="cancel-reason-container-${b.id}">
+                                    <strong class="text-danger">${"<?php echo t('Cancellation Reason', 'เหตุผลที่ยกเลิก/หมายเหตุ'); ?>"}:</strong>
+                                    <span class="text-light font-sans" id="cancel-reason-text-${b.id}">${escapeHtml(b.cancel_reason || '')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+
+                resultsContainer.innerHTML = html;
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            })
+            .catch(err => {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = "<?php echo t('Search', 'ค้นหาข้อมูล'); ?>";
+                }
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border border-danger text-light p-3 rounded-0 font-mono mt-3">
+                        [ERROR]: Connection error while searching.
+                    </div>
+                `;
+            });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
     let cancelModalInstance = null;
