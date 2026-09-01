@@ -641,7 +641,7 @@ require_once 'header.php';
                                 <h5 id="form-alert-title" class="font-anton text-warning text-uppercase tracking-wider fs-6 mb-1 m-0">
                                     <?php echo t("Table Selection Required", "กรุณาเลือกโต๊ะนั่ง"); ?>
                                 </h5>
-                                <div id="form-alert-msg" class="small text-light font-sans opacity-90 leading-relaxed">
+                                <div id="form-alert-msg" class="small text-black font-sans font-bold leading-relaxed">
                                     <?php echo t("Please select a table from the layout map on the left first.", "กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง"); ?>
                                 </div>
                             </div>
@@ -825,6 +825,8 @@ require_once 'header.php';
             alertIcon.className = "material-symbols-outlined text-warning fs-5 mt-0.5 shrink-0 me-2";
             alertIcon.innerText = "warning";
         }
+
+        if (alertMsg) alertMsg.className = "small text-black font-sans font-bold leading-relaxed";
 
         alertBox.classList.remove('d-none');
         alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
