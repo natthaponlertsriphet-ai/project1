@@ -994,6 +994,7 @@ require_once 'header.php';
 
                 resultsContainer.innerHTML = html;
                 resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                startStatusPolling(query);
             })
             .catch(err => {
                 if (submitBtn) {
@@ -1182,68 +1183,81 @@ require_once 'header.php';
         });
     });
 
-    // Live Polling of Booking Statuses (Real-time updates)
-    <?php if ($searched && !empty($search_bookings)): ?>
-    (function() {
-        const searchQuery = <?php echo json_encode($search_query); ?>;
-        
-        function pollBookingStatuses() {
-            fetch(`reservation.php?action=poll_booking_statuses&q=${encodeURIComponent(searchQuery)}`)
-                .then(res => res.json())
-                .then(bookings => {
-                    bookings.forEach(b => {
-                        // 1. Update status badge
-                        const badgeContainer = document.getElementById(`status-badge-${b.id}`);
-                        if (badgeContainer) {
-                            let badgeHTML = '';
-                            if (b.status === 'CONFIRMED') {
-                                badgeHTML = `<span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?></span>`;
-                            } else if (b.status === 'COMPLETED') {
-                                badgeHTML = `<span class="badge bg-secondary border border-secondary text-white px-2.5 py-1.5 rounded font-sans"><?php echo t("COMPLETED", "เสร็จสิ้นการใช้งานแล้ว"); ?></span>`;
-                            } else if (b.status === 'CANCELLED') {
-                                badgeHTML = `<span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?></span>`;
-                            } else if (b.status === 'CANCEL_REQUESTED') {
-                                badgeHTML = `<span class="badge bg-info border border-info text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CANCEL REQUESTED (PENDING)", "ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)"); ?></span>`;
-                            } else {
-                                badgeHTML = `<span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?></span>`;
-                            }
+    // Live Real-Time Polling of Booking Statuses
+    let activeSearchQuery = <?php echo json_encode($search_query ?? ''); ?>;
+
+    function startStatusPolling(query) {
+        if (!query) return;
+        activeSearchQuery = query;
+
+        if (!window.statusPollerInterval) {
+            window.statusPollerInterval = setInterval(pollBookingStatuses, 3000);
+        }
+        pollBookingStatuses();
+    }
+
+    function pollBookingStatuses() {
+        if (!activeSearchQuery) return;
+
+        fetch(`reservation.php?action=poll_booking_statuses&q=${encodeURIComponent(activeSearchQuery)}`)
+            .then(res => res.json())
+            .then(bookings => {
+                if (!Array.isArray(bookings)) return;
+
+                bookings.forEach(b => {
+                    // 1. Update status badge
+                    const badgeContainer = document.getElementById(`status-badge-${b.id}`);
+                    if (badgeContainer) {
+                        let badgeHTML = '';
+                        if (b.status === 'CONFIRMED') {
+                            badgeHTML = `<span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?></span>`;
+                        } else if (b.status === 'COMPLETED') {
+                            badgeHTML = `<span class="badge bg-secondary border border-secondary text-white px-2.5 py-1.5 rounded font-sans"><?php echo t("COMPLETED", "เสร็จสิ้นการใช้งานแล้ว"); ?></span>`;
+                        } else if (b.status === 'CANCELLED') {
+                            badgeHTML = `<span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?></span>`;
+                        } else if (b.status === 'CANCEL_REQUESTED') {
+                            badgeHTML = `<span class="badge bg-info border border-info text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("CANCEL REQUESTED (PENDING)", "ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)"); ?></span>`;
+                        } else {
+                            badgeHTML = `<span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans"><?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?></span>`;
+                        }
+
+                        if (badgeContainer.innerHTML.trim() !== badgeHTML.trim()) {
                             badgeContainer.innerHTML = badgeHTML;
                         }
+                    }
 
-                        // 2. Update cancel button
-                        const btnContainer = document.getElementById(`cancel-btn-container-${b.id}`);
-                        if (btnContainer) {
-                            if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
-                                // Re-inject cancel button if not present
-                                if (!btnContainer.querySelector('button')) {
-                                    btnContainer.innerHTML = `<button class="btn btn-sm btn-outline-danger font-sans px-2.5 py-1 rounded" onclick="requestCancelBooking('${b.id}', '${b.customer_phone || ''}')"><?php echo t("Cancel Booking", "ยกเลิกจอง"); ?></button>`;
-                                }
-                            } else {
-                                btnContainer.innerHTML = '';
+                    // 2. Update cancel button
+                    const btnContainer = document.getElementById(`cancel-btn-container-${b.id}`);
+                    if (btnContainer) {
+                        if (b.status === 'PENDING' || b.status === 'CONFIRMED') {
+                            if (!btnContainer.querySelector('button')) {
+                                btnContainer.innerHTML = `<button class="btn btn-sm btn-outline-danger font-sans px-2.5 py-1 rounded" onclick="requestCancelBooking('${b.id}', '${escapeHtml(b.customer_phone || '')}')"><?php echo t("Cancel Booking", "ยกเลิกจอง"); ?></button>`;
                             }
+                        } else {
+                            btnContainer.innerHTML = '';
                         }
+                    }
 
-                        // 3. Update cancel reason section
-                        const reasonContainer = document.getElementById(`cancel-reason-container-${b.id}`);
-                        const reasonText = document.getElementById(`cancel-reason-text-${b.id}`);
-                        if (reasonContainer && reasonText) {
-                            if ((b.status === 'CANCELLED' || b.status === 'CANCEL_REQUESTED') && b.cancel_reason) {
-                                reasonText.innerText = b.cancel_reason;
-                                reasonContainer.classList.remove('d-none');
-                            } else {
-                                reasonContainer.classList.add('d-none');
-                            }
+                    // 3. Update cancel reason section
+                    const reasonContainer = document.getElementById(`cancel-reason-container-${b.id}`);
+                    const reasonText = document.getElementById(`cancel-reason-text-${b.id}`);
+                    if (reasonContainer && reasonText) {
+                        if ((b.status === 'CANCELLED' || b.status === 'CANCEL_REQUESTED') && b.cancel_reason) {
+                            reasonText.innerText = b.cancel_reason;
+                            reasonContainer.classList.remove('d-none');
+                        } else {
+                            reasonContainer.classList.add('d-none');
                         }
-                    });
-                })
-                .catch(err => console.error("Error polling booking status:", err));
-        }
+                    }
+                });
+            })
+            .catch(err => console.log("Error polling status:", err));
+    }
 
-        // Run immediately, then poll every 3 seconds
-        pollBookingStatuses();
-        setInterval(pollBookingStatuses, 3000);
-    })();
-    <?php endif; ?>
+    // Auto start polling if query exists
+    if (activeSearchQuery) {
+        startStatusPolling(activeSearchQuery);
+    }
 </script>
 
 <!-- Custom Cancellation Modal -->
