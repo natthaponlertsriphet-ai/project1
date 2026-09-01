@@ -47,6 +47,7 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') {
 // Handle Quick Toggle status (AVAILABLE / OCCUPIED)
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
     $toggle_id = $_GET['id'];
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
     try {
         $stmt = $pdo->prepare("SELECT table_status AS status FROM `table` WHERE table_id = ?");
         $stmt->execute([$toggle_id]);
@@ -57,9 +58,25 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
         $stmt = $pdo->prepare("UPDATE `table` SET table_status = ? WHERE table_id = ?");
         $stmt->execute([$new_status, $toggle_id]);
         
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'id' => $toggle_id,
+                'status' => $new_status,
+                'message' => t("Table status toggled successfully.", "สลับสถานะโต๊ะเรียบร้อยแล้ว.")
+            ]);
+            exit;
+        }
+
         // Pass message via session to persist across redirect
         $_SESSION['action_success'] = t("Table status toggled successfully.", "สลับสถานะโต๊ะเรียบร้อยแล้ว.");
     } catch (Exception $e) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
         $_SESSION['action_error'] = "Error: " . $e->getMessage();
     }
     header("Location: tables.php");
@@ -368,12 +385,12 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
 
             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-3.5 p-5 bg-zinc-950 border border-zinc-900 rounded-lg">
                 <?php foreach ($all_tables as $t): ?>
-                    <a href="tables.php?action=toggle_status&id=<?php echo $t['id']; ?>" class="admin-map-btn block no-underline transition-transform duration-200 hover:-translate-y-0.5" data-zone="<?php echo $t['zone']; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโต๊ะ'); ?>">
-                        <div class="flex flex-col items-center justify-center border rounded-lg p-3 w-full aspect-square transition-all duration-200 hover:shadow-lg cursor-pointer" 
+                    <a href="javascript:void(0)" onclick="toggleTableStatusRealtime(event, '<?php echo $t['id']; ?>', this)" class="admin-map-btn block no-underline transition-transform duration-200 hover:-translate-y-0.5" data-zone="<?php echo $t['zone']; ?>" data-table-id="<?php echo $t['id']; ?>" data-table-status="<?php echo $t['status']; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโต๊ะ'); ?>">
+                        <div class="table-card-inner flex flex-col items-center justify-center border rounded-lg p-3 w-full aspect-square transition-all duration-200 hover:shadow-lg cursor-pointer" 
                              style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: rgba(34, 197, 94, 0.05); border-color: rgba(34, 197, 94, 0.2); color: #4ade80;' : 'background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2); color: #f87171;'; ?>">
                             <span class="font-anton text-xl leading-none"><?php echo htmlspecialchars($t['number']); ?></span>
                             <span class="text-[10px] font-mono text-zinc-500 mt-1"><?php echo $t['capacity']; ?> Pax</span>
-                            <span class="w-1.5 h-1.5 rounded-full mt-2 animate-pulse" style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: #22c55e; box-shadow: 0 0 8px #22c55e;' : 'background-color: #ef4444; box-shadow: 0 0 8px #ef4444;'; ?>"></span>
+                            <span class="table-status-dot w-1.5 h-1.5 rounded-full mt-2 animate-pulse" style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: #22c55e; box-shadow: 0 0 8px #22c55e;' : 'background-color: #ef4444; box-shadow: 0 0 8px #ef4444;'; ?>"></span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -437,8 +454,8 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                                     </td>
                                     <td class="text-center text-zinc-400"><?php echo $t['capacity']; ?> Guests</td>
                                     <td class="text-center">
-                                        <a href="tables.php?action=toggle_status&id=<?php echo $t['id']; ?>" class="inline-block" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโต๊ะ'); ?>">
-                                            <span class="badge py-1.5 px-3 rounded text-xs transition-all duration-150 hover:scale-105 hover:brightness-110 cursor-pointer" style="
+                                        <a href="javascript:void(0)" onclick="toggleTableStatusRealtime(event, '<?php echo $t['id']; ?>', this)" class="inline-block" data-table-id="<?php echo $t['id']; ?>" data-table-status="<?php echo $t['status']; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโต๊ะ'); ?>">
+                                            <span id="table-row-badge-<?php echo $t['id']; ?>" class="table-row-badge badge py-1.5 px-3 rounded text-xs transition-all duration-150 hover:scale-105 hover:brightness-110 cursor-pointer" style="
                                                 <?php echo $t['status'] === 'AVAILABLE' ? 'background-color: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.25); color: #4ade80;' : 'background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171;'; ?>
                                             ">
                                                 <?php echo $t['status'] === 'AVAILABLE' ? t("AVAILABLE", "โต๊ะว่าง") : t("OCCUPIED", "ไม่ว่าง"); ?>
@@ -587,6 +604,78 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
             </a>
         </div>
     </div>
-</div>
+<script>
+function toggleTableStatusRealtime(event, tableId, el) {
+    if (event) event.preventDefault();
+
+    const elements = document.querySelectorAll(`[data-table-id="${tableId}"]`);
+    if (!elements || elements.length === 0) return;
+
+    let currentStatus = 'AVAILABLE';
+    elements.forEach(linkEl => {
+        if (linkEl.getAttribute('data-table-status')) {
+            currentStatus = linkEl.getAttribute('data-table-status');
+        }
+    });
+
+    const newStatus = (currentStatus === 'AVAILABLE') ? 'OCCUPIED' : 'AVAILABLE';
+
+    // 1. Instant Optimistic Real-Time UI Update for all occurrences
+    elements.forEach(linkEl => {
+        linkEl.setAttribute('data-table-status', newStatus);
+        
+        const innerCard = linkEl.querySelector('.table-card-inner') || linkEl.querySelector('div');
+        const statusDot = linkEl.querySelector('.table-status-dot');
+        const rowBadge = linkEl.querySelector('.table-row-badge') || document.getElementById(`table-row-badge-${tableId}`);
+
+        if (innerCard) {
+            if (newStatus === 'AVAILABLE') {
+                innerCard.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
+                innerCard.style.borderColor = 'rgba(34, 197, 94, 0.2)';
+                innerCard.style.color = '#4ade80';
+            } else {
+                innerCard.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
+                innerCard.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                innerCard.style.color = '#f87171';
+            }
+        }
+        if (statusDot) {
+            if (newStatus === 'AVAILABLE') {
+                statusDot.style.backgroundColor = '#22c55e';
+                statusDot.style.boxShadow = '0 0 8px #22c55e';
+            } else {
+                statusDot.style.backgroundColor = '#ef4444';
+                statusDot.style.boxShadow = '0 0 8px #ef4444';
+            }
+        }
+        if (rowBadge) {
+            if (newStatus === 'AVAILABLE') {
+                rowBadge.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
+                rowBadge.style.border = '1px solid rgba(34, 197, 94, 0.25)';
+                rowBadge.style.color = '#4ade80';
+                rowBadge.innerText = '<?php echo t("AVAILABLE", "โต๊ะว่าง"); ?>';
+            } else {
+                rowBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                rowBadge.style.border = '1px solid rgba(239, 68, 68, 0.25)';
+                rowBadge.style.color = '#f87171';
+                rowBadge.innerText = '<?php echo t("OCCUPIED", "ไม่ว่าง"); ?>';
+            }
+        }
+    });
+
+    // 2. Perform AJAX background update
+    fetch(`tables.php?action=toggle_status&id=${encodeURIComponent(tableId)}&ajax=1`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                // Revert on failure
+                elements.forEach(linkEl => {
+                    linkEl.setAttribute('data-table-status', currentStatus);
+                });
+            }
+        })
+        .catch(err => console.error("Error toggling table status:", err));
+}
+</script>
 
 <?php require_once 'admin_footer.php'; ?>

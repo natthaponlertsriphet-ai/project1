@@ -40,6 +40,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_live_dashboard_counts') {
 // Handle Quick Toggle table status (AVAILABLE / OCCUPIED)
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
     $toggle_id = $_GET['id'];
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
     try {
         $stmt = $pdo->prepare("SELECT table_status AS status FROM `table` WHERE table_id = ?");
         $stmt->execute([$toggle_id]);
@@ -50,8 +51,24 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
         $stmt = $pdo->prepare("UPDATE `table` SET table_status = ? WHERE table_id = ?");
         $stmt->execute([$new_status, $toggle_id]);
         
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'id' => $toggle_id,
+                'status' => $new_status,
+                'message' => t("Table status toggled successfully.", "สลับสถานะโต๊ะเรียบร้อยแล้ว.")
+            ]);
+            exit;
+        }
+
         $_SESSION['action_success'] = t("Table status toggled successfully.", "สลับสถานะโต๊ะเรียบร้อยแล้ว.");
     } catch (Exception $e) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
         $_SESSION['action_error'] = "Error: " . $e->getMessage();
     }
     header("Location: index.php");
@@ -1326,12 +1343,12 @@ foreach ($chart_monthly as $m) {
 
     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 gap-3.5 p-5 bg-zinc-950 border border-zinc-900 rounded-lg">
         <?php foreach ($all_tables as $t): ?>
-            <a href="index.php?action=toggle_status&id=<?php echo $t['id']; ?>" class="admin-map-btn block no-underline transition-transform duration-200 hover:-translate-y-0.5" data-zone="<?php echo $t['zone']; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโต๊ะ'); ?>">
-                <div class="flex flex-col items-center justify-center border rounded-lg p-3 w-full aspect-square transition-all duration-200 hover:shadow-lg cursor-pointer" 
+            <a href="javascript:void(0)" onclick="toggleTableStatusRealtime(event, '<?php echo $t['id']; ?>', this)" class="admin-map-btn block no-underline transition-transform duration-200 hover:-translate-y-0.5" data-zone="<?php echo $t['zone']; ?>" data-table-id="<?php echo $t['id']; ?>" data-table-status="<?php echo $t['status']; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโต๊ะ'); ?>">
+                <div class="table-card-inner flex flex-col items-center justify-center border rounded-lg p-3 w-full aspect-square transition-all duration-200 hover:shadow-lg cursor-pointer" 
                      style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: rgba(34, 197, 94, 0.05); border-color: rgba(34, 197, 94, 0.2); color: #4ade80;' : 'background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2); color: #f87171;'; ?>">
                     <span class="font-anton text-xl leading-none"><?php echo htmlspecialchars($t['number']); ?></span>
                     <span class="text-[10px] font-mono text-zinc-500 mt-1"><?php echo $t['capacity']; ?> Pax</span>
-                    <span class="w-1.5 h-1.5 rounded-full mt-2 animate-pulse" style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: #22c55e; box-shadow: 0 0 8px #22c55e;' : 'background-color: #ef4444; box-shadow: 0 0 8px #ef4444;'; ?>"></span>
+                    <span class="table-status-dot w-1.5 h-1.5 rounded-full mt-2 animate-pulse" style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: #22c55e; box-shadow: 0 0 8px #22c55e;' : 'background-color: #ef4444; box-shadow: 0 0 8px #ef4444;'; ?>"></span>
                 </div>
             </a>
         <?php endforeach; ?>
@@ -1341,6 +1358,63 @@ foreach ($chart_monthly as $m) {
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+function toggleTableStatusRealtime(event, tableId, el) {
+    if (event) event.preventDefault();
+
+    const linkEl = el || document.querySelector(`[data-table-id="${tableId}"]`);
+    if (!linkEl) return;
+
+    const innerCard = linkEl.querySelector('.table-card-inner') || linkEl.querySelector('div');
+    const statusDot = linkEl.querySelector('.table-status-dot') || linkEl.querySelector('span:last-child');
+    const currentStatus = linkEl.getAttribute('data-table-status') || 'AVAILABLE';
+    const newStatus = (currentStatus === 'AVAILABLE') ? 'OCCUPIED' : 'AVAILABLE';
+
+    // 1. Instant Optimistic UI Update (0ms delay)
+    linkEl.setAttribute('data-table-status', newStatus);
+    if (innerCard) {
+        if (newStatus === 'AVAILABLE') {
+            innerCard.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
+            innerCard.style.borderColor = 'rgba(34, 197, 94, 0.2)';
+            innerCard.style.color = '#4ade80';
+        } else {
+            innerCard.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
+            innerCard.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+            innerCard.style.color = '#f87171';
+        }
+    }
+    if (statusDot) {
+        if (newStatus === 'AVAILABLE') {
+            statusDot.style.backgroundColor = '#22c55e';
+            statusDot.style.boxShadow = '0 0 8px #22c55e';
+        } else {
+            statusDot.style.backgroundColor = '#ef4444';
+            statusDot.style.boxShadow = '0 0 8px #ef4444';
+        }
+    }
+
+    // 2. Perform AJAX background update
+    fetch(`index.php?action=toggle_status&id=${encodeURIComponent(tableId)}&ajax=1`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                // Revert on failure
+                linkEl.setAttribute('data-table-status', currentStatus);
+                if (innerCard) {
+                    if (currentStatus === 'AVAILABLE') {
+                        innerCard.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
+                        innerCard.style.borderColor = 'rgba(34, 197, 94, 0.2)';
+                        innerCard.style.color = '#4ade80';
+                    } else {
+                        innerCard.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
+                        innerCard.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                        innerCard.style.color = '#f87171';
+                    }
+                }
+            }
+        })
+        .catch(err => console.error("Error toggling table status:", err));
+}
+
 function cancelBooking(bookingId, currentTab) {
     document.getElementById('admin-cancel-booking-id').value = bookingId;
     document.getElementById('admin-cancel-tab').value = currentTab;
