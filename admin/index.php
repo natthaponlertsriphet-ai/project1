@@ -1090,27 +1090,27 @@ foreach ($chart_monthly as $m) {
     ?>
 
     <!-- Pending Requests Tab -->
-    <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-warning border-warning' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="javascript:void(0)" onclick="switchDashboardTab(event, 'pending')" data-tab-name="pending" class="dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-warning border-warning' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
         <?php echo t("Pending Requests", "รายการส่งคำขอรออนุมัติ"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
     </a>
 
     <!-- Confirmed Bookings Tab -->
-    <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-500 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="javascript:void(0)" onclick="switchDashboardTab(event, 'confirmed')" data-tab-name="confirmed" class="dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-500 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
         <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (<span id="count-confirmed"><?php echo $c_count; ?></span>)
     </a>
 
     <!-- Completed Bookings Tab -->
-    <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="javascript:void(0)" onclick="switchDashboardTab(event, 'completed')" data-tab-name="completed" class="dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
         <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (<span id="count-completed"><?php echo $comp_count; ?></span>)
     </a>
 
     <!-- Cancel Requests Tab -->
-    <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-500 border-sky-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="javascript:void(0)" onclick="switchDashboardTab(event, 'cancel_requests')" data-tab-name="cancel_requests" class="dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-500 border-sky-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
         <?php echo t("Cancel Requests", "คำขอยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
     </a>
 
     <!-- Cancelled Bookings Tab -->
-    <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-500 border-rose-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="javascript:void(0)" onclick="switchDashboardTab(event, 'cancelled')" data-tab-name="cancelled" class="dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-500 border-rose-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
         <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (<span id="count-cancelled"><?php echo $cl_count; ?></span>)
     </a>
 </div>
@@ -1547,7 +1547,36 @@ function executeBookingActionRealtime(event, actionUrl, bookingId) {
                 rowEl.style.transform = 'none';
             }
         });
+function switchDashboardTab(event, tabName) {
+    if (event) event.preventDefault();
+
+    // 1. Update active tab UI styling in 0ms
+    const tabBtns = document.querySelectorAll('.dashboard-tab-btn');
+    tabBtns.forEach(btn => {
+        const name = btn.getAttribute('data-tab-name');
+        btn.className = 'dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all text-zinc-500 border-transparent hover:text-zinc-300';
+        if (name === tabName) {
+            if (name === 'pending') btn.className = 'dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all text-warning border-warning';
+            else if (name === 'confirmed') btn.className = 'dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all text-emerald-500 border-emerald-500';
+            else if (name === 'completed') btn.className = 'dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all text-emerald-400 border-emerald-500';
+            else if (name === 'cancel_requests') btn.className = 'dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all text-sky-500 border-sky-500';
+            else if (name === 'cancelled') btn.className = 'dashboard-tab-btn py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all text-rose-500 border-rose-500';
+        }
+    });
+
+    // 2. Update address bar URL silently without reloading page
+    const newUrl = `index.php?tab=${encodeURIComponent(tabName)}`;
+    window.history.pushState({ tab: tabName }, '', newUrl);
+
+    // 3. Reset hash & immediately poll content via AJAX
+    currentDashboardHash = '';
+    pollAdminDashboardLive();
 }
+
+window.addEventListener('popstate', function() {
+    currentDashboardHash = '';
+    pollAdminDashboardLive();
+});
 
 let currentDashboardHash = '';
 
