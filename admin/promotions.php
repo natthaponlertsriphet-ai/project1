@@ -27,6 +27,44 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
 
+// Handle Quick Toggle promotion status (ACTIVE / EXPIRED)
+if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
+    $toggle_id = $_GET['id'];
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
+    try {
+        $stmt = $pdo->prepare("SELECT is_active FROM promotion WHERE promo_id = ?");
+        $stmt->execute([$toggle_id]);
+        $current_active = $stmt->fetchColumn();
+        
+        $new_active = $current_active ? 0 : 1;
+        
+        $stmt = $pdo->prepare("UPDATE promotion SET is_active = ? WHERE promo_id = ?");
+        $stmt->execute([$new_active, $toggle_id]);
+        
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'id' => $toggle_id,
+                'is_active' => $new_active,
+                'message' => t("Promotion status toggled successfully.", "สลับสถานะโปรโมชันสำเร็จ.")
+            ]);
+            exit;
+        }
+
+        $success = t("Promotion status toggled successfully.", "สลับสถานะโปรโมชันสำเร็จ.");
+    } catch (Exception $e) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
+        $error = "Error: " . $e->getMessage();
+    }
+    header("Location: promotions.php");
+    exit;
+}
+
 // Handle GET edit details loader
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
     $edit_id = $_GET['id'];
@@ -261,13 +299,15 @@ $all_promos = $stmt->fetchAll();
                                 <tr>
                                     <td class="font-semibold text-zinc-100"><?php echo htmlspecialchars($promo['title']); ?></td>
                                     <td class="text-zinc-400"><?php echo htmlspecialchars($promo['period']); ?></td>
-                                    <td class="text-center">
-                                        <span class="badge py-1 px-2.5 rounded text-xs" style="
-                                            <?php echo $promo['active'] ? 'background-color: rgba(25, 135, 84, 0.1); border: 1px solid rgba(25, 135, 84, 0.25); color: #75b798;' : 'background-color: rgba(63, 63, 70, 0.2); border: 1px solid rgba(63, 63, 70, 0.3); color: #a1a1aa;'; ?>
-                                        ">
-                                            <?php echo $promo['active'] ? t("Active", "กำลังจัดอยู่") : t("Expired", "หมดเขต"); ?>
-                                        </span>
-                                    </td>
+                                     <td class="text-center">
+                                         <a href="javascript:void(0)" onclick="togglePromoStatusRealtime(event, '<?php echo $promo['id']; ?>', this)" class="inline-block text-decoration-none" data-promo-id="<?php echo $promo['id']; ?>" data-promo-active="<?php echo $promo['active'] ? '1' : '0'; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโปรโมชัน'); ?>">
+                                             <span class="promo-status-badge badge py-1 px-2.5 rounded text-xs transition-all hover:scale-105 cursor-pointer" style="
+                                                 <?php echo $promo['active'] ? 'background-color: rgba(25, 135, 84, 0.1); border: 1px solid rgba(25, 135, 84, 0.25); color: #75b798;' : 'background-color: rgba(63, 63, 70, 0.2); border: 1px solid rgba(63, 63, 70, 0.3); color: #a1a1aa;'; ?>
+                                             ">
+                                                 <?php echo $promo['active'] ? t("Active", "กำลังจัดอยู่") : t("Expired", "หมดเขต"); ?>
+                                             </span>
+                                         </a>
+                                     </td>
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="promotions.php?action=edit&id=<?php echo $promo['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
@@ -286,6 +326,42 @@ $all_promos = $stmt->fetchAll();
 </div>
 
 <script>
+function togglePromoStatusRealtime(event, promoId, el) {
+    if (event) event.preventDefault();
+    const linkEl = el || document.querySelector(`[data-promo-id="${promoId}"]`);
+    if (!linkEl) return;
+
+    const badgeSpan = linkEl.querySelector('.promo-status-badge') || linkEl.querySelector('span');
+    const currentActive = linkEl.getAttribute('data-promo-active') === '1';
+    const newActive = !currentActive;
+
+    // Instant optimistic UI update (0ms)
+    linkEl.setAttribute('data-promo-active', newActive ? '1' : '0');
+    if (badgeSpan) {
+        if (newActive) {
+            badgeSpan.style.backgroundColor = 'rgba(25, 135, 84, 0.1)';
+            badgeSpan.style.border = '1px solid rgba(25, 135, 84, 0.25)';
+            badgeSpan.style.color = '#75b798';
+            badgeSpan.innerText = '<?php echo t("Active", "กำลังจัดอยู่"); ?>';
+        } else {
+            badgeSpan.style.backgroundColor = 'rgba(63, 63, 70, 0.2)';
+            badgeSpan.style.border = '1px solid rgba(63, 63, 70, 0.3)';
+            badgeSpan.style.color = '#a1a1aa';
+            badgeSpan.innerText = '<?php echo t("Expired", "หมดเขต"); ?>';
+        }
+    }
+
+    fetch(`promotions.php?action=toggle_status&id=${encodeURIComponent(promoId)}&ajax=1`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                // Revert on failure
+                linkEl.setAttribute('data-promo-active', currentActive ? '1' : '0');
+            }
+        })
+        .catch(err => console.error("Error toggling promo status:", err));
+}
+
     function confirmDeletePromo(promoId, promoTitle, promoPeriod) {
         document.getElementById('delete-promo-title-display').innerText = promoTitle;
         document.getElementById('delete-promo-period-display').innerText = promoPeriod;

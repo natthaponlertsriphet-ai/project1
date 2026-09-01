@@ -24,12 +24,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_live_dashboard_counts') {
         $cr_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'CANCEL_REQUESTED'")->fetchColumn();
         $cl_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'CANCELLED'")->fetchColumn();
 
+        $tables = $pdo->query("SELECT table_id AS id, table_status AS status FROM `table`")->fetchAll(PDO::FETCH_ASSOC);
+
         echo json_encode([
             'p_count' => $p_count,
             'c_count' => $c_count,
             'comp_count' => $comp_count,
             'cr_count' => $cr_count,
-            'cl_count' => $cl_count
+            'cl_count' => $cl_count,
+            'tables' => $tables
         ]);
     } catch (Exception $e) {
         echo json_encode(['error' => $e->getMessage()]);
@@ -78,9 +81,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
 // Handle Clear Table action (Freeing up table after customer leaves)
 if (isset($_GET['action']) && $_GET['action'] === 'clear_table' && isset($_GET['booking_id'])) {
     $b_id = $_GET['booking_id'];
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
     
     // Check role: Only STAFF is allowed to modify bookings. ADMIN can only view.
     if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => t("Admins can only view. Approval management is restricted to staff members.", "แอดมินมีสิทธิ์ดูข้อมูลเท่านั้น การจัดการอนุมัติเป็นหน้าที่ของพนักงาน")]);
+            exit;
+        }
         $_SESSION['action_error'] = t("Admins can only view. Approval management is restricted to staff members.", "แอดมินมีสิทธิ์ดูข้อมูลเท่านั้น การจัดการอนุมัติเป็นหน้าที่ของพนักงาน");
         header("Location: index.php?tab=confirmed");
         exit;
@@ -102,10 +111,24 @@ if (isset($_GET['action']) && $_GET['action'] === 'clear_table' && isset($_GET['
             $stmt->execute([$table_id]);
         }
         
-
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'booking_id' => $b_id,
+                'table_id' => $table_id,
+                'message' => t("Table cleared and made available successfully.", "เคลียร์โต๊ะและคืนสถานะโต๊ะว่างเรียบร้อยแล้ว.")
+            ]);
+            exit;
+        }
         
         $_SESSION['action_success'] = t("Table cleared and made available successfully.", "เคลียร์โต๊ะและคืนสถานะโต๊ะว่างเรียบร้อยแล้ว.");
     } catch (Exception $e) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
         $_SESSION['action_error'] = "Error: " . $e->getMessage();
     }
     header("Location: index.php?tab=confirmed");
@@ -117,9 +140,15 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
     $b_id = $_GET['booking_id'];
     $act = $_GET['action'];
     $target_tab = $_GET['tab'] ?? 'pending';
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
     
     // Check role: Only STAFF is allowed to modify bookings. ADMIN can only view.
     if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN') {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => t("Admins can only view. Approval management is restricted to staff members.", "แอดมินมีสิทธิ์ดูข้อมูลเท่านั้น การจัดการอนุมัติเป็นหน้าที่ของพนักงาน")]);
+            exit;
+        }
         $_SESSION['action_error'] = t("Admins can only view. Approval management is restricted to staff members.", "แอดมินมีสิทธิ์ดูข้อมูลเท่านั้น การจัดการอนุมัติเป็นหน้าที่ของพนักงาน");
         header("Location: index.php?tab=" . urlencode($target_tab));
         exit;
@@ -131,11 +160,18 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
         $stmt->execute([$b_id]);
         $b_details = $stmt->fetch();
         
+        $msg = '';
         if ($b_details) {
             if ($act === 'confirm') {
                 // Prevent re-confirming past cancelled bookings
                 if ($b_details['status'] === 'CANCELLED' && $b_details['date'] < date('Y-m-d')) {
-                    $_SESSION['action_error'] = t("Cannot re-approve past reservations. Re-approval is allowed day-by-day or for future dates only.", "ไม่สามารถอนุมัติรายการจองที่ผ่านมาแล้วใหม่ได้ การอนุมัติใหม่ทำได้เฉพาะวันต่อวันหรือวันล่วงหน้าเท่านั้น");
+                    $err_msg = t("Cannot re-approve past reservations. Re-approval is allowed day-by-day or for future dates only.", "ไม่สามารถอนุมัติรายการจองที่ผ่านมาแล้วใหม่ได้ การอนุมัติใหม่ทำได้เฉพาะวันต่อวันหรือวันล่วงหน้าเท่านั้น");
+                    if ($is_ajax) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['success' => false, 'error' => $err_msg]);
+                        exit;
+                    }
+                    $_SESSION['action_error'] = $err_msg;
                     header("Location: index.php?tab=" . urlencode($target_tab));
                     exit;
                 }
@@ -150,7 +186,7 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                     $stmt->execute([$b_details['table_id']]);
                 }
                 
-                $_SESSION['action_success'] = t("Booking confirmed successfully!", "ยืนยันรายการจองเรียบร้อยแล้ว!");
+                $msg = t("Booking confirmed successfully!", "ยืนยันรายการจองเรียบร้อยแล้ว!");
             } elseif ($act === 'cancel') {
                 // Cancel booking
                 $reason = trim($_GET['reason'] ?? '');
@@ -163,7 +199,7 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                     $stmt->execute([$b_details['table_id']]);
                 }
                 
-                $_SESSION['action_success'] = t("Booking cancelled successfully.", "ยกเลิกรายการจองเรียบร้อยแล้ว.");
+                $msg = t("Booking cancelled successfully.", "ยกเลิกรายการจองเรียบร้อยแล้ว.");
             } elseif ($act === 'approve_cancel') {
                 // Confirm/approve cancel request
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CANCELLED' WHERE reservation_id = ?");
@@ -175,7 +211,7 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                     $stmt->execute([$b_details['table_id']]);
                 }
                 
-                $_SESSION['action_success'] = t("Booking cancellation confirmed successfully.", "ยืนยันการยกเลิกการจองเรียบร้อยแล้ว.");
+                $msg = t("Booking cancellation confirmed successfully.", "ยืนยันการยกเลิกการจองเรียบร้อยแล้ว.");
             } elseif ($act === 'reject_cancel') {
                 // Reject cancel request (keep the booking confirmed)
                 $stmt = $pdo->prepare("UPDATE reservation SET reservation_status = 'CONFIRMED' WHERE reservation_id = ?");
@@ -187,15 +223,37 @@ if (isset($_GET['action']) && isset($_GET['booking_id'])) {
                     $stmt->execute([$b_details['table_id']]);
                 }
 
-                $_SESSION['action_success'] = t("Cancellation request rejected. Booking is kept confirmed.", "ปฏิเสธคำขอยกเลิกแล้ว และคงสถานะการจองตามเดิม");
+                $msg = t("Cancellation request rejected. Booking is kept confirmed.", "ปฏิเสธคำขอยกเลิกแล้ว และคงสถานะการจองตามเดิม");
             }
+
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'booking_id' => $b_id,
+                    'action' => $act,
+                    'message' => $msg
+                ]);
+                exit;
+            }
+
+            $_SESSION['action_success'] = $msg;
         } else {
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'error' => t("Booking not found.", "ไม่พบข้อมูลการจองดังกล่าว.")]);
+                exit;
+            }
             $_SESSION['action_error'] = t("Booking not found.", "ไม่พบข้อมูลการจองดังกล่าว.");
         }
     } catch (Exception $e) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
         $_SESSION['action_error'] = "Error: " . $e->getMessage();
     }
-    
     header("Location: index.php?tab=" . urlencode($target_tab));
     exit;
 }
@@ -1239,7 +1297,7 @@ foreach ($chart_monthly as $m) {
                     </tr>
                 <?php else: ?>
                     <?php foreach ($display_bookings as $b): ?>
-                        <tr>
+                        <tr id="booking-row-<?php echo $b['id']; ?>" class="transition-all duration-300">
                             <td class="font-semibold text-zinc-100">
                                 <?php echo htmlspecialchars($b['customer_name']); ?>
                                 <?php if (($active_tab === 'cancelled' || $active_tab === 'cancel_requests') && !empty($b['cancel_reason'])): ?>
@@ -1286,7 +1344,7 @@ foreach ($chart_monthly as $m) {
                                     <?php else: ?>
                                         <!-- Staff View: Interactive action buttons -->
                                         <?php if ($active_tab === 'pending'): ?>
-                                            <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=pending" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Confirm", "ยืนยัน"); ?></a>
+                                            <a href="javascript:void(0)" onclick="executeBookingActionRealtime(event, 'index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=pending&ajax=1', '<?php echo $b['id']; ?>')" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Confirm", "ยืนยัน"); ?></a>
                                             <a href="javascript:void(0)" onclick="cancelBooking('<?php echo $b['id']; ?>', 'pending')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Cancel", "ปฏิเสธ"); ?></a>
                                         <?php elseif ($active_tab === 'confirmed'): ?>
                                             <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Approved", "อนุมัติแล้ว"); ?></span>
@@ -1296,11 +1354,11 @@ foreach ($chart_monthly as $m) {
                                             <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
                                         <?php elseif ($active_tab === 'cancel_requests'): ?>
                                             <a href="javascript:void(0)" onclick="confirmApproveCancel('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Approve Cancel", "ยืนยันยกเลิก"); ?></a>
-                                            <a href="index.php?action=reject_cancel&booking_id=<?php echo $b['id']; ?>&tab=cancel_requests" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Reject Request", "คงสิทธิ์การจอง"); ?></a>
+                                            <a href="javascript:void(0)" onclick="executeBookingActionRealtime(event, 'index.php?action=reject_cancel&booking_id=<?php echo $b['id']; ?>&tab=cancel_requests&ajax=1', '<?php echo $b['id']; ?>')" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Reject Request", "คงสิทธิ์การจอง"); ?></a>
                                         <?php else: ?>
                                             <span class="badge bg-rose-950 text-rose-400 border border-rose-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></span>
                                             <?php if (isset($b['date']) && $b['date'] >= date('Y-m-d')): ?>
-                                                <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=cancelled" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Re-confirm", "อนุมัติใหม่"); ?></a>
+                                                <a href="javascript:void(0)" onclick="executeBookingActionRealtime(event, 'index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=cancelled&ajax=1', '<?php echo $b['id']; ?>')" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Re-confirm", "อนุมัติใหม่"); ?></a>
                                             <?php endif; ?>
                                         <?php endif; ?>
                                     <?php endif; ?>
@@ -1415,6 +1473,97 @@ function toggleTableStatusRealtime(event, tableId, el) {
         .catch(err => console.error("Error toggling table status:", err));
 }
 
+function executeBookingActionRealtime(event, actionUrl, bookingId) {
+    if (event) event.preventDefault();
+    const rowEl = document.getElementById(`booking-row-${bookingId}`);
+    if (rowEl) {
+        rowEl.style.opacity = '0.3';
+        rowEl.style.transform = 'scale(0.98)';
+        rowEl.style.transition = 'all 0.2s ease';
+    }
+
+    fetch(actionUrl)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (rowEl) {
+                    rowEl.remove();
+                }
+                pollAdminDashboardLive();
+            } else {
+                if (rowEl) {
+                    rowEl.style.opacity = '1';
+                    rowEl.style.transform = 'none';
+                }
+                alert(data.error || "Operation failed");
+            }
+        })
+        .catch(err => {
+            console.error("Error executing booking action:", err);
+            if (rowEl) {
+                rowEl.style.opacity = '1';
+                rowEl.style.transform = 'none';
+            }
+        });
+}
+
+function pollAdminDashboardLive() {
+    fetch('index.php?action=get_live_dashboard_counts')
+        .then(res => res.json())
+        .then(data => {
+            if (data && typeof data.p_count !== 'undefined') {
+                const pendingBadge = document.getElementById('count-pending');
+                const confirmedBadge = document.getElementById('count-confirmed');
+                const completedBadge = document.getElementById('count-completed');
+                const cancelReqBadge = document.getElementById('count-cancel_requests');
+                const cancelledBadge = document.getElementById('count-cancelled');
+
+                if (pendingBadge) pendingBadge.innerText = data.p_count;
+                if (confirmedBadge) confirmedBadge.innerText = data.c_count;
+                if (completedBadge) completedBadge.innerText = data.comp_count;
+                if (cancelReqBadge) cancelReqBadge.innerText = data.cr_count;
+                if (cancelledBadge) cancelledBadge.innerText = data.cl_count;
+
+                // Sync floorplan map tables in real time
+                if (data.tables && Array.isArray(data.tables)) {
+                    data.tables.forEach(t => {
+                        const linkEl = document.querySelector(`[data-table-id="${t.id}"]`);
+                        if (linkEl) {
+                            const innerCard = linkEl.querySelector('.table-card-inner') || linkEl.querySelector('div');
+                            const statusDot = linkEl.querySelector('.table-status-dot');
+                            const currentStatus = linkEl.getAttribute('data-table-status');
+                            if (currentStatus !== t.status) {
+                                linkEl.setAttribute('data-table-status', t.status);
+                                if (innerCard) {
+                                    if (t.status === 'AVAILABLE') {
+                                        innerCard.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
+                                        innerCard.style.borderColor = 'rgba(34, 197, 94, 0.2)';
+                                        innerCard.style.color = '#4ade80';
+                                    } else {
+                                        innerCard.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
+                                        innerCard.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                                        innerCard.style.color = '#f87171';
+                                    }
+                                }
+                                if (statusDot) {
+                                    if (t.status === 'AVAILABLE') {
+                                        statusDot.style.backgroundColor = '#22c55e';
+                                        statusDot.style.boxShadow = '0 0 8px #22c55e';
+                                    } else {
+                                        statusDot.style.backgroundColor = '#ef4444';
+                                        statusDot.style.boxShadow = '0 0 8px #ef4444';
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        })
+        .catch(err => console.error("Error polling live dashboard counts:", err));
+}
+setInterval(pollAdminDashboardLive, 3000);
+
 function cancelBooking(bookingId, currentTab) {
     document.getElementById('admin-cancel-booking-id').value = bookingId;
     document.getElementById('admin-cancel-tab').value = currentTab;
@@ -1451,7 +1600,9 @@ function submitAdminCancel() {
         return;
     }
 
-    window.location.href = `index.php?action=cancel&booking_id=${bookingId}&tab=${currentTab}&reason=${encodeURIComponent(reason)}`;
+    closeAdminCancelModal();
+    const actionUrl = `index.php?action=cancel&booking_id=${bookingId}&tab=${currentTab}&reason=${encodeURIComponent(reason)}&ajax=1`;
+    executeBookingActionRealtime(null, actionUrl, bookingId);
 }
 
 function submitCalendarFilter(type, val) {
@@ -1711,7 +1862,14 @@ document.addEventListener("DOMContentLoaded", function() {
     function confirmClearTable(bookingId, tableNum, customerName) {
         document.getElementById('clear-table-num-display').innerText = '<?php echo t("Table ", "โต๊ะหมายเลข "); ?>' + tableNum;
         document.getElementById('clear-table-customer-display').innerText = customerName;
-        document.getElementById('confirm-clear-table-btn').href = 'index.php?action=clear_table&booking_id=' + encodeURIComponent(bookingId);
+        const confirmBtn = document.getElementById('confirm-clear-table-btn');
+        if (confirmBtn) {
+            confirmBtn.href = 'javascript:void(0)';
+            confirmBtn.onclick = function(e) {
+                closeClearTableModal();
+                executeBookingActionRealtime(e, 'index.php?action=clear_table&booking_id=' + encodeURIComponent(bookingId) + '&ajax=1', bookingId);
+            };
+        }
         document.getElementById('clearTableModal').classList.remove('hidden');
     }
 
@@ -1722,7 +1880,14 @@ document.addEventListener("DOMContentLoaded", function() {
     function confirmApproveCancel(bookingId, customerName) {
         document.getElementById('approve-cancel-customer-display').innerText = customerName;
         document.getElementById('approve-cancel-ref-display').innerText = '#' + bookingId;
-        document.getElementById('confirm-approve-cancel-btn').href = 'index.php?action=approve_cancel&booking_id=' + encodeURIComponent(bookingId) + '&tab=cancel_requests';
+        const confirmBtn = document.getElementById('confirm-approve-cancel-btn');
+        if (confirmBtn) {
+            confirmBtn.href = 'javascript:void(0)';
+            confirmBtn.onclick = function(e) {
+                closeApproveCancelModal();
+                executeBookingActionRealtime(e, 'index.php?action=approve_cancel&booking_id=' + encodeURIComponent(bookingId) + '&tab=cancel_requests&ajax=1', bookingId);
+            };
+        }
         document.getElementById('approveCancelModal').classList.remove('hidden');
     }
 

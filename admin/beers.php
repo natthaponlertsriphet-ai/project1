@@ -22,6 +22,7 @@ if (!function_exists('t')) {
 // Handle quick toggle active status (SOLD OUT / ACTIVE)
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET['id'])) {
     $toggle_id = $_GET['id'];
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
     try {
         $stmt = $pdo->prepare("SELECT is_active AS active FROM menu WHERE menu_id = ?");
         $stmt->execute([$toggle_id]);
@@ -32,8 +33,24 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
         $stmt = $pdo->prepare("UPDATE menu SET is_active = ? WHERE menu_id = ?");
         $stmt->execute([$new_active, $toggle_id]);
         
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'id' => $toggle_id,
+                'is_active' => $new_active,
+                'message' => t("Beer tap availability status toggled successfully.", "สลับสถานะเปิด/ปิดขายแท็ปเบียร์สำเร็จ.")
+            ]);
+            exit;
+        }
+
         $_SESSION['action_success'] = t("Beer tap availability status toggled successfully.", "สลับสถานะเปิด/ปิดขายแท็ปเบียร์สำเร็จ.");
     } catch (Exception $e) {
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+            exit;
+        }
         $_SESSION['action_error'] = "Error: " . $e->getMessage();
     }
     header("Location: beers.php");
@@ -256,8 +273,8 @@ $all_beers = $stmt->fetchAll();
                                         <span class="text-zinc-200"><?php echo htmlspecialchars($b['abv']); ?></span>
                                     </td>
                                     <td class="text-center">
-                                        <a href="beers.php?action=toggle_status&id=<?php echo $b['id']; ?>" class="inline-block text-decoration-none" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะเปิด/ปิดขาย'); ?>">
-                                            <span class="badge py-1 px-2.5 rounded text-[11px] font-medium transition-all hover:scale-105 cursor-pointer" style="
+                                        <a href="javascript:void(0)" onclick="toggleBeerStatusRealtime(event, '<?php echo $b['id']; ?>', this)" class="inline-block text-decoration-none" data-beer-id="<?php echo $b['id']; ?>" data-beer-active="<?php echo $b['active'] ? '1' : '0'; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะเปิด/ปิดขาย'); ?>">
+                                            <span class="beer-status-badge badge py-1 px-2.5 rounded text-[11px] font-medium transition-all hover:scale-105 cursor-pointer" style="
                                                 <?php echo $b['active'] ? 'background-color: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #34d399;' : 'background-color: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171;'; ?>
                                             ">
                                                 <?php echo $b['active'] ? t("ACTIVE", "เปิดขาย") : t("SOLD OUT", "หมด / ปิดขาย"); ?>
@@ -358,6 +375,42 @@ $all_beers = $stmt->fetchAll();
             </a>
         </div>
     </div>
-</div>
+<script>
+function toggleBeerStatusRealtime(event, beerId, el) {
+    if (event) event.preventDefault();
+    const linkEl = el || document.querySelector(`[data-beer-id="${beerId}"]`);
+    if (!linkEl) return;
+
+    const badgeSpan = linkEl.querySelector('.beer-status-badge') || linkEl.querySelector('span');
+    const currentActive = linkEl.getAttribute('data-beer-active') === '1';
+    const newActive = !currentActive;
+
+    // Instant optimistic update (0ms)
+    linkEl.setAttribute('data-beer-active', newActive ? '1' : '0');
+    if (badgeSpan) {
+        if (newActive) {
+            badgeSpan.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+            badgeSpan.style.border = '1px solid rgba(16, 185, 129, 0.25)';
+            badgeSpan.style.color = '#34d399';
+            badgeSpan.innerText = '<?php echo t("ACTIVE", "เปิดขาย"); ?>';
+        } else {
+            badgeSpan.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            badgeSpan.style.border = '1px solid rgba(239, 68, 68, 0.25)';
+            badgeSpan.style.color = '#f87171';
+            badgeSpan.innerText = '<?php echo t("SOLD OUT", "หมด / ปิดขาย"); ?>';
+        }
+    }
+
+    fetch(`beers.php?action=toggle_status&id=${encodeURIComponent(beerId)}&ajax=1`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                // Revert on failure
+                linkEl.setAttribute('data-beer-active', currentActive ? '1' : '0');
+            }
+        })
+        .catch(err => console.error("Error toggling beer status:", err));
+}
+</script>
 
 <?php require_once 'admin_footer.php'; ?>
