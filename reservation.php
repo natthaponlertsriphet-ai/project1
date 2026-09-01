@@ -604,7 +604,7 @@ require_once 'header.php';
                 <div class="absolute top-0 start-0 end-0 bg-warning" style="height: 3px;"></div>
                 <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 mt-2"><?php echo t("Booking Details", "รายละเอียดการจอง"); ?></h3>
                 
-                <form action="reservation.php" method="POST" onsubmit="return validateBookingForm()">
+                <form action="reservation.php" method="POST" onsubmit="return validateBookingForm()" novalidate>
                     <input type="hidden" name="action" value="create_booking">
                     <input type="hidden" name="table_id" id="form-table-id" value="">
 
@@ -835,20 +835,34 @@ require_once 'header.php';
         if (alertBox) alertBox.classList.add('d-none');
     }
 
-    // Form Validator with Inline Alert
+    // Form Validator with Custom Inline Alert (no browser native popups)
     function validateBookingForm() {
-        const tableId = document.getElementById('form-table-id').value;
-        if (!tableId) {
+        // 1. Customer Name Check
+        const nameInput = document.querySelector('input[name="customer_name"]');
+        const name = nameInput ? nameInput.value.trim() : '';
+        if (!name) {
             showInlineFormAlert(
-                "<?php echo t('Please select a table from the layout map on the left first.', 'กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง'); ?>",
-                "<?php echo t('Table Selection Required', 'กรุณาเลือกโต๊ะนั่ง'); ?>",
+                "<?php echo t('Please enter customer name.', 'กรุณากรอกชื่อลูกค้าผู้ทำการจอง'); ?>",
+                "<?php echo t('Customer Name Required', 'กรุณากรอกชื่อลูกค้า'); ?>",
                 'warning'
             );
+            if (nameInput) nameInput.focus();
             return false;
         }
-        
+
+        // 2. Customer Phone Check
         const phoneInput = document.querySelector('input[name="customer_phone"]');
         const phone = phoneInput ? phoneInput.value.trim() : '';
+        if (!phone) {
+            showInlineFormAlert(
+                "<?php echo t('Please enter phone number.', 'กรุณากรอกเบอร์โทรศัพท์สำหรับติดต่อกลับ'); ?>",
+                "<?php echo t('Phone Number Required', 'กรุณากรอกเบอร์โทรศัพท์'); ?>",
+                'warning'
+            );
+            if (phoneInput) phoneInput.focus();
+            return false;
+        }
+
         const phonePattern = /^\+?[0-9\s\-()]+$/;
         if (!phonePattern.test(phone)) {
             showInlineFormAlert(
@@ -859,8 +873,19 @@ require_once 'header.php';
             if (phoneInput) phoneInput.focus();
             return false;
         }
+
+        // 3. Table Selection Check
+        const tableId = document.getElementById('form-table-id').value;
+        if (!tableId) {
+            showInlineFormAlert(
+                "<?php echo t('Please select a table from the layout map on the left first.', 'กรุณาคลิกเลือกโต๊ะนั่งจากแผนผังผังที่นั่งทางด้านซ้ายก่อนส่งจอง'); ?>",
+                "<?php echo t('Table Selection Required', 'กรุณาเลือกโต๊ะนั่ง'); ?>",
+                'warning'
+            );
+            return false;
+        }
         
-        // Check capacity
+        // 4. Check capacity
         const selectedBtn = document.querySelector('.table-selected');
         if (selectedBtn) {
             const capacity = parseInt(selectedBtn.getAttribute('data-capacity'));
