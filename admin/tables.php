@@ -449,7 +449,12 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                                         <?php 
                                         if ($t['zone'] === 'INDOOR') echo t("Indoor AC Room", "ห้องแอร์ด้านใน");
                                         elseif ($t['zone'] === 'OUTDOOR') echo t("Outdoor Breeze", "ลานระเบียงด้านนอก");
-                                        else echo t("Stage Front", "หน้าเวทีการแสดง");
+                                        elseif ($t['zone'] === 'STAGE') echo t("Stage Front", "หน้าเวทีการแสดง");
+                                        elseif ($t['zone'] === 'INDOOR_WINDOW') echo t("Indoor Window", "ติดกระจก");
+                                        elseif ($t['zone'] === 'INDOOR_CENTER') echo t("Indoor Center", "ตรงกลาง");
+                                        elseif ($t['zone'] === 'BAR') echo t("Bar Front", "หน้าบาร์");
+                                        elseif ($t['zone'] === 'WALKWAY') echo t("Walkway Zone", "โซนทางเดิน");
+                                        else echo htmlspecialchars($t['zone'] ?? 'N/A');
                                         ?>
                                     </td>
                                     <td class="text-center text-zinc-400"><?php echo $t['capacity']; ?> Guests</td>

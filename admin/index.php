@@ -1246,7 +1246,12 @@ foreach ($chart_monthly as $m) {
                                     <?php 
                                     if ($b['table_zone'] === 'INDOOR') echo t("Indoor AC", "ห้องแอร์");
                                     elseif ($b['table_zone'] === 'OUTDOOR') echo t("Outdoor Breeze", "ด้านนอก");
-                                    else echo t("Stage Front", "หน้าเวที");
+                                    elseif ($b['table_zone'] === 'STAGE') echo t("Stage Front", "หน้าเวที");
+                                    elseif ($b['table_zone'] === 'INDOOR_WINDOW') echo t("Indoor Window", "ติดกระจก");
+                                    elseif ($b['table_zone'] === 'INDOOR_CENTER') echo t("Indoor Center", "ตรงกลาง");
+                                    elseif ($b['table_zone'] === 'BAR') echo t("Bar Front", "หน้าบาร์");
+                                    elseif ($b['table_zone'] === 'WALKWAY') echo t("Walkway Zone", "โซนทางเดิน");
+                                    else echo htmlspecialchars($b['table_zone'] ?? 'N/A');
                                     ?>
                                 </span>
                             </td>
