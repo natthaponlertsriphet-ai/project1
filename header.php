@@ -106,11 +106,78 @@ function is_active($page) {
         .glass-card {
             background: rgba(32, 31, 31, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 8px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        /* Premium Validation Error Styles */
+        @keyframes premiumShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+        .animate-premium-shake {
+            animation: premiumShake 0.35s ease-in-out;
+        }
+        .premium-field-error-badge {
+            animation: fadeInSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
     </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('invalid', function(e) {
+            e.preventDefault();
+            var input = e.target;
+            if (!input) return;
+
+            var msg = input.validationMessage || '⚠️ กรุณาระบุข้อมูลในช่องนี้';
+            
+            clearPremiumFieldError(input);
+
+            input.classList.add('animate-premium-shake');
+            input.style.borderColor = '#dc3545';
+            input.style.boxShadow = '0 0 0 0.25rem rgba(220, 53, 69, 0.3), 0 0 15px rgba(220, 53, 69, 0.2)';
+            
+            setTimeout(function() {
+                input.classList.remove('animate-premium-shake');
+            }, 400);
+
+            var badge = document.createElement('div');
+            badge.className = 'premium-field-error-badge mt-2 d-inline-flex align-items-center gap-2 px-3 py-1.5 border border-danger border-opacity-50 rounded-2 shadow-sm font-sans';
+            badge.style.fontSize = '12px';
+            badge.style.backdropFilter = 'blur(8px)';
+            badge.style.backgroundColor = 'rgba(60, 10, 15, 0.85)';
+            badge.style.color = '#ff99a8';
+            badge.innerHTML = '<span class="material-symbols-outlined fs-6 align-middle text-danger">error</span><span class="fw-medium tracking-wide">' + msg + '</span>';
+
+            if (input.nextSibling) {
+                input.parentNode.insertBefore(badge, input.nextSibling);
+            } else {
+                input.parentNode.appendChild(badge);
+            }
+
+            input.focus();
+
+            var clearHandler = function() {
+                clearPremiumFieldError(input);
+                input.removeEventListener('input', clearHandler);
+                input.removeEventListener('change', clearHandler);
+            };
+            input.addEventListener('input', clearHandler);
+            input.addEventListener('change', clearHandler);
+        }, true);
+
+        function clearPremiumFieldError(input) {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+            var parent = input.parentNode;
+            if (parent) {
+                var existing = parent.querySelector('.premium-field-error-badge');
+                if (existing) existing.remove();
+            }
+        }
+    });
+    </script>
 </head>
 <body>
 

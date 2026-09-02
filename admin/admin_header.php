@@ -252,11 +252,74 @@ function is_admin_active($page) {
         .shadcn-table tbody tr:hover {
             background-color: rgba(255, 255, 255, 0.02);
         }
-        .shadcn-table td {
-            padding: 0.75rem 1rem;
-            vertical-align: middle;
+        /* Premium Validation Error Styles */
+        @keyframes premiumShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+        .animate-premium-shake {
+            animation: premiumShake 0.35s ease-in-out;
+        }
+        .premium-field-error-badge {
+            animation: fadeInSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
     </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('invalid', function(e) {
+            e.preventDefault();
+            var input = e.target;
+            if (!input) return;
+
+            var msg = input.validationMessage || '⚠️ กรุณาระบุข้อมูลในช่องนี้';
+            
+            clearPremiumFieldError(input);
+
+            input.classList.add('animate-premium-shake');
+            input.style.borderColor = '#f43f5e';
+            input.style.boxShadow = '0 0 0 2px rgba(244, 63, 94, 0.4), 0 0 15px rgba(244, 63, 94, 0.25)';
+            
+            setTimeout(function() {
+                input.classList.remove('animate-premium-shake');
+            }, 400);
+
+            var badge = document.createElement('div');
+            badge.className = 'premium-field-error-badge mt-1.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-950/90 border border-rose-500/60 text-rose-200 text-xs font-sans rounded-md shadow-xl backdrop-blur-md';
+            badge.innerHTML = '<span class="material-symbols-outlined text-rose-400 text-sm shrink-0">error</span><span class="font-medium tracking-wide">' + msg + '</span>';
+
+            if (input.nextSibling) {
+                input.parentNode.insertBefore(badge, input.nextSibling);
+            } else {
+                input.parentNode.appendChild(badge);
+            }
+
+            input.focus();
+
+            var clearHandler = function() {
+                clearPremiumFieldError(input);
+                input.removeEventListener('input', clearHandler);
+                input.removeEventListener('change', clearHandler);
+            };
+            input.addEventListener('input', clearHandler);
+            input.addEventListener('change', clearHandler);
+        }, true);
+
+        function clearPremiumFieldError(input) {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+            var parent = input.parentNode;
+            if (parent) {
+                var existing = parent.querySelector('.premium-field-error-badge');
+                if (existing) existing.remove();
+            }
+        }
+    });
+    </script>
 </head>
 <body class="h-full bg-zinc-950 text-zinc-50">
 
