@@ -125,13 +125,56 @@ function is_active($page) {
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('form').forEach(function(f) {
+            f.setAttribute('novalidate', 'novalidate');
+        });
+
+        document.addEventListener('submit', function(e) {
+            var form = e.target;
+            if (!form) return;
+
+            var requiredInputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+            var isValid = true;
+            var firstInvalid = null;
+
+            requiredInputs.forEach(function(input) {
+                var val = input.value ? input.value.trim() : '';
+                if (!val) {
+                    isValid = false;
+                    if (!firstInvalid) firstInvalid = input;
+                    showPremiumFieldError(input);
+                } else {
+                    clearPremiumFieldError(input);
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (firstInvalid) firstInvalid.focus();
+                return false;
+            }
+        }, true);
+
         document.addEventListener('invalid', function(e) {
             e.preventDefault();
             var input = e.target;
-            if (!input) return;
+            if (input) showPremiumFieldError(input);
+        }, true);
 
-            var msg = input.validationMessage || '⚠️ กรุณาระบุข้อมูลในช่องนี้';
-            
+        function showPremiumFieldError(input) {
+            var msg = input.getAttribute('data-error') || input.dataset.customError;
+            if (!msg) {
+                var customVal = input.getAttribute('oninvalid');
+                if (customVal && customVal.indexOf('setCustomValidity') !== -1) {
+                    var match = customVal.match(/setCustomValidity\(['"]([^'"]+)['"]\)/);
+                    if (match && match[1]) msg = match[1];
+                }
+            }
+            if (!msg || msg.indexOf('Please fill') !== -1 || msg.indexOf('กรุณากรอกข้อมูลในฟิลด์นี้') !== -1) {
+                msg = '⚠️ กรุณาระบุข้อมูลในช่องนี้';
+            }
+
             clearPremiumFieldError(input);
 
             input.classList.add('animate-premium-shake');
@@ -156,8 +199,6 @@ function is_active($page) {
                 input.parentNode.appendChild(badge);
             }
 
-            input.focus();
-
             var clearHandler = function() {
                 clearPremiumFieldError(input);
                 input.removeEventListener('input', clearHandler);
@@ -165,7 +206,7 @@ function is_active($page) {
             };
             input.addEventListener('input', clearHandler);
             input.addEventListener('change', clearHandler);
-        }, true);
+        }
 
         function clearPremiumFieldError(input) {
             input.style.borderColor = '';
