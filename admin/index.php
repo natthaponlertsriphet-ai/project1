@@ -488,8 +488,17 @@ try {
 }
 
 try {
-    $stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table` ORDER BY zone, table_number");
+    $stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table`");
     $all_tables = $stmt->fetchAll();
+    usort($all_tables, function($a, $b) {
+        $numA = (string)$a['number'];
+        $numB = (string)$b['number'];
+        $isDA = (strpos($numA, 'D') === 0);
+        $isDB = (strpos($numB, 'D') === 0);
+        if ($isDA && !$isDB) return -1;
+        if (!$isDA && $isDB) return 1;
+        return strnatcasecmp($numA, $numB);
+    });
 } catch (Exception $e) {
     $all_tables = [];
 }

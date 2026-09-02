@@ -247,8 +247,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Fetch all tables for initial map layout render
-$stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table` ORDER BY table_number");
+$stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table`");
 $tables = $stmt->fetchAll();
+usort($tables, function($a, $b) {
+    $numA = (string)$a['number'];
+    $numB = (string)$b['number'];
+    $isDA = (strpos($numA, 'D') === 0);
+    $isDB = (strpos($numB, 'D') === 0);
+    if ($isDA && !$isDB) return -1;
+    if (!$isDA && $isDB) return 1;
+    return strnatcasecmp($numA, $numB);
+});
 
 // Hero slider mock images (using local home-booking folder)
 $hero_images = [
