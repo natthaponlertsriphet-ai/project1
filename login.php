@@ -187,12 +187,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form action="login.php" method="POST" class="flex flex-col gap-4">
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Email Address", "อีเมลผู้ใช้"); ?></label>
-                <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('Please enter your email address.', 'กรุณากรอกอีเมลผู้ใช้'); ?>')" oninput="this.setCustomValidity('')" placeholder="admin@chithole.com" class="shadcn-input">
+                <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter your registered login email.', '⚠️ กรุณาระบุอีเมลผู้ใช้งานสำหรับเข้าสู่ระบบ'); ?>')" oninput="this.setCustomValidity('')" placeholder="admin@chithole.com" class="shadcn-input">
             </div>
 
             <div class="flex flex-col gap-1.5">
                 <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Password", "รหัสผ่าน"); ?></label>
-                <input type="password" name="password" required oninvalid="this.setCustomValidity('<?php echo t('Please enter your password.', 'กรุณากรอกรหัสผ่าน'); ?>')" oninput="this.setCustomValidity('')" placeholder="••••••••" class="shadcn-input">
+                <input type="password" name="password" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter your account password.', '⚠️ กรุณาระบุรหัสผ่านเพื่อเข้าสู่ระบบ'); ?>')" oninput="this.setCustomValidity('')" placeholder="••••••••" class="shadcn-input">
             </div>
 
             <button type="submit" class="shadcn-btn-primary w-full mt-2 text-uppercase font-bold tracking-wider">

@@ -227,12 +227,12 @@ $all_promos = $stmt->fetchAll();
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Promotion Title", "หัวข้อโปรโมชัน"); ?></label>
-                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('Please enter promotion title.', 'กรุณากรอกหัวข้อโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input" value="<?php echo htmlspecialchars($title); ?>">
+                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input" value="<?php echo htmlspecialchars($title); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Period / Schedule", "ช่วงเวลาจัด"); ?></label>
-                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('Please enter promotion period.', 'กรุณากรอกช่วงเวลาจัดโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input" value="<?php echo htmlspecialchars($period); ?>">
+                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input" value="<?php echo htmlspecialchars($period); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -249,7 +249,7 @@ $all_promos = $stmt->fetchAll();
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Description", "คำอธิบายเงื่อนไข"); ?></label>
-                    <textarea name="description" required oninvalid="this.setCustomValidity('<?php echo t('Please enter promotion description.', 'กรุณากรอกคำอธิบายเงื่อนไขโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="Double the impact..." class="shadcn-input min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
+                    <textarea name="description" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide detailed promo offer terms.', '⚠️ กรุณาระบุคำอธิบายเงื่อนไขและรายละเอียดโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="Double the impact..." class="shadcn-input min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
                 </div>
 
                 <div class="flex items-center gap-2 py-1">

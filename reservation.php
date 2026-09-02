@@ -496,7 +496,7 @@ require_once 'header.php';
                 <form id="search-booking-form" onsubmit="performBookingSearch(event)" action="reservation.php" method="GET" class="row g-2 mb-3">
                     <input type="hidden" name="action" value="search_booking">
                     <div class="col-sm-9">
-                        <input type="text" id="search-query-input" name="q" required oninvalid="this.setCustomValidity('<?php echo t('Please enter booking ID or phone number.', 'กรุณากรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>')" oninput="this.setCustomValidity('')" class="form-control bg-dark border-secondary border-opacity-50 text-white rounded-0 py-2.5 font-sans" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
+                        <input type="text" id="search-query-input" name="q" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify Booking ID or phone number.', '⚠️ กรุณาระบุรหัสการจอง หรือ เบอร์โทรศัพท์ที่ใช้จอง'); ?>')" oninput="this.setCustomValidity('')" class="form-control bg-dark border-secondary border-opacity-50 text-white rounded-0 py-2.5 font-sans" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
                     </div>
                     <div class="col-sm-3">
                         <button type="submit" id="search-submit-btn" class="btn btn-custom-gold w-100 py-2.5 text-uppercase font-anton">
@@ -629,17 +629,17 @@ require_once 'header.php';
 
                     <div class="mb-3">
                         <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Number of Guests (Pax)", "จำนวนคน (ท่าน)"); ?></label>
-                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('Please enter guest count.', 'กรุณากรอกจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" value="2">
+                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" value="2">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Customer Name", "ชื่อลูกค้า"); ?></label>
-                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('Please enter customer name.', 'กรุณากรอกชื่อลูกค้าผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
+                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Phone Number", "เบอร์โทรศัพท์"); ?></label>
-                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('Please enter phone number.', 'กรุณากรอกเบอร์โทรศัพท์สำหรับติดต่อกลับ'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
+                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
                     </div>
 
                     <!-- Beautiful Inline Form Validation Alert Box -->
@@ -1341,7 +1341,7 @@ require_once 'header.php';
                             <span class="material-symbols-outlined fs-6 align-middle me-1">call</span>
                             <?php echo t("Registered Phone Number", "เบอร์โทรศัพท์ที่ใช้จอง (เพื่อยืนยันตัวตน)"); ?> *
                         </label>
-                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="<?php echo t('e.g. 0812345678', 'เช่น 0812345678'); ?>" required oninvalid="this.setCustomValidity('<?php echo t('Please enter phone number.', 'กรุณากรอกเบอร์โทรศัพท์เพื่อยืนยันตัวตน'); ?>')" oninput="this.setCustomValidity('')" autocomplete="off">
+                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="<?php echo t('e.g. 0812345678', 'เช่น 0812345678'); ?>" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter registered phone number to verify.', '⚠️ กรุณาระบุเบอร์โทรศัพท์ที่ใช้จองเพื่อยืนยันตัวตน'); ?>')" oninput="this.setCustomValidity('')" autocomplete="off">
                     </div>
 
                     <div class="mb-2">
@@ -1349,7 +1349,7 @@ require_once 'header.php';
                             <span class="material-symbols-outlined fs-6 align-middle me-1">edit_note</span>
                             <?php echo t("Cancellation Reason", "เหตุผลในการขอยกเลิก"); ?> *
                         </label>
-                        <textarea id="cancel-modal-reason-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" rows="3" placeholder="<?php echo t("e.g. Change of plans, emergency schedule...", "เช่น ติดภารกิจด่วน, เลื่อนวันเดินทาง ฯลฯ"); ?>" style="resize: none;" required oninvalid="this.setCustomValidity('<?php echo t('Please specify cancellation reason.', 'กรุณาระบุเหตุผลในการขอยกเลิกการจอง'); ?>')" oninput="this.setCustomValidity('')"></textarea>
+                        <textarea id="cancel-modal-reason-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" rows="3" placeholder="<?php echo t("e.g. Change of plans, emergency schedule...", "เช่น ติดภารกิจด่วน, เลื่อนวันเดินทาง ฯลฯ"); ?>" style="resize: none;" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify detailed reason for cancellation.', '⚠️ กรุณาระบุเหตุผลหรือรายละเอียดเพิ่มเติมในการขอยกเลิก'); ?>')" oninput="this.setCustomValidity('')"></textarea>
                     </div>
                 </form>
             </div>

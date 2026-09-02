@@ -1629,7 +1629,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <label for="admin-cancel-reason" class="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-1.5">
                         <?php echo t("Reason / Remarks", "เหตุผล / หมายเหตุการยกเลิก"); ?> *
                     </label>
-                    <textarea id="admin-cancel-reason" rows="3" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-warning resize-none font-sans" placeholder="<?php echo t("e.g. Table unavailable, Customer requested cancellation...", "เช่น โต๊ะชำรุด, ลูกค้าติดต่อมาขอยกเลิก ฯลฯ"); ?>" required oninvalid="this.setCustomValidity('<?php echo t('Please specify cancellation reason.', 'กรุณาระบุเหตุผลในการยกเลิก'); ?>')" oninput="this.setCustomValidity('')"></textarea>
+                    <textarea id="admin-cancel-reason" rows="3" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 text-sm focus:outline-none focus:border-warning resize-none font-sans" placeholder="<?php echo t("e.g. Table unavailable, Customer requested cancellation...", "เช่น โต๊ะชำรุด, ลูกค้าติดต่อมาขอยกเลิก ฯลฯ"); ?>" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide detailed reason for cancellation.', '⚠️ กรุณาระบุเหตุผลหรือรายละเอียดเพิ่มเติมในการยกเลิก'); ?>')" oninput="this.setCustomValidity('')"></textarea>
                 </div>
             </form>
         </div>

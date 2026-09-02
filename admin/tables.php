@@ -301,12 +301,12 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Table Number", "หมายเลขโต๊ะ"); ?></label>
-                    <input type="text" name="number" required oninvalid="this.setCustomValidity('<?php echo t('Please enter table number.', 'กรุณากรอกหมายเลขโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. T1" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" value="<?php echo htmlspecialchars($number); ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <input type="text" name="number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the table number code.', '⚠️ กรุณาระบุรหัสหมายเลขโต๊ะบริการ'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. T1" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" value="<?php echo htmlspecialchars($number); ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Zone / Area", "โซนที่ตั้งโต๊ะ"); ?></label>
-                    <select name="zone" required oninvalid="this.setCustomValidity('<?php echo t('Please select a zone.', 'กรุณาเลือกโซนที่ตั้งโต๊ะ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <select name="zone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select a table location zone.', '⚠️ กรุณาเลือกโซนพื้นที่ตั้งโต๊ะ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                         <option value="INDOOR_CENTER" <?php echo $zone === 'INDOOR_CENTER' ? 'selected' : ''; ?>><?php echo t("INDOOR CENTER (ตรงกลางห้องแอร์)", "INDOOR CENTER (ตรงกลางห้องแอร์)"); ?></option>
                         <option value="INDOOR_WINDOW" <?php echo $zone === 'INDOOR_WINDOW' ? 'selected' : ''; ?>><?php echo t("INDOOR WINDOW (ติดกระจก)", "INDOOR WINDOW (ติดกระจก)"); ?></option>
                         <option value="INDOOR" <?php echo $zone === 'INDOOR' ? 'selected' : ''; ?>><?php echo t("INDOOR GENERAL (ห้องแอร์ทั่วไป)", "INDOOR GENERAL (ห้องแอร์ทั่วไป)"); ?></option>
@@ -319,7 +319,7 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Capacity (Seats)", "ความจุที่นั่ง (ท่าน)"); ?></label>
-                    <input type="number" name="capacity" required oninvalid="this.setCustomValidity('<?php echo t('Please enter seat capacity.', 'กรุณากรอกจำนวนความจุที่นั่ง'); ?>')" oninput="this.setCustomValidity('')" min="1" max="50" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" value="<?php echo $capacity; ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <input type="number" name="capacity" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify maximum seat capacity.', '⚠️ กรุณาระบุจำนวนความจุที่นั่งสูงสุด'); ?>')" oninput="this.setCustomValidity('')" min="1" max="50" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" value="<?php echo $capacity; ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">

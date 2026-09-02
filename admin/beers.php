@@ -199,22 +199,22 @@ $all_beers = $stmt->fetchAll();
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Tap Number", "เลขแท็ป"); ?></label>
-                    <input type="text" name="tap_number" required oninvalid="this.setCustomValidity('<?php echo t('Please enter tap number.', 'กรุณากรอกหมายเลขแท็ป'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 01" class="shadcn-input" value="<?php echo htmlspecialchars($tap_number); ?>">
+                    <input type="text" name="tap_number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the beer tap number.', '⚠️ กรุณาระบุหมายเลขแท็ปเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 01" class="shadcn-input" value="<?php echo htmlspecialchars($tap_number); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Brand / Brewery", "แบรนด์ / โรงผลิต"); ?></label>
-                    <input type="text" name="type" required oninvalid="this.setCustomValidity('<?php echo t('Please enter brewery brand.', 'กรุณากรอกแบรนด์/โรงผลิต'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Moonshine" class="shadcn-input" value="<?php echo htmlspecialchars($type); ?>">
+                    <input type="text" name="type" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the brewery brand.', '⚠️ กรุณาระบุชื่อแบรนด์หรือโรงผลิตเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Moonshine" class="shadcn-input" value="<?php echo htmlspecialchars($type); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Beer Name", "ชื่อเบียร์"); ?></label>
-                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('Please enter beer name.', 'กรุณากรอกชื่อเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Lager Light" class="shadcn-input" value="<?php echo htmlspecialchars($name); ?>">
+                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the craft beer name.', '⚠️ กรุณาระบุชื่อเมนูเบียร์คราฟต์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Lager Light" class="shadcn-input" value="<?php echo htmlspecialchars($name); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("ABV (%)", "ระดับแอลกอฮอล์ (ABV)"); ?></label>
-                    <input type="text" name="abv" required oninvalid="this.setCustomValidity('<?php echo t('Please enter ABV percentage.', 'กรุณากรอกระดับแอลกอฮอล์ ABV'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 5.0%" class="shadcn-input" value="<?php echo htmlspecialchars($abv); ?>">
+                    <input type="text" name="abv" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the ABV percentage.', '⚠️ กรุณาระบุเปอร์เซ็นต์แอลกอฮอล์ ABV'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 5.0%" class="shadcn-input" value="<?php echo htmlspecialchars($abv); ?>">
                 </div>
 
 

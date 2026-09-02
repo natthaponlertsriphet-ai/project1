@@ -206,7 +206,7 @@ if (is_dir($gallery_dir)) {
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Day", "วันแสดง"); ?></label>
-                    <select name="day" required oninvalid="this.setCustomValidity('<?php echo t('Please select show day.', 'กรุณาเลือกวันแสดง'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950">
+                    <select name="day" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select the live performance day.', '⚠️ กรุณาระบุวันแสดงดนตรีสด'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950">
                         <?php foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $d): ?>
                             <option value="<?php echo $d; ?>" <?php echo $day === $d ? 'selected' : ''; ?>>
                                 <?php echo t($d, $d); ?>
@@ -217,12 +217,12 @@ if (is_dir($gallery_dir)) {
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Time Slot", "ช่วงเวลาโชว์"); ?></label>
-                    <input type="text" name="time" required oninvalid="this.setCustomValidity('<?php echo t('Please enter show time.', 'กรุณากรอกช่วงเวลาโชว์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 19:30 - 20:30" class="shadcn-input" value="<?php echo htmlspecialchars($time); ?>">
+                    <input type="text" name="time" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the performance time slot.', '⚠️ กรุณาระบุช่วงเวลาการแสดงดนตรีสด'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 19:30 - 20:30" class="shadcn-input" value="<?php echo htmlspecialchars($time); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Band / Artist", "ชื่อวงดนตรี / ศิลปิน"); ?></label>
-                    <input type="text" name="artist" required oninvalid="this.setCustomValidity('<?php echo t('Please enter band or artist name.', 'กรุณากรอกชื่อวงดนตรีหรือศิลปิน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Band Name" class="shadcn-input" value="<?php echo htmlspecialchars($artist); ?>">
+                    <input type="text" name="artist" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the band or artist name.', '⚠️ กรุณาระบุชื่อวงดนตรีหรือศิลปินผู้แสดง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Band Name" class="shadcn-input" value="<?php echo htmlspecialchars($artist); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
