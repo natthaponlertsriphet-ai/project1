@@ -197,12 +197,12 @@ $all_staff = $stmt->fetchAll();
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Full Name", "ชื่อ-นามสกุล"); ?></label>
-                    <input type="text" name="name" required placeholder="e.g. Somchai" class="shadcn-input" value="<?php echo htmlspecialchars($name); ?>">
+                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('Please enter full name.', 'กรุณากรอกชื่อ-นามสกุลพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Somchai" class="shadcn-input" value="<?php echo htmlspecialchars($name); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Email Address", "อีเมลล็อกอิน"); ?></label>
-                    <input type="email" name="email" required placeholder="e.g. staff@chithole.com" class="shadcn-input" value="<?php echo htmlspecialchars($email); ?>">
+                    <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('Please enter email address.', 'กรุณากรอกอีเมลล็อกอิน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. staff@chithole.com" class="shadcn-input" value="<?php echo htmlspecialchars($email); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -212,12 +212,12 @@ $all_staff = $stmt->fetchAll();
                             <span class="text-zinc-500 text-[10px] lowercase normal-case"><?php echo t("(Leave blank to keep current)", "(เว้นว่างไว้เพื่อรักษารหัสผ่านเดิม)"); ?></span>
                         <?php endif; ?>
                     </label>
-                    <input type="password" name="password" placeholder="••••••••" class="shadcn-input" <?php echo $is_editing ? '' : 'required'; ?>>
+                    <input type="password" name="password" placeholder="••••••••" class="shadcn-input" <?php echo $is_editing ? '' : 'required oninvalid="this.setCustomValidity(\'' . t('Please enter password.', 'กรุณากรอกรหัสผ่าน') . '\')" oninput="this.setCustomValidity(\'\')"'; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("System Role", "ระดับสิทธิ์ระบบ"); ?></label>
-                    <select name="role" required class="shadcn-input bg-zinc-950">
+                    <select name="role" required oninvalid="this.setCustomValidity('<?php echo t('Please select a system role.', 'กรุณาเลือกระดับสิทธิ์ระบบ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950">
                         <option value="STAFF" <?php echo $role === 'STAFF' ? 'selected' : ''; ?>><?php echo t("STAFF (พนักงานบริการลูกค้า)", "STAFF (พนักงานบริการลูกค้า)"); ?></option>
                         <option value="ADMIN" <?php echo $role === 'ADMIN' ? 'selected' : ''; ?>><?php echo t("ADMIN (ผู้ดูแลระบบหลังบ้าน)", "ADMIN (ผู้ดูแลระบบหลังบ้าน)"); ?></option>
                     </select>
