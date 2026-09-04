@@ -274,7 +274,8 @@ require_once 'header.php';
 <style>
     .hero-slider {
         position: relative;
-        height: 60vh;
+        height: 80vh;
+        min-height: 600px;
         width: 100%;
         overflow: hidden;
     }
@@ -288,15 +289,15 @@ require_once 'header.php';
         z-index: 1;
     }
     .hero-slide.active {
-        opacity: 0.35;
+        opacity: 0.45;
         z-index: 2;
     }
     .hero-content {
         position: absolute;
-        bottom: 10%;
+        bottom: 12%;
         left: 5%;
         z-index: 3;
-        max-width: 600px;
+        max-width: 650px;
     }
     .table-btn {
         width: 60px;
