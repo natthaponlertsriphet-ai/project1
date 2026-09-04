@@ -388,11 +388,11 @@ require_once 'header.php';
 </style>
 
 <!-- Hero Slider Section -->
-<div class="hero-slider bg-black">
+<div class="hero-slider" style="background-color: #131313;">
     <?php foreach ($hero_images as $index => $img): ?>
         <div class="hero-slide <?php echo $index === 0 ? 'active' : ''; ?>" style="background-image: url('<?php echo $img; ?>');"></div>
     <?php endforeach; ?>
-    <div class="absolute inset-0 z-0 bg-gradient-to-t from-[#131313] via-[#131313]/60 to-transparent" style="position:absolute; bottom:0; left:0; right:0; height:150px; background: linear-gradient(to top, #131313, transparent);"></div>
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 320px; background: linear-gradient(to top, #131313 0%, rgba(19, 19, 19, 0.85) 45%, rgba(19, 19, 19, 0.3) 75%, transparent 100%); pointer-events: none; z-index: 2;"></div>
     <div class="hero-content">
         <span class="font-anton text-warning text-uppercase tracking-wider fs-6 d-block mb-2">[ <?php echo t("TAPROOM EXPERIENCE", "ค่ำคืนพิเศษกับแท็ปเบียร์คัดสรร"); ?> ]</span>
         <h1 class="font-anton text-light text-uppercase tracking-wide display-3 lh-1 mb-3">
