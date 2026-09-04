@@ -81,8 +81,9 @@ function is_active($page) {
         }
         /* Custom navbar styles */
         .navbar-custom {
-            background-color: rgba(19, 19, 19, 0.9) !important;
-            backdrop-filter: blur(15px);
+            background-color: rgba(19, 19, 19, 0.75) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         .btn-custom-gold {
