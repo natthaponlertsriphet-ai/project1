@@ -50,13 +50,13 @@ function is_active($page) {
     <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Pridi:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
     
     <style>
-        body {
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
             background-color: #131313;
             color: #e5e2e1;
             font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
             overflow-x: hidden;
-            margin: 0;
-            padding: 0;
         }
         /* Make Thai text bolder for readability */
         html[lang="th"] body,
@@ -84,7 +84,8 @@ function is_active($page) {
             background: linear-gradient(180deg, rgba(12, 12, 14, 0.85) 0%, rgba(12, 12, 14, 0.35) 60%, rgba(12, 12, 14, 0) 100%) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: none !important;
+            box-shadow: none !important;
             transition: background 0.3s ease;
         }
         .btn-custom-gold {

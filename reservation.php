@@ -275,10 +275,11 @@ require_once 'header.php';
     .hero-slider {
         position: relative;
         top: 0;
-        margin-top: 0;
-        padding-top: 0;
-        height: 70vh;
-        min-height: 520px;
+        left: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 85vh;
+        min-height: 600px;
         width: 100%;
         overflow: hidden;
     }
