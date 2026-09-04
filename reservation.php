@@ -274,6 +274,9 @@ require_once 'header.php';
 <style>
     .hero-slider {
         position: relative;
+        top: 0;
+        margin-top: 0;
+        padding-top: 0;
         height: 70vh;
         min-height: 520px;
         width: 100%;
@@ -283,7 +286,7 @@ require_once 'header.php';
         position: absolute;
         top: 0; left: 0; width: 100%; height: 100%;
         background-size: cover;
-        background-position: center;
+        background-position: center top;
         opacity: 0;
         transition: opacity 1.5s ease-in-out;
         z-index: 1;

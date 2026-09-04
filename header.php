@@ -55,6 +55,8 @@ function is_active($page) {
             color: #e5e2e1;
             font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
         /* Make Thai text bolder for readability */
         html[lang="th"] body,
