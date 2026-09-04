@@ -404,7 +404,7 @@ require_once 'header.php';
             <?php echo t("Reserve", "จองโต๊ะ"); ?><br>
             <span class="text-warning"><?php echo t("Your spot", "ที่นั่งของคุณ"); ?></span>
         </h1>
-        <p class="text-light text-opacity-90 lh-base mb-0" style="font-size: 1.35rem; max-width: 720px; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
+        <p class="text-secondary lh-base mb-0" style="font-size: 1.35rem; max-width: 720px; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
             <?php echo t("Secure your seat under Chiang Mai's nocturnal sky. Enjoy fresh Original Thai Craft Beer, live music, and warm friendly vibes all night long.", "ล็อกมุมโปรดใต้แสงดาวเชียงใหม่ ดื่มด่ำ Original Thai Craft Beer สดใหม่หลากสไตล์ เคล้าเสียงดนตรีสดและบรรยากาศเป็นกันเองตลอดค่ำคืน"); ?>
         </p>
     </div>
