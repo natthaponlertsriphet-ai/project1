@@ -77,11 +77,13 @@ function is_active($page) {
         .font-anton {
             font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         }
-        /* Custom navbar styles */
+        /* Custom navbar styles - Full Overlay Banner Mode */
         .navbar-custom {
-            background-color: rgba(19, 19, 19, 0.9) !important;
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(180deg, rgba(12, 12, 14, 0.85) 0%, rgba(12, 12, 14, 0.35) 60%, rgba(12, 12, 14, 0) 100%) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.3s ease;
         }
         .btn-custom-gold {
             background-color: #ffd782;
