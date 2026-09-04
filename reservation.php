@@ -294,10 +294,10 @@ require_once 'header.php';
     }
     .hero-content {
         position: absolute;
-        bottom: 12%;
+        bottom: 10%;
         left: 5%;
         z-index: 3;
-        max-width: 650px;
+        max-width: 800px;
     }
     .table-btn {
         width: 60px;
@@ -394,12 +394,12 @@ require_once 'header.php';
     <?php endforeach; ?>
     <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 320px; background: linear-gradient(to top, #131313 0%, rgba(19, 19, 19, 0.85) 45%, rgba(19, 19, 19, 0.3) 75%, transparent 100%); pointer-events: none; z-index: 2;"></div>
     <div class="hero-content">
-        <span class="font-anton text-warning text-uppercase tracking-wider fs-6 d-block mb-2">[ <?php echo t("TAPROOM EXPERIENCE", "ค่ำคืนพิเศษกับแท็ปเบียร์คัดสรร"); ?> ]</span>
-        <h1 class="font-anton text-light text-uppercase tracking-wide display-3 lh-1 mb-3">
+        <span class="font-anton text-warning text-uppercase tracking-wider d-block mb-3" style="font-size: 1.25rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">[ <?php echo t("TAPROOM EXPERIENCE", "ค่ำคืนพิเศษกับแท็ปเบียร์คัดสรร"); ?> ]</span>
+        <h1 class="font-anton text-light text-uppercase tracking-wide fw-bold lh-1 mb-3" style="font-size: clamp(3.2rem, 6vw, 4.8rem); text-shadow: 0 4px 15px rgba(0,0,0,0.9);">
             <?php echo t("Reserve", "จองโต๊ะ"); ?><br>
             <span class="text-warning"><?php echo t("Your spot", "ที่นั่งของคุณ"); ?></span>
         </h1>
-        <p class="text-secondary fs-5">
+        <p class="text-light text-opacity-90 lh-base mb-0" style="font-size: 1.35rem; max-width: 720px; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">
             <?php echo t("Secure your seat under Chiang Mai's nocturnal sky. Enjoy fresh Original Thai Craft Beer, live music, and warm friendly vibes all night long.", "ล็อกมุมโปรดใต้แสงดาวเชียงใหม่ ดื่มด่ำ Original Thai Craft Beer สดใหม่หลากสไตล์ เคล้าเสียงดนตรีสดและบรรยากาศเป็นกันเองตลอดค่ำคืน"); ?>
         </p>
     </div>
