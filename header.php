@@ -50,10 +50,16 @@ function is_active($page) {
     <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Pridi:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
     
     <style>
-        html, body {
+        html {
             margin: 0 !important;
             padding: 0 !important;
-            background-color: #131313;
+            background-color: #131313 !important;
+            overscroll-behavior-y: none;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #131313 !important;
             color: #e5e2e1;
             font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
             overflow-x: hidden;
