@@ -488,7 +488,7 @@ require_once 'header.php';
                     <?php endforeach; ?>
                 </div>
 
-                <div class="text-secondary small">
+                <div class="text-light text-opacity-90 small">
                     * <?php echo t("Please select Date and Time Slot first to see live availability status.", "กรุณาเลือกวันที่และเวลาจองเพื่ออัปเดตสถานะความว่างของโต๊ะแบบเรียลไทม์"); ?>
                 </div>
             </div>

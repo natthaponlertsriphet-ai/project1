@@ -241,7 +241,7 @@ function is_active($page) {
                 </div>
                 <div class="d-flex flex-column">
                     <span class="font-anton text-warning text-uppercase tracking-wider fs-4 lh-1">CHIT HOLE CNX</span>
-                    <span class="text-uppercase text-secondary tracking-widest" style="font-size: 9px; font-weight: bold;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์ชิตโฮลเชียงใหม่"); ?></span>
+                    <span class="text-uppercase text-light text-opacity-90 tracking-widest" style="font-size: 9px; font-weight: bold;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์ชิตโฮลเชียงใหม่"); ?></span>
                 </div>
             </a>
             
