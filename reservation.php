@@ -390,6 +390,16 @@ require_once 'header.php';
     #search-query-input {
         color: #ffffff !important;
     }
+
+    /* Premium Toast Notification Keyframes */
+    @keyframes toastSlideDown {
+        from { transform: translate(-50%, -25px); opacity: 0; scale: 0.95; }
+        to { transform: translate(-50%, 0); opacity: 1; scale: 1; }
+    }
+    @keyframes toastSlideUp {
+        from { transform: translate(-50%, 0); opacity: 1; scale: 1; }
+        to { transform: translate(-50%, -20px); opacity: 0; scale: 0.95; }
+    }
 </style>
 
 <!-- Hero Slider Section -->
@@ -706,12 +716,61 @@ require_once 'header.php';
         }, 4500);
     }
 
-    // 2. Select Table Handler
+    // 2. Premium Dark Glass Toast Notification Engine
+    function showPremiumNotice(title, message, iconName = 'event_busy') {
+        let existing = document.getElementById('premium-custom-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'premium-custom-toast';
+        toast.className = 'position-fixed start-50 translate-middle-x rounded-3 shadow-lg font-sans';
+        toast.style.cssText = `
+            top: 100px;
+            min-width: 340px;
+            max-width: 90vw;
+            background: rgba(22, 10, 14, 0.94);
+            border: 1px solid rgba(220, 53, 69, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.85), 0 0 25px rgba(220, 53, 69, 0.25);
+            color: #ffffff;
+            animation: toastSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10000;
+            padding: 14px 18px;
+        `;
+
+        toast.innerHTML = `
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-danger bg-opacity-20 p-2 d-flex align-items-center justify-content-center text-danger flex-shrink-0" style="width: 40px; height: 40px; border: 1px solid rgba(220, 53, 69, 0.3);">
+                    <span class="material-symbols-outlined fs-5">${iconName}</span>
+                </div>
+                <div class="flex-grow-1 me-2">
+                    <div class="font-anton text-danger text-uppercase tracking-wider fs-6 mb-0.5" style="letter-spacing: 0.05em;">${title}</div>
+                    <div class="text-light text-opacity-90 small lh-sm" style="font-size: 13px;">${message}</div>
+                </div>
+                <button type="button" class="btn-close btn-close-white opacity-75 hover-opacity-100 ms-auto" onclick="this.parentElement.parentElement.remove()" style="font-size: 11px;"></button>
+            </div>
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.style.animation = 'toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+            }
+        }, 4500);
+    }
+
+    // 3. Select Table Handler
     let selectedTableBtn = null;
     
     function selectTable(element) {
         if (element.classList.contains('table-reserved')) {
-            alert("<?php echo t('Sorry, this table is already booked for this slot!', 'ขออภัย โต๊ะนี้ไม่ว่างในรอบเวลาที่คุณเลือก!'); ?>");
+            const tableNum = element.getAttribute('data-number') || '';
+            const title = "<?php echo t('TABLE UNAVAILABLE', 'โต๊ะนี้ไม่ว่างในรอบเวลานี้'); ?>";
+            const msg = "<?php echo t('Sorry, Table ', 'ขออภัย โต๊ะ '); ?>" + tableNum + " <?php echo t('is already booked for your selected time slot! Please choose another table or change date/time.', 'ไม่ว่างในรอบเวลาที่คุณเลือก! กรุณาเลือกโต๊ะอื่นหรือเปลี่ยนรอบเวลาจอง'); ?>";
+            showPremiumNotice(title, msg, 'event_busy');
             return;
         }
         
