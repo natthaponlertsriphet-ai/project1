@@ -132,20 +132,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600 !important;
         }
 
-        .pearl-glow-btn {
-            background: linear-gradient(135deg, #fdfbf7 0%, #e2ded4 100%);
-            color: #18181b;
+        .pearl-text-btn {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #fdfbf7 !important;
+            font-weight: 700;
+            border: 1px solid rgba(253, 251, 247, 0.4);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        .pearl-glow-btn:hover {
-            background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
-            box-shadow: 0 0 25px rgba(253, 251, 247, 0.5);
-            color: #09090b;
+        .pearl-text-btn:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #ffffff !important;
+            box-shadow: 0 0 25px rgba(253, 251, 247, 0.6), 0 0 15px rgba(245, 158, 11, 0.5);
             transform: translateY(-1px);
         }
-        .pearl-glow-btn:active {
+        .pearl-text-btn active {
             transform: translateY(0);
+        }
+        .pearl-text-btn span {
+            color: #fdfbf7 !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
 
         .glass-login-card {
@@ -361,7 +367,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="pearl-glow-btn w-full mt-3 py-3 px-4 rounded-xl font-anton text-sm uppercase tracking-wider font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+            <button type="submit" class="pearl-text-btn w-full mt-3 py-3 px-4 rounded-xl font-anton text-sm uppercase tracking-wider font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer">
                 <span class="material-symbols-outlined text-lg">login</span>
                 <span><?php echo t("Sign In to Dashboard", "เข้าสู่ระบบหลังบ้าน"); ?></span>
             </button>
