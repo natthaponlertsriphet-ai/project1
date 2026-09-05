@@ -71,13 +71,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     exit;
 }
 
-// Retrieve flash feedback
-$success = $_SESSION['action_success'] ?? null;
-$error = $_SESSION['action_error'] ?? null;
-unset($_SESSION['action_success'], $_SESSION['action_error']);
-
-require_once 'admin_header.php';
-
 // Form inputs state variables
 $is_editing = false;
 $edit_id = '';
@@ -86,6 +79,61 @@ $name = '';
 $type = '';
 $abv = '';
 $active = 1;
+
+// Handle POST submissions (Create/Update)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $tap_number = trim($_POST['tap_number'] ?? '');
+    $name = trim($_POST['name'] ?? '');
+    $type = trim($_POST['type'] ?? '');
+    $abv = trim($_POST['abv'] ?? '');
+    $active = isset($_POST['active']) ? 1 : 0;
+    
+    if (!$tap_number || !$name || !$type || !$abv) {
+        $_SESSION['action_error'] = t("Please fill in all required fields.", "กรุณากรอกข้อมูลให้ครบถ้วนทุกช่อง");
+    } else {
+        if ($_POST['action'] === 'create_beer') {
+            try {
+                // Check duplicate tap number
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu WHERE tap_number = ?");
+                $stmt->execute([$tap_number]);
+                if ($stmt->fetchColumn() > 0) {
+                    $_SESSION['action_error'] = t("This Tap Number already exists.", "หมายเลขแท็ปนี้มีในระบบแล้ว");
+                } else {
+                    $id = 'beer_' . uniqid();
+                    $stmt = $pdo->prepare("INSERT INTO menu (menu_id, tap_number, menu_name, beer_type, abv, is_active) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$id, $tap_number, $name, $type, $abv, $active]);
+                    
+                    $_SESSION['action_success'] = t("Beer tap registered successfully!", "เพิ่มข้อมูลแท็ปเบียร์สำเร็จ!");
+                    header("Location: beers.php");
+                    exit;
+                }
+            } catch (Exception $e) {
+                $_SESSION['action_error'] = "Error: " . $e->getMessage();
+            }
+        } elseif ($_POST['action'] === 'update_beer') {
+            $id = $_POST['edit_id'] ?? '';
+            try {
+                // Check duplicate tap number (excluding itself)
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu WHERE tap_number = ? AND menu_id != ?");
+                $stmt->execute([$tap_number, $id]);
+                if ($stmt->fetchColumn() > 0) {
+                    $_SESSION['action_error'] = t("This Tap Number is already in use by another beer.", "หมายเลขแท็ปนี้ถูกใช้งานโดยรายการอื่นแล้ว");
+                } else {
+                    $stmt = $pdo->prepare("UPDATE menu SET tap_number = ?, menu_name = ?, beer_type = ?, abv = ?, is_active = ? WHERE menu_id = ?");
+                    $stmt->execute([$tap_number, $name, $type, $abv, $active, $id]);
+                    
+                    $_SESSION['action_success'] = t("Beer tap configuration updated!", "แก้ไขข้อมูลแท็ปเบียร์สำเร็จ!");
+                    header("Location: beers.php");
+                    exit;
+                }
+            } catch (Exception $e) {
+                $_SESSION['action_error'] = "Error: " . $e->getMessage();
+            }
+        }
+    }
+    header("Location: beers.php" . (isset($_POST['edit_id']) ? "?action=edit&id=" . urlencode($_POST['edit_id']) : ""));
+    exit;
+}
 
 // Handle GET edit details loader
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
@@ -104,58 +152,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) 
     }
 }
 
-// Handle POST submissions (Create/Update)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $tap_number = trim($_POST['tap_number'] ?? '');
-    $name = trim($_POST['name'] ?? '');
-    $type = trim($_POST['type'] ?? '');
-    $abv = trim($_POST['abv'] ?? '');
-    $active = isset($_POST['active']) ? 1 : 0;
-    
-    if (!$tap_number || !$name || !$type || !$abv) {
-        $error = "Please fill in all required fields.";
-    } else {
-        if ($_POST['action'] === 'create_beer') {
-            try {
-                // Check duplicate tap number
-                $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu WHERE tap_number = ?");
-                $stmt->execute([$tap_number]);
-                if ($stmt->fetchColumn() > 0) {
-                    $error = "This Tap Number already exists.";
-                } else {
-                    $id = 'beer_' . uniqid();
-                    $stmt = $pdo->prepare("INSERT INTO menu (menu_id, tap_number, menu_name, beer_type, abv, is_active) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$id, $tap_number, $name, $type, $abv, $active]);
-                    
-                    $_SESSION['action_success'] = t("Beer tap registered successfully!", "เพิ่มข้อมูลแท็ปเบียร์สำเร็จ!");
-                    header("Location: beers.php");
-                    exit;
-                }
-            } catch (Exception $e) {
-                $error = "Error: " . $e->getMessage();
-            }
-        } elseif ($_POST['action'] === 'update_beer') {
-            $id = $_POST['edit_id'];
-            try {
-                // Check duplicate tap number (excluding itself)
-                $stmt = $pdo->prepare("SELECT COUNT(*) FROM menu WHERE tap_number = ? AND menu_id != ?");
-                $stmt->execute([$tap_number, $id]);
-                if ($stmt->fetchColumn() > 0) {
-                    $error = "This Tap Number is already in use by another beer.";
-                } else {
-                    $stmt = $pdo->prepare("UPDATE menu SET tap_number = ?, menu_name = ?, beer_type = ?, abv = ?, is_active = ? WHERE menu_id = ?");
-                    $stmt->execute([$tap_number, $name, $type, $abv, $active, $id]);
-                    
-                    $_SESSION['action_success'] = t("Beer tap configuration updated!", "แก้ไขข้อมูลแท็ปเบียร์สำเร็จ!");
-                    header("Location: beers.php");
-                    exit;
-                }
-            } catch (Exception $e) {
-                $error = "Error: " . $e->getMessage();
-            }
-        }
-    }
-}
+// Retrieve flash feedback
+$success = $_SESSION['action_success'] ?? null;
+$error = $_SESSION['action_error'] ?? null;
+unset($_SESSION['action_success'], $_SESSION['action_error']);
+
+require_once 'admin_header.php';
 
 // Fetch all beers
 $stmt = $pdo->query("SELECT menu_id AS id, tap_number, menu_name AS name, beer_type AS type, abv, is_active AS active FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
