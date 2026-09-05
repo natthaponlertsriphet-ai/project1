@@ -172,14 +172,16 @@ $all_beers = $stmt->fetchAll();
 </div>
 
 <?php if ($success): ?>
-    <div class="bg-zinc-900 border border-zinc-800 text-zinc-300 p-3 rounded-md text-xs font-mono mb-6 uppercase">
-        [SUCCESS]: <?php echo $success; ?>
+    <div class="bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 p-3.5 rounded-lg text-xs font-mono mb-6 flex items-center gap-2.5 shadow-lg shadow-emerald-950/30">
+        <span class="material-symbols-outlined text-emerald-400 text-base leading-none">check_circle</span>
+        <span>[SUCCESS]: <?php echo $success; ?></span>
     </div>
 <?php endif; ?>
 
 <?php if ($error): ?>
-    <div class="bg-zinc-900 border border-zinc-800 text-red-300 p-3 rounded-md text-xs font-mono mb-6 uppercase">
-        [ERROR]: <?php echo $error; ?>
+    <div class="bg-red-950/40 border border-red-500/40 text-red-300 p-3.5 rounded-lg text-xs font-mono mb-6 flex items-center gap-2.5 shadow-lg shadow-red-950/30">
+        <span class="material-symbols-outlined text-red-400 text-base leading-none">error</span>
+        <span>[ERROR]: <?php echo $error; ?></span>
     </div>
 <?php endif; ?>
 
