@@ -1,15 +1,18 @@
 <?php
 require_once 'db.php';
 
-// AJAX Request to fetch live beer availability statuses
+// AJAX Request to fetch full live beer list for real-time board updates
 if (isset($_GET['action']) && $_GET['action'] === 'get_beers_status') {
     header('Content-Type: application/json');
     try {
-        $stmt = $pdo->query("SELECT menu_id, tap_number, is_active FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
-        $beers_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($beers_status);
+        $stmt = $pdo->query("SELECT menu_id, tap_number, menu_name, beer_type, abv, is_active FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
+        $beers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode([
+            'success' => true,
+            'beers' => $beers
+        ]);
     } catch (Exception $e) {
-        echo json_encode([]);
+        echo json_encode(['success' => false, 'beers' => []]);
     }
     exit;
 }
@@ -149,7 +152,7 @@ require_once 'header.php';
                                 <th class="py-3 px-3" style="width: 15%;"><?php echo t("ABV", "แอลกอฮอล์"); ?></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="beer-table-body">
                             <?php if (empty($beers)): ?>
                                 <tr>
                                     <td colspan="4" class="text-center py-5 text-secondary">
@@ -195,56 +198,91 @@ require_once 'header.php';
 </div>
 
 <script>
-    // Real-Time Draft Beer Status Polling (every 5 seconds)
-    function updateBeerStatus() {
+    // Real-Time Draft Beer Menu Synchronization Engine (1.5s live polling)
+    let previousBeersHash = '';
+
+    function syncLiveBeerList() {
         fetch('tap-list.php?action=get_beers_status')
             .then(res => res.json())
-            .then(beers => {
-                let activeTapsCount = 0;
+            .then(data => {
+                if (!data.success || !Array.isArray(data.beers)) return;
                 
-                beers.forEach(beer => {
-                    const row = document.getElementById(`beer-row-${beer.menu_id}`);
-                    if (!row) return;
-                    
-                    const nameContainer = row.querySelector('.beer-name-container');
-                    const isActive = parseInt(beer.is_active) === 1;
-                    
-                    if (isActive) {
-                        activeTapsCount++;
-                        // Reset row opacity
-                        row.classList.remove('opacity-40', 'select-none');
-                        // Remove SOLD OUT badge if exists
-                        const badge = nameContainer.querySelector('.soldout-badge');
-                        if (badge) {
-                            badge.remove();
-                        }
-                    } else {
-                        // Apply sold out styles
-                        row.classList.add('opacity-40', 'select-none');
-                        // Append SOLD OUT badge if not exists
-                        let badge = nameContainer.querySelector('.soldout-badge');
-                        if (!badge) {
-                            badge = document.createElement('span');
-                            badge.className = 'badge bg-danger text-light font-anton text-uppercase px-2 py-0.5 tracking-wider soldout-badge';
-                            badge.style.fontSize = '8.5px';
-                            badge.innerText = "<?php echo t('SOLD OUT', 'หมดแล้ว'); ?>";
-                            nameContainer.appendChild(badge);
-                        }
-                    }
-                });
+                const beers = data.beers;
+                const currentHash = JSON.stringify(beers);
                 
-                // Update live stat count badge
+                // Skip DOM update if data has not changed
+                if (currentHash === previousBeersHash) return;
+                previousBeersHash = currentHash;
+
+                const tbody = document.getElementById('beer-table-body');
                 const countBadge = document.getElementById('active-taps-count');
+                if (!tbody) return;
+
+                let activeTapsCount = 0;
+                let html = '';
+
+                if (beers.length === 0) {
+                    html = `
+                        <tr>
+                            <td colspan="4" class="text-center py-5 text-secondary">
+                                <?php echo t("No active beers on tap right now.", "ขณะนี้ไม่มีเบียร์เปิดบริการบนแท็ปบอร์ด"); ?>
+                            </td>
+                        </tr>`;
+                } else {
+                    beers.forEach(b => {
+                        const isActive = parseInt(b.is_active) === 1;
+                        if (isActive) activeTapsCount++;
+
+                        const formattedTap = String(b.tap_number).padStart(2, '0');
+                        const rowClass = isActive ? '' : 'opacity-40 select-none';
+                        const soldoutBadge = isActive ? '' : `<span class="badge bg-danger text-light font-anton text-uppercase px-2 py-0.5 tracking-wider soldout-badge" style="font-size: 8.5px;"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>`;
+
+                        html += `
+                            <tr id="beer-row-${b.menu_id}" class="tap-row border-bottom border-secondary border-opacity-10 ${rowClass}">
+                                <td class="py-4 px-3 font-anton text-warning fs-5">
+                                    ${formattedTap}
+                                </td>
+                                <td class="py-4 px-3 text-secondary font-sans font-bold fs-6 text-uppercase">
+                                    ${escapeHtml(b.beer_type)}
+                                </td>
+                                <td class="py-4 px-3">
+                                    <div class="d-flex flex-column">
+                                        <div class="d-flex align-items-center gap-2 beer-name-container">
+                                            <span class="text-light font-anton text-uppercase fs-6 tracking-wide">${escapeHtml(b.menu_name)}</span>
+                                            ${soldoutBadge}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-3 font-anton text-light fs-5">
+                                    ${escapeHtml(b.abv)}
+                                </td>
+                            </tr>`;
+                    });
+                }
+
+                tbody.innerHTML = html;
+
                 if (countBadge) {
                     countBadge.innerText = String(activeTapsCount).padStart(2, '0');
                 }
             })
-            .catch(err => console.error("Error fetching live status:", err));
+            .catch(err => console.error("Error syncing live beer list:", err));
     }
-    
-    // Start polling loop
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Start 1.5s real-time sync loop
     window.addEventListener('load', () => {
-        setInterval(updateBeerStatus, 5000);
+        syncLiveBeerList();
+        setInterval(syncLiveBeerList, 1500);
     });
 </script>
 
