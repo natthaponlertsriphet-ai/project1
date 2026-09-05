@@ -100,13 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Tailwind CSS v4 Browser Compiler -->
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     
-    <!-- Custom theme variables & Utilities -->
-    <style type="tailwindcss">
-        @theme {
-            --font-sans: 'Rockwell', 'Pridi', 'Arvo', serif;
-            --font-anton: 'Rockwell', 'Pridi', 'Arvo', serif;
-        }
-
+    <!-- Standard CSS Styles -->
+    <style>
         body {
             background-color: #09090b;
             color: #fafafa;
@@ -132,33 +127,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600 !important;
         }
 
-        .pearl-text-btn {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: #fdfbf7 !important;
-            font-weight: 700;
-            border: 1px solid rgba(253, 251, 247, 0.4);
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        .pearl-white-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f4efe6 100%) !important;
+            color: #111113 !important;
+            border: 1px solid #ffffff !important;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4), 0 0 25px rgba(244, 239, 230, 0.3) !important;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
-        .pearl-text-btn:hover {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #ffffff !important;
-            box-shadow: 0 0 25px rgba(253, 251, 247, 0.6), 0 0 15px rgba(245, 158, 11, 0.5);
-            transform: translateY(-1px);
+        .pearl-white-btn:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%) !important;
+            color: #000000 !important;
+            box-shadow: 0 0 35px rgba(255, 255, 255, 0.85), 0 0 15px rgba(255, 255, 255, 0.6) !important;
+            transform: translateY(-2px) !important;
         }
-        .pearl-text-btn active {
-            transform: translateY(0);
+        .pearl-white-btn:active {
+            transform: translateY(0) !important;
         }
-        .pearl-text-btn span {
-            color: #fdfbf7 !important;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        .pearl-white-btn span {
+            color: #111113 !important;
+            font-weight: 700 !important;
         }
 
         .glass-login-card {
-            background: rgba(18, 18, 22, 0.85);
+            background: rgba(18, 18, 22, 0.88);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 0, 0, 0.5);
         }
 
@@ -305,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Central Glassmorphism Login Card -->
-    <div class="relative z-10 w-full max-w-md glass-login-card rounded-2xl p-6 sm:p-8 flex flex-col gap-6 relative overflow-hidden my-12">
+    <div class="relative z-10 w-full max-w-md glass-login-card rounded-2xl p-6 sm:p-8 flex flex-col gap-6 overflow-hidden my-12">
         
         <!-- Glowing Top Accent Line -->
         <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500/20 via-amber-400 to-amber-500/20"></div>
@@ -366,10 +360,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="pearl-text-btn w-full mt-3 py-3 px-4 rounded-xl font-anton text-sm uppercase tracking-wider font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer">
-                <span class="material-symbols-outlined text-lg">login</span>
-                <span><?php echo t("Sign In to Dashboard", "เข้าสู่ระบบหลังบ้าน"); ?></span>
+            <!-- Submit Button (Pearl White Gradient Background with Clear Dark Text) -->
+            <button type="submit" class="pearl-white-btn w-full mt-3 py-3.5 px-4 rounded-xl font-anton text-sm uppercase tracking-wider font-bold flex items-center justify-center gap-2 cursor-pointer" style="background: linear-gradient(135deg, #ffffff 0%, #f4efe6 100%) !important; color: #111113 !important; border: 1px solid #ffffff !important; box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4), 0 0 25px rgba(244, 239, 230, 0.3) !important;">
+                <span class="material-symbols-outlined text-lg" style="color: #111113 !important;">login</span>
+                <span style="color: #111113 !important; font-weight: 700 !important;"><?php echo t("Sign In to Dashboard", "เข้าสู่ระบบหลังบ้าน"); ?></span>
             </button>
         </form>
 
