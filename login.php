@@ -132,17 +132,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600 !important;
         }
 
-        .gold-glow-btn {
-            background: linear-gradient(135deg, #ffd782 0%, #e6b84d 100%);
-            color: #211500;
+        .pearl-glow-btn {
+            background: linear-gradient(135deg, #fdfbf7 0%, #e2ded4 100%);
+            color: #18181b;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        .gold-glow-btn:hover {
-            background: linear-gradient(135deg, #fff2ce 0%, #ffd782 100%);
-            box-shadow: 0 0 25px rgba(255, 215, 130, 0.45);
+        .pearl-glow-btn:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
+            box-shadow: 0 0 25px rgba(253, 251, 247, 0.5);
+            color: #09090b;
             transform: translateY(-1px);
         }
-        .gold-glow-btn:active {
+        .pearl-glow-btn:active {
             transform: translateY(0);
         }
 
@@ -359,7 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="gold-glow-btn w-full mt-3 py-3 px-4 rounded-xl font-anton text-sm uppercase tracking-wider font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+            <button type="submit" class="pearl-glow-btn w-full mt-3 py-3 px-4 rounded-xl font-anton text-sm uppercase tracking-wider font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer">
                 <span class="material-symbols-outlined text-lg">login</span>
                 <span><?php echo t("Sign In to Dashboard", "เข้าสู่ระบบหลังบ้าน"); ?></span>
             </button>
