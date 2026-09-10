@@ -118,13 +118,13 @@ require_once 'header.php';
                 <div class="live-dot-core"></div>
                 <div class="live-dot-ring"></div>
             </div>
-            <span class="live-status-text"><?php echo t("Promotions List", "รายการโปรโมชั่น"); ?></span>
+            <span class="live-status-text"><?php echo t("Promotions List", "รายการโปรโมชัน"); ?></span>
         </div>
         <span class="font-mono text-warning mb-2 d-block tracking-widest text-uppercase" style="font-size: 11px; font-weight: bold;">
             <?php echo t("Chit Hole Experiences", "ชิตโฮล ประสบการณ์พิเศษ"); ?>
         </span>
         <h1 class="font-anton text-light text-uppercase display-3 leading-none m-0">
-            <?php echo t("Promotions", "โปรโมชั่น"); ?>
+            <?php echo t("Promotions", "รายการโปรโมชัน"); ?>
         </h1>
         <p class="mt-4 text-secondary fs-5 m-0" style="max-width: 600px;">
             <?php echo t(

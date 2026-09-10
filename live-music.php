@@ -271,7 +271,7 @@ require_once 'header.php';
             <span class="live-status-text"><?php echo t("LIVE SESSIONS TIMETABLE", "ตารางการแสดงดนตรีสด"); ?></span>
         </div>
         <h1 class="font-anton text-light text-uppercase tracking-wide display-4 mb-3 lh-1">
-            <?php echo t("Stage Lineup", "ตารางดนตรีสด"); ?>
+            <?php echo t("Stage Lineup", "ตารางเวลาการแสดงดนตรีสด"); ?>
         </h1>
         <p class="text-secondary fs-5 max-width-md m-0">
             <?php echo t(
