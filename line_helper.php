@@ -5,7 +5,8 @@ require_once __DIR__ . '/config_line.php';
  * Sends a raw LINE Push Message to a specific LINE user ID.
  */
 function sendLinePushMessage($to, $messages) {
-    if (LINE_CHANNEL_ACCESS_TOKEN === 'YOUR_CHANNEL_ACCESS_TOKEN_HERE' || empty($to)) {
+    if (empty(LINE_CHANNEL_ACCESS_TOKEN) || $to === '' || empty($to)) {
+        error_log("LINE Push Message skipped: missing access token or recipient");
         return false;
     }
 
@@ -26,7 +27,12 @@ function sendLinePushMessage($to, $messages) {
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
     curl_close($ch);
+
+    if ($httpCode !== 200) {
+        error_log("LINE Push Message failed (HTTP $httpCode): " . $response . " | Curl error: " . $curlError);
+    }
 
     return ($httpCode === 200);
 }
@@ -61,9 +67,12 @@ function notifyAdminNewBooking($booking) {
 
     $altText = "🆕 มีคิวจองโต๊ะใหม่เข้ามาจากคุณ " . $name;
 
-    // Detect server host dynamically (supports ngrok, localtunnel, localhost, etc.)
-    $host = $_SERVER['HTTP_HOST'] ?? 'width-visibly-revisit.ngrok-free.dev';
-    $protocol = (strpos($host, 'localhost') !== false) ? 'http://' : 'https://';
+    // Detect server host dynamically (supports chitholecnx.me, Render, ngrok, localhost, etc.)
+    $host = $_SERVER['HTTP_HOST'] ?? 'chitholecnx.me';
+    $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+               (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+               (strpos($host, 'localhost') === false);
+    $protocol = $isHttps ? 'https://' : 'http://';
     $logoUrl = $protocol . $host . '/images/logo/755221157_122278964708129427_8713818424547983601_n.jpg';
     $adminUrl = $protocol . $host . '/admin/index.php';
 
