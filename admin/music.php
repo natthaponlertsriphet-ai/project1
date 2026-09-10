@@ -194,9 +194,9 @@ if (is_dir($gallery_dir)) {
     
     <!-- Left Column: Add/Edit Lineup Form -->
     <div class="lg:col-span-4">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">music_video</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">music_video</span>
                 <span><?php echo $is_editing ? t("Edit Performance", "แก้ไขข้อมูลวงดนตรี") : t("Register Performance", "เพิ่มวงดนตรีใหม่"); ?></span>
             </h3>
             
@@ -207,8 +207,11 @@ if (is_dir($gallery_dir)) {
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Day", "วันแสดง"); ?></label>
-                    <select name="day" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select the live performance day.', '⚠️ กรุณาระบุวันแสดงดนตรีสด'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">calendar_today</span>
+                        <span><?php echo t("Day", "วันแสดง"); ?></span>
+                    </label>
+                    <select name="day" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select the live performance day.', '⚠️ กรุณาระบุวันแสดงดนตรีสด'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 focus:border-amber-400">
                         <?php foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $d): ?>
                             <option value="<?php echo $d; ?>" <?php echo $day === $d ? 'selected' : ''; ?>>
                                 <?php echo t($d, $d); ?>
@@ -218,23 +221,33 @@ if (is_dir($gallery_dir)) {
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Time Slot", "ช่วงเวลาโชว์"); ?></label>
-                    <input type="text" name="time" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the performance time slot.', '⚠️ กรุณาระบุช่วงเวลาการแสดงดนตรีสด'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 19:30 - 20:30" class="shadcn-input" value="<?php echo htmlspecialchars($time); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">schedule</span>
+                        <span><?php echo t("Time Slot", "ช่วงเวลาโชว์"); ?></span>
+                    </label>
+                    <input type="text" name="time" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the performance time slot.', '⚠️ กรุณาระบุช่วงเวลาการแสดงดนตรีสด'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 19:30 - 20:30" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($time); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Band / Artist", "ชื่อวงดนตรี / ศิลปิน"); ?></label>
-                    <input type="text" name="artist" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the band or artist name.', '⚠️ กรุณาระบุชื่อวงดนตรีหรือศิลปินผู้แสดง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Band Name" class="shadcn-input" value="<?php echo htmlspecialchars($artist); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">mic</span>
+                        <span><?php echo t("Band / Artist", "ชื่อวงดนตรี / ศิลปิน"); ?></span>
+                    </label>
+                    <input type="text" name="artist" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the band or artist name.', '⚠️ กรุณาระบุชื่อวงดนตรีหรือศิลปินผู้แสดง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Band Name" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($artist); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Genre Description", "แนวเพลงหรือคำบรรยาย"); ?></label>
-                    <textarea name="description" placeholder="Acoustic session..." class="shadcn-input min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">queue_music</span>
+                        <span><?php echo t("Genre Description", "แนวเพลงหรือคำบรรยาย"); ?></span>
+                    </label>
+                    <textarea name="description" placeholder="Acoustic session..." class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
                 </div>
 
-                <div class="flex gap-2 mt-2">
-                    <button type="submit" class="shadcn-btn-primary flex-grow">
-                        <?php echo $is_editing ? t("Update Lineup", "อัปเดตตารางโชว์") : t("Register Lineup", "บันทึกตารางโชว์"); ?>
+                <div class="flex gap-2 mt-4">
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        <span><?php echo $is_editing ? t("Update Lineup", "อัปเดตตารางโชว์") : t("Register Lineup", "บันทึกตารางโชว์"); ?></span>
                     </button>
                     <?php if ($is_editing): ?>
                         <a href="music.php" class="shadcn-btn-outline"><?php echo t("Cancel", "ยกเลิก"); ?></a>
