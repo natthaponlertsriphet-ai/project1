@@ -32,8 +32,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'search_booking') {
                 FROM reservation b 
                 LEFT JOIN `table` t ON b.table_id = t.table_id 
                 WHERE (b.reservation_id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ?)
-                  AND b.reservation_date >= ?
-                ORDER BY b.created_at DESC
+                  AND b.reservation_date = ?
+                ORDER BY b.created_at DESC, b.reservation_time DESC
             ");
             $like_query = "%" . $search_query . "%";
             $stmt->execute([$like_query, $like_query, $like_query, $today]);
@@ -91,15 +91,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'ajax_search_booking') {
     }
     
     try {
+        $today = date('Y-m-d');
         $stmt = $pdo->prepare("
             SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, t.table_number, t.zone AS table_zone 
             FROM reservation b 
             LEFT JOIN `table` t ON b.table_id = t.table_id 
             WHERE (b.reservation_id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ?)
-            ORDER BY b.created_at DESC
+              AND b.reservation_date = ?
+            ORDER BY b.created_at DESC, b.reservation_time DESC
         ");
         $like_query = "%" . $q . "%";
-        $stmt->execute([$like_query, $like_query, $like_query]);
+        $stmt->execute([$like_query, $like_query, $like_query, $today]);
         $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode([
