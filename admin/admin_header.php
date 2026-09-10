@@ -47,8 +47,8 @@ if (!function_exists('getLangUrl')) {
 function is_admin_active($page) {
     global $current_admin_page;
     return ($current_admin_page === $page) 
-        ? 'bg-zinc-800 text-zinc-50 font-medium' 
-        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/60';
+        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold shadow-sm' 
+        : 'text-zinc-300 hover:text-white hover:bg-zinc-800/80';
 }
 ?>
 <!DOCTYPE html>
@@ -368,55 +368,55 @@ function is_admin_active($page) {
 <body class="h-full bg-zinc-950 text-zinc-50">
 
     <!-- Sidebar Layout -->
-    <div class="w-full md:w-64 md:fixed md:top-0 md:left-0 md:bottom-0 border-b md:border-b-0 md:border-r border-zinc-900 flex flex-col justify-between p-4 bg-zinc-950 z-40">
+    <div class="w-full md:w-64 md:fixed md:top-0 md:left-0 md:bottom-0 border-b md:border-b-0 md:border-r border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 flex flex-col justify-between p-4 z-40 backdrop-blur-md">
         <div>
             <!-- Header Brand logo -->
-            <div class="px-3 mb-6 pb-4 border-b border-zinc-900 flex items-center gap-3">
-                <div class="rounded-lg overflow-hidden border border-warning shadow-md bg-zinc-950 flex items-center justify-content-center" style="width: 38px; height: 38px;">
+            <div class="px-3 mb-6 pb-4 border-b border-zinc-800 flex items-center gap-3">
+                <div class="rounded-lg overflow-hidden border border-amber-400 shadow-md shadow-amber-500/20 bg-zinc-950 flex items-center justify-center shrink-0" style="width: 38px; height: 38px;">
                     <img src="../images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" class="w-full h-full object-cover">
                 </div>
                 <div class="flex flex-col">
-                    <span class="font-anton text-warning text-uppercase tracking-wider text-lg leading-none">CHIT HOLE CNX</span>
-                    <span class="text-uppercase text-zinc-500 tracking-widest font-mono mt-1" style="font-size: 8px; font-weight: bold;"><?php echo t("ADMIN PANEL", "ผู้จัดการหลังบ้าน"); ?></span>
+                    <span class="font-anton text-amber-400 uppercase tracking-wider text-lg leading-none">CHIT HOLE CNX</span>
+                    <span class="uppercase text-zinc-300 tracking-widest font-mono mt-1 font-bold text-[9px]"><?php echo t("ADMIN PANEL", "ผู้จัดการหลังบ้าน"); ?></span>
                 </div>
             </div>
             
             <!-- Sidebar Navigation Links -->
-            <ul class="flex flex-col gap-1 font-sans text-sm">
+            <ul class="flex flex-col gap-1.5 font-sans text-sm">
                 <li>
-                    <a class="py-2 px-3 rounded-md flex items-center gap-3 transition-colors <?php echo is_admin_active('index.php'); ?>" href="index.php">
-                        <span class="material-symbols-outlined text-lg leading-none"><?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'assignment' : 'dashboard'; ?></span>
+                    <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('index.php'); ?>" href="index.php">
+                        <span class="material-symbols-outlined text-lg leading-none text-amber-400"><?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'assignment' : 'dashboard'; ?></span>
                         <span><?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? t("Manage Queue", "จัดการคิวจองโต๊ะ") : t("Dashboard", "หน้าหลักแดชบอร์ด"); ?></span>
                     </a>
                 </li>
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
                 <li>
-                    <a class="py-2 px-3 rounded-md flex items-center gap-3 transition-colors <?php echo is_admin_active('beers.php'); ?>" href="beers.php">
-                        <span class="material-symbols-outlined text-lg leading-none">sports_bar</span>
+                    <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('beers.php'); ?>" href="beers.php">
+                        <span class="material-symbols-outlined text-lg leading-none text-amber-400">sports_bar</span>
                         <span><?php echo t("Draft Beers", "จัดการข้อมูลรายการเครื่องดื่ม"); ?></span>
                     </a>
                 </li>
                 <li>
-                    <a class="py-2 px-3 rounded-md flex items-center gap-3 transition-colors <?php echo is_admin_active('music.php'); ?>" href="music.php">
-                        <span class="material-symbols-outlined text-lg leading-none">music_note</span>
+                    <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('music.php'); ?>" href="music.php">
+                        <span class="material-symbols-outlined text-lg leading-none text-amber-400">music_note</span>
                         <span><?php echo t("Live Schedule", "จัดการตารางเวลาการแสดงดนตรีสด"); ?></span>
                     </a>
                 </li>
                 <li>
-                    <a class="py-2 px-3 rounded-md flex items-center gap-3 transition-colors <?php echo is_admin_active('promotions.php'); ?>" href="promotions.php">
-                        <span class="material-symbols-outlined text-lg leading-none">local_offer</span>
+                    <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('promotions.php'); ?>" href="promotions.php">
+                        <span class="material-symbols-outlined text-lg leading-none text-amber-400">local_offer</span>
                         <span><?php echo t("Promotions", "จัดการรายการโปรโมชัน"); ?></span>
                     </a>
                 </li>
                 <li>
-                    <a class="py-2 px-3 rounded-md flex items-center gap-3 transition-colors <?php echo is_admin_active('tables.php'); ?>" href="tables.php">
-                        <span class="material-symbols-outlined text-lg leading-none">table_restaurant</span>
+                    <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('tables.php'); ?>" href="tables.php">
+                        <span class="material-symbols-outlined text-lg leading-none text-amber-400">table_restaurant</span>
                         <span><?php echo t("Tables Layout", "จัดการข้อมูลผังที่นั่งและระบบหมายเลขโต๊ะ"); ?></span>
                     </a>
                 </li>
                 <li>
-                    <a class="py-2 px-3 rounded-md flex items-center gap-3 transition-colors <?php echo is_admin_active('staff.php'); ?>" href="staff.php">
-                        <span class="material-symbols-outlined text-lg leading-none">badge</span>
+                    <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('staff.php'); ?>" href="staff.php">
+                        <span class="material-symbols-outlined text-lg leading-none text-amber-400">badge</span>
                         <span><?php echo t("Staff Creds", "จัดการข้อมูลพนักงาน"); ?></span>
                     </a>
                 </li>
@@ -425,22 +425,23 @@ function is_admin_active($page) {
         </div>
         
         <!-- Sidebar Footer Action Panel -->
-        <div class="mt-6 pt-4 border-t border-zinc-900 flex flex-col gap-2 font-sans">
-            <div class="text-zinc-500 text-xs font-mono text-center mb-1">
-                <?php echo t("Session role", "เข้าใช้งานในฐานะ"); ?>: <span class="text-zinc-300 font-semibold"><?php echo $_SESSION['user_role']; ?></span>
+        <div class="mt-6 pt-4 border-t border-zinc-800 flex flex-col gap-2.5 font-sans">
+            <div class="text-zinc-300 text-xs font-mono text-center mb-1 flex items-center justify-center gap-1.5">
+                <span><?php echo t("Session role", "เข้าใช้งานในฐานะ"); ?>:</span>
+                <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded text-[11px] font-bold"><?php echo $_SESSION['user_role']; ?></span>
             </div>
             
             <!-- Language Selector Segmented Buttons -->
-            <div class="flex gap-1 p-0.5 bg-zinc-950 border border-zinc-900 rounded-md mb-2">
-                <a href="<?php echo getLangUrl('th'); ?>" class="flex-1 py-1 text-[10px] font-bold text-center rounded transition-all duration-150 <?php echo $lang === 'th' ? 'bg-zinc-900 text-zinc-50 border border-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'; ?>">ไทย</a>
-                <a href="<?php echo getLangUrl('en'); ?>" class="flex-1 py-1 text-[10px] font-bold text-center rounded transition-all duration-150 <?php echo $lang === 'en' ? 'bg-zinc-900 text-zinc-50 border border-zinc-800 shadow-sm' : 'text-zinc-500 hover:text-zinc-300'; ?>">EN</a>
+            <div class="flex gap-1 p-1 bg-zinc-950 border border-zinc-700 rounded-lg mb-1">
+                <a href="<?php echo getLangUrl('th'); ?>" class="flex-1 py-1.5 text-[11px] font-bold text-center rounded-md transition-all duration-150 <?php echo $lang === 'th' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">ไทย</a>
+                <a href="<?php echo getLangUrl('en'); ?>" class="flex-1 py-1.5 text-[11px] font-bold text-center rounded-md transition-all duration-150 <?php echo $lang === 'en' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">EN</a>
             </div>
 
-            <a href="../index.php" class="shadcn-btn-outline py-2 w-full flex items-center justify-center gap-2 text-xs">
-                <span class="material-symbols-outlined text-base leading-none">web</span>
+            <a href="../index.php" class="border border-zinc-700 bg-zinc-950 hover:bg-zinc-800 text-zinc-200 hover:text-white py-2 w-full flex items-center justify-center gap-2 text-xs rounded-lg font-semibold transition-all">
+                <span class="material-symbols-outlined text-base leading-none text-amber-400">web</span>
                 <span><?php echo t("Customer Site", "ดูหน้าเว็บร้าน"); ?></span>
             </a>
-            <a href="../logout.php" class="shadcn-btn-destructive py-2 w-full flex items-center justify-center gap-2 text-xs">
+            <a href="../logout.php" class="bg-rose-950/80 border border-rose-500/50 text-rose-300 hover:bg-rose-900/90 hover:text-white py-2 w-full flex items-center justify-center gap-2 text-xs rounded-lg font-semibold transition-all shadow-md">
                 <span class="material-symbols-outlined text-base leading-none">logout</span>
                 <span><?php echo t("Log Out", "ออกจากระบบ"); ?></span>
             </a>
