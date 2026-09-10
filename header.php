@@ -87,44 +87,48 @@ function is_active($page) {
         }
         /* Custom navbar styles */
         .navbar-custom {
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-bottom: 1px solid transparent !important;
-            box-shadow: none !important;
-            transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            background-color: rgba(19, 19, 19, 0.75) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .navbar-custom.at-top {
-            background-color: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            border-bottom: 1px solid transparent !important;
-            box-shadow: none !important;
+            background-color: rgba(19, 19, 19, 0.45) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
         }
         .navbar-custom.scrolled {
             background-color: rgba(19, 19, 19, 0.94) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border-bottom: 1px solid rgba(255, 215, 130, 0.3) !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom-color: rgba(255, 215, 130, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
         .admin-nav-btn {
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
             white-space: nowrap;
         }
         .navbar-custom.at-top .admin-nav-btn {
-            opacity: 0.85;
-            background: rgba(30, 30, 30, 0.5) !important;
-            border: 1px solid rgba(255, 215, 130, 0.4) !important;
-            backdrop-filter: blur(6px);
+            opacity: 0;
+            max-width: 0;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin: 0 !important;
+            border-width: 0 !important;
+            pointer-events: none;
+            transform: scale(0.9);
         }
         .navbar-custom.scrolled .admin-nav-btn {
             opacity: 1;
+            max-width: 160px;
+            pointer-events: auto;
             transform: scale(1);
-            box-shadow: 0 0 15px rgba(255, 215, 130, 0.2);
         }
         .btn-custom-gold {
             background-color: #ffd782;
