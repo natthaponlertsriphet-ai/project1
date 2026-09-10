@@ -215,9 +215,9 @@ $all_promos = $stmt->fetchAll();
     
     <!-- Left Column: Create/Edit Form -->
     <div class="lg:col-span-4">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">local_offer</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">local_offer</span>
                 <span><?php echo $is_editing ? t("Edit Promo Properties", "แก้ไขข้อมูลโปรโมชัน") : t("Create Promotion Offer", "สร้างโปรโมชันใหม่"); ?></span>
             </h3>
             
@@ -228,40 +228,53 @@ $all_promos = $stmt->fetchAll();
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Promotion Title", "หัวข้อโปรโมชัน"); ?></label>
-                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input" value="<?php echo htmlspecialchars($title); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">campaign</span>
+                        <span><?php echo t("Promotion Title", "หัวข้อโปรโมชัน"); ?></span>
+                    </label>
+                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($title); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Period / Schedule", "ช่วงเวลาจัด"); ?></label>
-                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input" value="<?php echo htmlspecialchars($period); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">schedule</span>
+                        <span><?php echo t("Period / Schedule", "ช่วงเวลาจัด"); ?></span>
+                    </label>
+                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($period); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Image Banner File", "ไฟล์ภาพแบนเนอร์"); ?></label>
-                    <input type="file" name="image_file" accept="image/*" class="shadcn-input">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">image</span>
+                        <span><?php echo t("Image Banner File", "ไฟล์ภาพแบนเนอร์"); ?></span>
+                    </label>
+                    <input type="file" name="image_file" accept="image/*" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-200 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30">
                     <input type="hidden" name="image_url" value="<?php echo htmlspecialchars($image); ?>">
                 </div>
 
                 <?php if ($image): ?>
-                    <div class="rounded-lg overflow-hidden border border-zinc-800 aspect-video bg-zinc-950">
+                    <div class="rounded-lg overflow-hidden border border-zinc-700 aspect-video bg-zinc-950">
                         <img src="../<?php echo ltrim($image, '/'); ?>" alt="Preview" class="w-full h-full object-cover">
                     </div>
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Description", "คำอธิบายเงื่อนไข"); ?></label>
-                    <textarea name="description" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide detailed promo offer terms.', '⚠️ กรุณาระบุคำอธิบายเงื่อนไขและรายละเอียดโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="Double the impact..." class="shadcn-input min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">description</span>
+                        <span><?php echo t("Description", "คำอธิบายเงื่อนไข"); ?></span>
+                    </label>
+                    <textarea name="description" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide detailed promo offer terms.', '⚠️ กรุณาระบุคำอธิบายเงื่อนไขและรายละเอียดโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="Double the impact..." class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
                 </div>
 
                 <div class="flex items-center gap-2 py-1">
-                    <input type="checkbox" name="active" id="promo-active" class="w-4 h-4 accent-warning cursor-pointer" <?php echo $active ? 'checked' : ''; ?>>
-                    <label for="promo-active" class="text-xs uppercase text-zinc-400 font-medium tracking-wider cursor-pointer select-none"><?php echo t("Active Offer", "เปิดใช้งานข้อเสนอนี้"); ?></label>
+                    <input type="checkbox" name="active" id="promo-active" class="w-4 h-4 accent-amber-400 cursor-pointer" <?php echo $active ? 'checked' : ''; ?>>
+                    <label for="promo-active" class="text-xs uppercase text-zinc-200 font-semibold tracking-wider cursor-pointer select-none"><?php echo t("Active Offer", "เปิดใช้งานข้อเสนอนี้"); ?></label>
                 </div>
 
-                <div class="flex gap-2 mt-2">
-                    <button type="submit" class="shadcn-btn-primary flex-grow">
-                        <?php echo $is_editing ? t("Update Promo", "อัปเดตโปรโมชัน") : t("Create Promo", "บันทึกโปรโมชัน"); ?>
+                <div class="flex gap-2 mt-4">
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        <span><?php echo $is_editing ? t("Update Promo", "อัปเดตโปรโมชัน") : t("Create Promo", "บันทึกโปรโมชัน"); ?></span>
                     </button>
                     <?php if ($is_editing): ?>
                         <a href="promotions.php" class="shadcn-btn-outline"><?php echo t("Cancel", "ยกเลิก"); ?></a>
