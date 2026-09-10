@@ -384,27 +384,27 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
     <div class="<?php echo $show_form ? 'lg:col-span-8' : 'lg:col-span-12'; ?> flex flex-col gap-6">
         
         <!-- Visual Seat Map Control Card -->
-        <div class="shadcn-card border border-warning/10 shadow-lg">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-2 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">grid_view</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-2 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">grid_view</span>
                 <span><?php echo t("Visual Seat Map (Click to Toggle)", "ผังที่นั่งร้านแบบโต้ตอบ (คลิกที่โต๊ะเพื่อเปิด/ปิดให้บริการ)"); ?></span>
             </h3>
-            <p class="text-zinc-400 text-xs mb-6">
+            <p class="text-zinc-300 text-xs mb-6">
                 <?php echo t("Green tables are Available. Red tables are Occupied. Click on any table to instantly toggle its status.", "สีเขียวหมายถึงโต๊ะว่าง สีแดงหมายถึงโต๊ะไม่ว่าง/ปิดบริการ คลิกที่โต๊ะใดก็ได้เพื่อสลับสถานะทันที"); ?>
             </p>
             
             <!-- Interactive Zone Tabs -->
-            <div class="flex gap-1 p-1 bg-zinc-950 border border-zinc-900 rounded-lg mb-6 max-w-md" id="zone-filter-container">
-                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50" onclick="filterMapZone('ALL', this)"><?php echo t("All Zones", "ทุกโซน"); ?></button>
-                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50" onclick="filterMapZone('INDOOR', this)"><?php echo t("Indoor AC", "ห้องแอร์"); ?></button>
-                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50" onclick="filterMapZone('OUTDOOR', this)"><?php echo t("Outdoor Breeze", "ด้านนอก"); ?></button>
-                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/50" onclick="filterMapZone('STAGE', this)"><?php echo t("Stage Front", "หน้าเวที"); ?></button>
+            <div class="flex gap-1 p-1 bg-zinc-950 border border-zinc-800 rounded-lg mb-6 max-w-md" id="zone-filter-container">
+                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-300 hover:text-white hover:bg-zinc-800/80" onclick="filterMapZone('ALL', this)"><?php echo t("All Zones", "ทุกโซน"); ?></button>
+                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-300 hover:text-white hover:bg-zinc-800/80" onclick="filterMapZone('INDOOR', this)"><?php echo t("Indoor AC", "ห้องแอร์"); ?></button>
+                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-300 hover:text-white hover:bg-zinc-800/80" onclick="filterMapZone('OUTDOOR', this)"><?php echo t("Outdoor Breeze", "ด้านนอก"); ?></button>
+                <button type="button" class="flex-1 py-1.5 text-xs font-medium rounded-md text-center transition-all duration-150 cursor-pointer text-zinc-300 hover:text-white hover:bg-zinc-800/80" onclick="filterMapZone('STAGE', this)"><?php echo t("Stage Front", "หน้าเวที"); ?></button>
             </div>
 
             <!-- Stage Orientation Visual indicator -->
             <div id="stage-visual-indicator" class="w-full bg-gradient-to-r from-zinc-900 via-zinc-900/50 to-zinc-900 border border-zinc-800/80 rounded-lg py-2.5 text-center mb-6 shadow-sm">
-                <span class="font-anton text-zinc-500 text-xs tracking-widest uppercase flex items-center justify-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm text-warning animate-pulse">music_note</span>
+                <span class="font-anton text-amber-400 text-xs tracking-widest uppercase flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm text-amber-400 animate-pulse">music_note</span>
                     <?php echo t("LIVE BAND STAGE / เวทีการแสดงดนตรีสด", "LIVE BAND STAGE / เวทีการแสดงดนตรีสด"); ?>
                 </span>
             </div>
@@ -415,7 +415,7 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                         <div class="table-card-inner flex flex-col items-center justify-center border rounded-lg p-3 w-full aspect-square transition-all duration-200 hover:shadow-lg cursor-pointer" 
                              style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: rgba(34, 197, 94, 0.05); border-color: rgba(34, 197, 94, 0.2); color: #4ade80;' : 'background-color: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2); color: #f87171;'; ?>">
                             <span class="font-anton text-xl leading-none"><?php echo htmlspecialchars($t['number']); ?></span>
-                            <span class="text-[10px] font-mono text-zinc-500 mt-1"><?php echo $t['capacity']; ?> Pax</span>
+                            <span class="text-[10px] font-mono text-zinc-400 mt-1"><?php echo $t['capacity']; ?> Pax</span>
                             <span class="table-status-dot w-1.5 h-1.5 rounded-full mt-2 animate-pulse" style="<?php echo $t['status'] === 'AVAILABLE' ? 'background-color: #22c55e; box-shadow: 0 0 8px #22c55e;' : 'background-color: #ef4444; box-shadow: 0 0 8px #ef4444;'; ?>"></span>
                         </div>
                     </a>
@@ -423,23 +423,23 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
             </div>
         </div>
 
-        <div class="shadcn-card shadow-lg">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">chair</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">chair</span>
                 <span><?php echo t("Tables Inventory", "รายการโต๊ะในร้านทั้งหมด"); ?> (<?php echo count($all_tables); ?>)</span>
             </h3>
             
             <div class="shadcn-table-container">
                 <table class="shadcn-table">
                     <thead>
-                        <tr>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400" style="width: 12%;"><?php echo t("Image", "รูปภาพ"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Number", "หมายเลขโต๊ะ"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Zone", "โซนที่ตั้ง"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center"><?php echo t("Seats", "ความจุที่นั่ง"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center"><?php echo t("Status (Click to Toggle)", "สถานะโต๊ะ (คลิกสลับสถานะ)"); ?></th>
+                        <tr class="border-b border-zinc-800">
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold" style="width: 12%;"><?php echo t("Image", "รูปภาพ"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Number", "หมายเลขโต๊ะ"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Zone", "โซนที่ตั้ง"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Seats", "ความจุที่นั่ง"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Status (Click to Toggle)", "สถานะโต๊ะ (คลิกสลับสถานะ)"); ?></th>
                             <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
                             <?php endif; ?>
                         </tr>
                     </thead>
