@@ -315,7 +315,7 @@ if (is_dir($gallery_dir)) {
         <div>
             <h3 class="font-anton text-amber-400 text-uppercase tracking-wider m-0 text-lg flex items-center gap-2">
                 <span class="material-symbols-outlined text-amber-400 text-xl leading-none">photo_library</span>
-                <span><?php echo t("Manage Stage Atmosphere Photos", "จัดการรูปภาพบรรยากาศเวทีและร้าน"); ?></span>
+                <span><?php echo t("Manage Venue Atmosphere Photos", "จัดการรูปภาพบรรยากาศร้าน"); ?></span>
             </h3>
             <p class="text-zinc-300 text-xs m-0 mt-1"><?php echo t("Upload new photos to show in the live music atmosphere gallery.", "อัปโหลดรูปภาพใหม่เพื่อนำไปแสดงผลบนหน้าเว็บลูกค้า"); ?></p>
         </div>

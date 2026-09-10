@@ -351,7 +351,7 @@ require_once 'header.php';
         <!-- Stage Atmosphere Gallery (Full Width Below) -->
         <div class="col-lg-12">
             <div class="glass-card p-4 p-md-5">
-                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4"><?php echo t("Stage Atmosphere", "ภาพบรรยากาศเวที"); ?></h3>
+                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4"><?php echo t("Venue Atmosphere", "ภาพบรรยากาศร้าน"); ?></h3>
                 
                 <div class="row g-4">
                     <?php if (empty($gallery_images)): ?>
