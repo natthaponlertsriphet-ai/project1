@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id'])) {
 // Temporary Translation Helper (defined locally before admin_header.php load)
 if (!function_exists('t')) {
     function t($en, $th) {
-        $lang = $_SESSION['lang'] ?? 'en';
+        $lang = $_SESSION['lang'] ?? 'th';
         return $lang === 'th' ? $th : $en;
     }
 }

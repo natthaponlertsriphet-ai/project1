@@ -3,14 +3,14 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. Language Handler
+// 1. Language Handler (Default to Thai 'th')
 if (isset($_GET['lang'])) {
-    $lang = $_GET['lang'] === 'th' ? 'th' : 'en';
+    $lang = $_GET['lang'] === 'en' ? 'en' : 'th';
     $_SESSION['lang'] = $lang;
 } elseif (isset($_SESSION['lang'])) {
     $lang = $_SESSION['lang'];
 } else {
-    $lang = 'en'; // default
+    $lang = 'th'; // Default to Thai
     $_SESSION['lang'] = $lang;
 }
 

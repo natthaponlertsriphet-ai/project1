@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // Temporary Translation Helper (defined locally before header.php load)
 if (!function_exists('t')) {
     function t($en, $th) {
-        $lang = $_SESSION['lang'] ?? 'en';
+        $lang = $_SESSION['lang'] ?? 'th';
         return $lang === 'th' ? $th : $en;
     }
 }
