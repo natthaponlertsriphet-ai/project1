@@ -445,7 +445,7 @@ require_once 'header.php';
                 <div><strong><?php echo t("Date & Slot", "วันและเวลา"); ?>:</strong> <?php echo $booking_success['date']; ?> @ <?php echo $booking_success['time_slot']; ?></div>
                 <div><strong><?php echo t("Table Number", "โต๊ะที่เลือก"); ?>:</strong> <?php echo $booking_success['table_number']; ?> (<?php echo $booking_success['pax']; ?> Pax)</div>
             </div>
-            <div class="mt-3 text-secondary" style="font-size: 14px;">
+            <div class="mt-3 text-light text-opacity-90" style="font-size: 15px;">
                 <?php echo t("Please take a screenshot of this receipt. Show it to our staff upon arrival.", "กรุณาแคปหน้าจอหลักฐานชิ้นนี้เพื่อยื่นให้พนักงานร้านตรวจสอบเมื่อคุณเดินทางมาถึง"); ?>
             </div>
         </div>
