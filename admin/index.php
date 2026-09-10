@@ -556,46 +556,46 @@ try {
 
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
 <!-- iOS / iPhone Style Analytics Calendar Control Panel -->
-<div class="bg-zinc-950/90 border border-zinc-800/90 rounded-2xl p-5 mb-6 shadow-2xl backdrop-blur-md">
+<div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6 mb-6 backdrop-blur-md">
     <form method="GET" action="index.php" id="analytics-filter-form" class="space-y-4">
         <input type="hidden" name="tab" value="<?php echo htmlspecialchars($active_tab); ?>">
         
         <!-- Header & iOS Style Segmented Control -->
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-4">
             <div class="flex items-center gap-3">
                 <!-- iOS App Style Icon Box -->
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-600 flex flex-col items-center justify-center text-zinc-950 font-bold shadow-lg shadow-yellow-500/20">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex flex-col items-center justify-center text-zinc-950 font-bold shadow-lg shadow-amber-500/20">
                     <span class="material-symbols-outlined text-xl leading-none">calendar_month</span>
                 </div>
                 <div>
-                    <h2 class="font-anton text-warning text-lg uppercase tracking-wider m-0 leading-tight">
+                    <h2 class="font-anton text-amber-400 text-lg uppercase tracking-wider m-0 leading-tight">
                         <?php echo t("Booking Analytics & Filter", "ข้อมูลสถิติการจองโต๊ะ ประจำวัน/เดือน/ปี"); ?>
                     </h2>
-                    <span class="text-zinc-400 text-xs font-mono block mt-0.5">
+                    <span class="text-zinc-300 text-xs font-mono block mt-0.5">
                         <?php echo t("Booking statistics overview by Day, Month, and Year", "ข้อมูลสถิติตารางจองโต๊ะ ประจำวัน/เดือน/ปี"); ?>
                     </span>
                 </div>
             </div>
             
             <!-- iOS Segmented Control Bar -->
-            <div class="inline-flex p-1 bg-zinc-900/90 border border-zinc-800 rounded-xl font-mono text-xs shadow-inner gap-1 flex-wrap">
-                <a href="index.php?analytics_mode=all" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === 'all' ? 'bg-warning text-zinc-950 font-bold shadow-md shadow-warning/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'; ?>" title="<?php echo t("Show all records without date filter", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>">
+            <div class="inline-flex p-1 bg-zinc-950 border border-zinc-800 rounded-xl font-mono text-xs shadow-inner gap-1 flex-wrap">
+                <a href="index.php?analytics_mode=all" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === 'all' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>" title="<?php echo t("Show all records without date filter", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>">
                     <span class="material-symbols-outlined text-base">restart_alt</span>
                     <span><?php echo t("All", "ทั้งหมด"); ?></span>
                 </a>
-                <a href="index.php?analytics_mode=today" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === 'today' ? 'bg-warning text-zinc-950 font-bold shadow-md shadow-warning/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'; ?>">
+                <a href="index.php?analytics_mode=today" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === 'today' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>">
                     <span class="material-symbols-outlined text-base">today</span>
                     <span><?php echo t("Today", "วันนี้"); ?></span>
                 </a>
-                <a href="index.php?analytics_mode=7days" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === '7days' ? 'bg-warning text-zinc-950 font-bold shadow-md shadow-warning/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'; ?>">
+                <a href="index.php?analytics_mode=7days" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === '7days' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>">
                     <span class="material-symbols-outlined text-base">date_range</span>
                     <span><?php echo t("7 Days", "7 วันล่าสุด"); ?></span>
                 </a>
-                <a href="index.php?analytics_mode=month&analytics_month=<?php echo date('Y-m'); ?>" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo ($analytics_mode === 'month' && $analytics_month === date('Y-m')) ? 'bg-warning text-zinc-950 font-bold shadow-md shadow-warning/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'; ?>">
+                <a href="index.php?analytics_mode=month&analytics_month=<?php echo date('Y-m'); ?>" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo ($analytics_mode === 'month' && $analytics_month === date('Y-m')) ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>">
                     <span class="material-symbols-outlined text-base">calendar_view_month</span>
                     <span><?php echo t("This Month", "เดือนนี้"); ?></span>
                 </a>
-                <a href="index.php?analytics_mode=year&analytics_year=<?php echo date('Y'); ?>" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo ($analytics_mode === 'year' && $analytics_year === date('Y')) ? 'bg-warning text-zinc-950 font-bold shadow-md shadow-warning/10' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'; ?>">
+                <a href="index.php?analytics_mode=year&analytics_year=<?php echo date('Y'); ?>" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo ($analytics_mode === 'year' && $analytics_year === date('Y')) ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>">
                     <span class="material-symbols-outlined text-base">event_note</span>
                     <span><?php echo t("This Year", "ปีนี้"); ?></span>
                 </a>
@@ -605,27 +605,27 @@ try {
         <!-- Direct Pure-Click Day / Month / Year Calendar Pickers Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end pt-1">
             <!-- 1. Click By Day (Date Dropdown + Calendar Sheet Trigger) -->
-            <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 hover:border-zinc-700 transition-colors">
-                <label class="block text-zinc-300 text-xs font-mono uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <div class="bg-zinc-950/80 border border-zinc-700/80 rounded-xl p-3.5 hover:border-amber-400/50 transition-colors">
+                <label class="block text-zinc-200 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center justify-between">
                     <span class="flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-sm text-warning">event</span>
+                        <span class="material-symbols-outlined text-sm text-amber-400">event</span>
                         <span><?php echo t("Select By Day", "เลือกตามวัน (คลิกเลือกวัน)"); ?></span>
                     </span>
                 </label>
                 <div class="relative">
-                    <input type="date" value="<?php echo ($analytics_mode === 'day') ? htmlspecialchars($analytics_start) : ''; ?>" onfocus="if(this.showPicker) this.showPicker();" onclick="if(this.showPicker) this.showPicker();" onchange="submitCalendarFilter('day', this.value)" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-warning cursor-pointer">
+                    <input type="date" value="<?php echo ($analytics_mode === 'day') ? htmlspecialchars($analytics_start) : ''; ?>" onfocus="if(this.showPicker) this.showPicker();" onclick="if(this.showPicker) this.showPicker();" onchange="submitCalendarFilter('day', this.value)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-amber-400 cursor-pointer">
                 </div>
             </div>
 
             <!-- 2. Click By Month (Dropdown Selection) -->
-            <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 hover:border-zinc-700 transition-colors">
-                <label class="block text-zinc-300 text-xs font-mono uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <div class="bg-zinc-950/80 border border-zinc-700/80 rounded-xl p-3.5 hover:border-amber-400/50 transition-colors">
+                <label class="block text-zinc-200 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center justify-between">
                     <span class="flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-sm text-warning">calendar_view_month</span>
+                        <span class="material-symbols-outlined text-sm text-amber-400">calendar_view_month</span>
                         <span><?php echo t("Select By Month", "เลือกตามเดือน (คลิกเลือกเดือน)"); ?></span>
                     </span>
                 </label>
-                <select onchange="submitCalendarFilter('month', this.value)" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-warning cursor-pointer">
+                <select onchange="submitCalendarFilter('month', this.value)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-amber-400 cursor-pointer">
                     <option value=""><?php echo t("-- Select Month --", "-- คลิกเลือกเดือน --"); ?></option>
                     <?php 
                     $curr_y = date('Y');
@@ -647,14 +647,14 @@ try {
             </div>
 
             <!-- 3. Click By Year (Dropdown Selection) -->
-            <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 hover:border-zinc-700 transition-colors">
-                <label class="block text-zinc-300 text-xs font-mono uppercase tracking-wider mb-1.5 flex items-center justify-between">
+            <div class="bg-zinc-950/80 border border-zinc-700/80 rounded-xl p-3.5 hover:border-amber-400/50 transition-colors">
+                <label class="block text-zinc-200 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center justify-between">
                     <span class="flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-sm text-warning">calendar_today</span>
+                        <span class="material-symbols-outlined text-sm text-amber-400">calendar_today</span>
                         <span><?php echo t("Select By Year", "เลือกตามปี (คลิกเลือกปี)"); ?></span>
                     </span>
                 </label>
-                <select onchange="submitCalendarFilter('year', this.value)" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-warning cursor-pointer">
+                <select onchange="submitCalendarFilter('year', this.value)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-amber-400 cursor-pointer">
                     <option value=""><?php echo t("-- Select Year --", "-- คลิกเลือกปี ค.ศ. --"); ?></option>
                     <?php 
                     $current_yr = (int)date('Y');
@@ -670,8 +670,8 @@ try {
 
             <!-- Reset & Reset All -->
             <div class="flex items-center gap-2">
-                <a href="index.php?analytics_mode=all" class="flex-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 py-2.5 px-3 rounded-xl text-xs font-mono transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-sm" title="<?php echo t("Show all records without date filter", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>">
-                    <span class="material-symbols-outlined text-base text-warning">restart_alt</span>
+                <a href="index.php?analytics_mode=all" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20" title="<?php echo t("Show all records without date filter", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>">
+                    <span class="material-symbols-outlined text-base">restart_alt</span>
                     <span><?php echo t("Show All Records", "ดูสถิติทั้งหมด"); ?></span>
                 </a>
             </div>
@@ -793,33 +793,33 @@ foreach ($chart_monthly as $m) {
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 font-sans">
     
     <!-- Daily Summary Card -->
-    <div class="shadcn-card">
-        <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-900 pb-2">
-            <span class="material-symbols-outlined text-base text-zinc-500">calendar_today</span>
+    <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
+        <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
+            <span class="material-symbols-outlined text-base text-amber-400">calendar_today</span>
             <span><?php echo t("Daily Summary", "สรุปยอดจองรายวัน"); ?></span>
         </h3>
         <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left text-zinc-400">
+            <table class="w-full text-xs text-left text-zinc-300">
                 <thead>
-                    <tr class="border-b border-zinc-900 text-zinc-500 uppercase">
+                    <tr class="border-b border-zinc-800 text-zinc-200 uppercase">
                         <th class="pb-2 font-semibold"><?php echo t("Date", "วันที่"); ?></th>
-                        <th class="pb-2 text-center font-semibold"><?php echo t("Total", "ยอดจอง"); ?></th>
-                        <th class="pb-2 text-center font-semibold text-emerald-500"><?php echo t("Approved", "ยืนยันแล้ว"); ?></th>
-                        <th class="pb-2 text-end font-semibold text-rose-500"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></th>
+                        <th class="pb-2 text-center font-semibold text-zinc-200"><?php echo t("Total", "ยอดจอง"); ?></th>
+                        <th class="pb-2 text-center font-semibold text-emerald-400"><?php echo t("Approved", "ยืนยันแล้ว"); ?></th>
+                        <th class="pb-2 text-end font-semibold text-rose-400"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($daily_summary)): ?>
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-zinc-600"><?php echo t("No records", "ไม่มีประวัติ"); ?></td>
+                            <td colspan="4" class="text-center py-4 text-zinc-500"><?php echo t("No records", "ไม่มีประวัติ"); ?></td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($daily_summary as $d): ?>
-                            <tr class="border-b border-zinc-900/40 last:border-0 hover:bg-zinc-900/10">
-                                <td class="py-2 text-zinc-300 font-mono"><?php echo formatDateStr($d['date']); ?></td>
-                                <td class="py-2 text-center font-bold text-zinc-200"><?php echo $d['total']; ?></td>
-                                <td class="py-2 text-center text-emerald-500 font-bold"><?php echo $d['completed']; ?></td>
-                                <td class="py-2 text-end text-rose-500 font-bold"><?php echo $d['cancelled']; ?></td>
+                            <tr class="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/30">
+                                <td class="py-2 text-zinc-200 font-mono"><?php echo formatDateStr($d['date']); ?></td>
+                                <td class="py-2 text-center font-bold text-zinc-100"><?php echo $d['total']; ?></td>
+                                <td class="py-2 text-center text-emerald-400 font-bold"><?php echo $d['completed']; ?></td>
+                                <td class="py-2 text-end text-rose-400 font-bold"><?php echo $d['cancelled']; ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -829,33 +829,33 @@ foreach ($chart_monthly as $m) {
     </div>
 
     <!-- Monthly Summary Card -->
-    <div class="shadcn-card">
-        <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-900 pb-2">
-            <span class="material-symbols-outlined text-base text-zinc-500">calendar_month</span>
+    <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
+        <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
+            <span class="material-symbols-outlined text-base text-amber-400">calendar_month</span>
             <span><?php echo t("Monthly Summary", "สรุปยอดจองรายเดือน"); ?></span>
         </h3>
         <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left text-zinc-400">
+            <table class="w-full text-xs text-left text-zinc-300">
                 <thead>
-                    <tr class="border-b border-zinc-900 text-zinc-500 uppercase">
+                    <tr class="border-b border-zinc-800 text-zinc-200 uppercase">
                         <th class="pb-2 font-semibold"><?php echo t("Month", "เดือน"); ?></th>
-                        <th class="pb-2 text-center font-semibold"><?php echo t("Total", "ยอดจอง"); ?></th>
-                        <th class="pb-2 text-center font-semibold text-emerald-500"><?php echo t("Approved", "ยืนยันแล้ว"); ?></th>
-                        <th class="pb-2 text-end font-semibold text-rose-500"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></th>
+                        <th class="pb-2 text-center font-semibold text-zinc-200"><?php echo t("Total", "ยอดจอง"); ?></th>
+                        <th class="pb-2 text-center font-semibold text-emerald-400"><?php echo t("Approved", "ยืนยันแล้ว"); ?></th>
+                        <th class="pb-2 text-end font-semibold text-rose-400"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($monthly_summary)): ?>
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-zinc-600"><?php echo t("No records", "ไม่มีประวัติ"); ?></td>
+                            <td colspan="4" class="text-center py-4 text-zinc-500"><?php echo t("No records", "ไม่มีประวัติ"); ?></td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($monthly_summary as $m): ?>
-                            <tr class="border-b border-zinc-900/40 last:border-0 hover:bg-zinc-900/10">
-                                <td class="py-2 text-zinc-300 font-semibold"><?php echo formatMonth($m['month']); ?></td>
-                                <td class="py-2 text-center font-bold text-zinc-200"><?php echo $m['total']; ?></td>
-                                <td class="py-2 text-center text-emerald-500 font-bold"><?php echo $m['completed']; ?></td>
-                                <td class="py-2 text-end text-rose-500 font-bold"><?php echo $m['cancelled']; ?></td>
+                            <tr class="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/30">
+                                <td class="py-2 text-zinc-200 font-semibold"><?php echo formatMonth($m['month']); ?></td>
+                                <td class="py-2 text-center font-bold text-zinc-100"><?php echo $m['total']; ?></td>
+                                <td class="py-2 text-center text-emerald-400 font-bold"><?php echo $m['completed']; ?></td>
+                                <td class="py-2 text-end text-rose-400 font-bold"><?php echo $m['cancelled']; ?></td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -865,29 +865,29 @@ foreach ($chart_monthly as $m) {
     </div>
 
     <!-- Yearly Summary Card -->
-    <div class="shadcn-card">
-        <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-900 pb-2">
-            <span class="material-symbols-outlined text-base text-zinc-500">date_range</span>
+    <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
+        <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
+            <span class="material-symbols-outlined text-base text-amber-400">date_range</span>
             <span><?php echo t("Yearly Summary", "สรุปยอดจองรายปี"); ?></span>
         </h3>
         <div class="overflow-x-auto">
-            <table class="w-full text-xs text-left text-zinc-400">
+            <table class="w-full text-xs text-left text-zinc-300">
                 <thead>
-                    <tr class="border-b border-zinc-900 text-zinc-500 uppercase">
+                    <tr class="border-b border-zinc-800 text-zinc-200 uppercase">
                         <th class="pb-2 font-semibold"><?php echo t("Year", "ปี"); ?></th>
-                        <th class="pb-2 text-center font-semibold"><?php echo t("Total", "ยอดจอง"); ?></th>
-                        <th class="pb-2 text-center font-semibold text-emerald-500"><?php echo t("Approved", "ยืนยันแล้ว"); ?></th>
-                        <th class="pb-2 text-end font-semibold text-rose-500"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></th>
+                        <th class="pb-2 text-center font-semibold text-zinc-200"><?php echo t("Total", "ยอดจอง"); ?></th>
+                        <th class="pb-2 text-center font-semibold text-emerald-400"><?php echo t("Approved", "ยืนยันแล้ว"); ?></th>
+                        <th class="pb-2 text-end font-semibold text-rose-400"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($yearly_summary)): ?>
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-zinc-600"><?php echo t("No records", "ไม่มีประวัติ"); ?></td>
+                            <td colspan="4" class="text-center py-4 text-zinc-500"><?php echo t("No records", "ไม่มีประวัติ"); ?></td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($yearly_summary as $y): ?>
-                            <tr class="border-b border-zinc-900/40 last:border-0 hover:bg-zinc-900/10">
+                            <tr class="border-b border-zinc-800/40 last:border-0 hover:bg-zinc-800/30">
                                 <td class="py-2 text-zinc-300 font-bold font-mono"><?php echo $lang === 'th' ? ($y['year'] + 543) : $y['year']; ?></td>
                                 <td class="py-2 text-center font-bold text-zinc-200"><?php echo $y['total']; ?></td>
                                 <td class="py-2 text-center text-emerald-500 font-bold"><?php echo $y['completed']; ?></td>
