@@ -163,7 +163,7 @@ $all_staff = $stmt->fetchAll();
 <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
     <div>
         <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Staff Credentials Manager", "จัดการข้อมูลพนักงาน"); ?></h1>
-        <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / User Accounts", "แผงควบคุมผู้ดูแลระบบ / จัดการสิทธิ์และบัญชีทีมงาน"); ?></p>
+        <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / User Accounts", "แผงควบคุมผู้ดูแลระบบ / จัดการสิทธิ์และบัญชีพนักงาน"); ?></p>
     </div>
 </div>
 
@@ -188,7 +188,7 @@ $all_staff = $stmt->fetchAll();
         <div class="shadcn-card">
             <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
                 <span class="material-symbols-outlined text-xl leading-none">manage_accounts</span>
-                <span><?php echo $is_editing ? t("Edit User Details", "แก้ไขข้อมูลทีมงาน") : t("Register Team User", "เพิ่มบัญชีทีมงาน"); ?></span>
+                <span><?php echo $is_editing ? t("Edit User Details", "แก้ไขข้อมูลพนักงาน") : t("Register Team User", "เพิ่มบัญชีพนักงาน"); ?></span>
             </h3>
             
             <form action="staff.php" method="POST" class="flex flex-col gap-4">
