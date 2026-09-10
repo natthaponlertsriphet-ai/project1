@@ -26,38 +26,19 @@ foreach ($music_events as $event) {
     $events_by_day[$event['show_day']][] = $event;
 }
 
-// Fetch dynamic gallery photos directly from /images/live-music/ with custom order
+// Fetch dynamic gallery photos directly from /images/live-music/
 $gallery_dir = __DIR__ . '/images/live-music';
 $gallery_images = [];
 
 if (is_dir($gallery_dir)) {
     $files = scandir($gallery_dir);
-    $raw_images = [];
     foreach ($files as $file) {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-            $raw_images[] = $file;
+            $gallery_images[] = [
+                'src' => 'images/live-music/' . $file
+            ];
         }
-    }
-
-    $order_file = $gallery_dir . '/photo_order.json';
-    if (file_exists($order_file)) {
-        $order = json_decode(file_get_contents($order_file), true);
-        if (is_array($order)) {
-            usort($raw_images, function($a, $b) use ($order) {
-                $pos_a = array_search($a, $order);
-                $pos_b = array_search($b, $order);
-                if ($pos_a === false) $pos_a = 9999;
-                if ($pos_b === false) $pos_b = 9999;
-                return $pos_a <=> $pos_b;
-            });
-        }
-    }
-
-    foreach ($raw_images as $file) {
-        $gallery_images[] = [
-            'src' => 'images/live-music/' . $file
-        ];
     }
 }
 

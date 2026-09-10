@@ -82,65 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
     }
 }
 
-// Helper functions for Atmosphere Photos ordering
-function getSortedAtmospherePhotos($dir) {
-    $images = [];
-    if (is_dir($dir)) {
-        $files = scandir($dir);
-        foreach ($files as $file) {
-            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-                $images[] = $file;
-            }
-        }
-    }
-
-    $order_file = $dir . '/photo_order.json';
-    if (file_exists($order_file)) {
-        $order = json_decode(file_get_contents($order_file), true);
-        if (is_array($order)) {
-            usort($images, function($a, $b) use ($order) {
-                $pos_a = array_search($a, $order);
-                $pos_b = array_search($b, $order);
-                if ($pos_a === false) $pos_a = 9999;
-                if ($pos_b === false) $pos_b = 9999;
-                return $pos_a <=> $pos_b;
-            });
-        }
-    }
-    return array_values($images);
-}
-
-function saveAtmospherePhotoOrder($dir, $images) {
-    $order_file = $dir . '/photo_order.json';
-    file_put_contents($order_file, json_encode(array_values($images), JSON_PRETTY_PRINT));
-}
-
-// Handle Photo Reordering (Move Left / Right)
-if (isset($_GET['action']) && $_GET['action'] === 'move_photo' && isset($_GET['filename']) && isset($_GET['dir'])) {
-    $filename = basename($_GET['filename']);
-    $direction = $_GET['dir'];
-    $gallery_dir = __DIR__ . '/../images/live-music';
-    $images = getSortedAtmospherePhotos($gallery_dir);
-    $idx = array_search($filename, $images);
-    
-    if ($idx !== false) {
-        if ($direction === 'left' && $idx > 0) {
-            $swap = $images[$idx - 1];
-            $images[$idx - 1] = $images[$idx];
-            $images[$idx] = $swap;
-            saveAtmospherePhotoOrder($gallery_dir, $images);
-            $success = t("Photo order updated successfully!", "จัดลำดับรูปภาพบรรยากาศร้านสำเร็จ!");
-        } elseif ($direction === 'right' && $idx < count($images) - 1) {
-            $swap = $images[$idx + 1];
-            $images[$idx + 1] = $images[$idx];
-            $images[$idx] = $swap;
-            saveAtmospherePhotoOrder($gallery_dir, $images);
-            $success = t("Photo order updated successfully!", "จัดลำดับรูปภาพบรรยากาศร้านสำเร็จ!");
-        }
-    }
-}
-
 // Handle Gallery Photo Delete
 if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET['filename'])) {
     $filename = basename($_GET['filename']); // Prevent directory traversal
@@ -148,10 +89,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET[
     
     if (file_exists($photo_path)) {
         unlink($photo_path);
-        $gallery_dir = __DIR__ . '/../images/live-music';
-        $images = getSortedAtmospherePhotos($gallery_dir);
-        $images = array_values(array_filter($images, function($f) use ($filename) { return $f !== $filename; }));
-        saveAtmospherePhotoOrder($gallery_dir, $images);
         $success = t("Atmosphere photo deleted successfully.", "ลบรูปภาพบรรยากาศเรียบร้อยแล้ว.");
     } else {
         $error = "Photo file not found.";
@@ -185,9 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 if (move_uploaded_file($file_tmp, $temp_heic)) {
                     exec('sips -s format jpeg ' . escapeshellarg($temp_heic) . ' --out ' . escapeshellarg($dest_path));
                     @unlink($temp_heic);
-                    $images = getSortedAtmospherePhotos($upload_dir);
-                    array_unshift($images, $new_name);
-                    saveAtmospherePhotoOrder($upload_dir, $images);
                     $success = t("Photo uploaded and converted to JPG successfully!", "อัปโหลดและแปลงไฟล์รูปภาพบรรยากาศสำเร็จ!");
                 } else {
                     $error = "Failed to save uploaded photo.";
@@ -197,9 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $dest_path = $upload_dir . $new_name;
                 
                 if (move_uploaded_file($file_tmp, $dest_path)) {
-                    $images = getSortedAtmospherePhotos($upload_dir);
-                    array_unshift($images, $new_name);
-                    saveAtmospherePhotoOrder($upload_dir, $images);
                     $success = t("Photo uploaded successfully!", "อัปโหลดรูปภาพบรรยากาศสำเร็จ!");
                 } else {
                     $error = "Failed to save uploaded photo.";
@@ -224,10 +155,18 @@ $stmt = $pdo->query("SELECT music_id AS id, show_day AS day, show_time AS time, 
     END, show_time");
 $music_events = $stmt->fetchAll();
 
-// Scan gallery photos with custom order
+// Scan gallery photos
 $gallery_dir = __DIR__ . '/../images/live-music';
-$gallery_images = getSortedAtmospherePhotos($gallery_dir);
-?>
+$gallery_images = [];
+if (is_dir($gallery_dir)) {
+    $files = scandir($gallery_dir);
+    foreach ($files as $file) {
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            $gallery_images[] = $file;
+        }
+    }
+}
 ?>
 
 <div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
@@ -394,47 +333,13 @@ $gallery_images = getSortedAtmospherePhotos($gallery_dir);
 
     <!-- Gallery Grid -->
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <?php foreach ($gallery_images as $index => $img): ?>
-            <div class="relative overflow-hidden rounded-xl bg-zinc-950 border border-zinc-800 shadow-lg group flex flex-col justify-between">
-                <!-- Order Position Badge -->
-                <div class="absolute top-2 left-2 z-10 bg-amber-500/90 text-zinc-950 font-bold px-2 py-0.5 rounded text-[11px] shadow font-mono">
-                    #<?php echo $index + 1; ?>
-                </div>
-
-                <!-- Image Thumbnail -->
-                <div class="aspect-square overflow-hidden relative">
-                    <img src="../images/live-music/<?php echo htmlspecialchars($img); ?>" alt="Gallery" class="w-full h-full object-cover opacity-85 group-hover:scale-105 group-hover:opacity-100 transition-all duration-300">
-                </div>
-
-                <!-- Card Action Footer: Reorder & Delete -->
-                <div class="p-2 bg-zinc-900 border-t border-zinc-800 flex items-center justify-between gap-1">
-                    <!-- Move Left / Up Button -->
-                    <?php if ($index > 0): ?>
-                        <a href="music.php?action=move_photo&dir=left&filename=<?php echo urlencode($img); ?>" class="p-1.5 rounded bg-zinc-800 hover:bg-amber-500 hover:text-zinc-950 text-zinc-300 transition-colors" title="<?php echo t("Move Left", "ย้ายไปซ้าย"); ?>">
-                            <span class="material-symbols-outlined text-sm leading-none block">arrow_back</span>
-                        </a>
-                    <?php else: ?>
-                        <span class="p-1.5 rounded bg-zinc-800/30 text-zinc-600 cursor-not-allowed">
-                            <span class="material-symbols-outlined text-sm leading-none block">arrow_back</span>
-                        </span>
-                    <?php endif; ?>
-
-                    <!-- Delete Button -->
-                    <a href="javascript:void(0)" onclick="confirmDeletePhoto('<?php echo urlencode($img); ?>')" class="py-1 px-2 rounded bg-red-950/60 hover:bg-red-600 text-red-300 hover:text-white transition-colors text-[10px] font-sans font-medium flex items-center gap-1 border border-red-900/40">
-                        <span class="material-symbols-outlined text-xs leading-none">delete</span>
-                        <span><?php echo t("Delete", "ลบ"); ?></span>
-                    </a>
-
-                    <!-- Move Right / Down Button -->
-                    <?php if ($index < count($gallery_images) - 1): ?>
-                        <a href="music.php?action=move_photo&dir=right&filename=<?php echo urlencode($img); ?>" class="p-1.5 rounded bg-zinc-800 hover:bg-amber-500 hover:text-zinc-950 text-zinc-300 transition-colors" title="<?php echo t("Move Right", "ย้ายไปขวา"); ?>">
-                            <span class="material-symbols-outlined text-sm leading-none block">arrow_forward</span>
-                        </a>
-                    <?php else: ?>
-                        <span class="p-1.5 rounded bg-zinc-800/30 text-zinc-600 cursor-not-allowed">
-                            <span class="material-symbols-outlined text-sm leading-none block">arrow_forward</span>
-                        </span>
-                    <?php endif; ?>
+        <?php foreach ($gallery_images as $img): ?>
+            <?php 
+            ?>
+            <div class="relative overflow-hidden rounded-lg bg-zinc-950 border border-zinc-900 aspect-square group">
+                <img src="../images/live-music/<?php echo $img; ?>" alt="Gallery" class="w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-300">
+                <div class="absolute bottom-0 left-0 right-0 p-2 bg-zinc-950/90 flex justify-center items-center border-t border-zinc-900">
+                    <a href="javascript:void(0)" onclick="confirmDeletePhoto('<?php echo urlencode($img); ?>')" class="shadcn-btn-destructive py-1 px-2.5 text-[10px] w-full text-center"><?php echo t("Delete", "ลบภาพ"); ?></a>
                 </div>
             </div>
         <?php endforeach; ?>
