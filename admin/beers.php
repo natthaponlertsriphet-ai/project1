@@ -259,7 +259,7 @@ $all_beers = $stmt->fetchAll();
         <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
             <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
                 <span class="material-symbols-outlined text-amber-400 text-xl leading-none">inventory_2</span>
-                <span><?php echo t("Beers Inventory", "รายการแท็ปเบียร์สดทั้งหมดในบอร์ด"); ?> (<?php echo count($all_beers); ?>)</span>
+                <span><?php echo t("Beers Inventory", "ข้อมูลรายการเครื่องดื่ม"); ?> (<?php echo count($all_beers); ?>)</span>
             </h3>
             
             <div class="shadcn-table-container">
