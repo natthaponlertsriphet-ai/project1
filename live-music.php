@@ -204,6 +204,57 @@ require_once 'header.php';
         color: #ffd782;
         transform: scale(1.1);
     }
+    .live-status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 14px;
+        background: rgba(24, 20, 16, 0.85);
+        border: 1px solid rgba(255, 215, 130, 0.35);
+        border-radius: 30px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 215, 130, 0.12);
+        margin-bottom: 1rem;
+    }
+    .live-dot-wrapper {
+        position: relative;
+        width: 10px;
+        height: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .live-dot-core {
+        width: 7px;
+        height: 7px;
+        background-color: #10b981;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #10b981;
+        position: relative;
+        z-index: 2;
+    }
+    .live-dot-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 2px solid #34d399;
+        border-radius: 50%;
+        animation: liveRingPulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        z-index: 1;
+    }
+    @keyframes liveRingPulse {
+        0% { transform: scale(0.8); opacity: 0.9; }
+        60%, 100% { transform: scale(2.6); opacity: 0; }
+    }
+    .live-status-text {
+        font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #ffd782;
+        text-transform: uppercase;
+    }
 </style>
 
 <!-- Cover Banner Section -->
@@ -212,11 +263,12 @@ require_once 'header.php';
     <div class="music-hero-overlay"></div>
     
     <div class="container px-4 px-lg-5" style="position: relative; z-index: 2;">
-        <div class="d-flex align-items-center gap-2 mb-3">
-            <span class="badge bg-warning rounded-circle animate-pulse" style="width: 10px; height: 10px; padding:0; display:inline-block; box-shadow: 0 0 10px rgba(255,215,130,0.8);"></span>
-            <span class="font-mono text-warning text-uppercase tracking-widest" style="font-size: 11px;">
-                <?php echo t("LIVE SESSIONS TIMETABLE", "ตารางการแสดงดนตรีสด"); ?>
-            </span>
+        <div class="live-status-pill">
+            <div class="live-dot-wrapper">
+                <div class="live-dot-core"></div>
+                <div class="live-dot-ring"></div>
+            </div>
+            <span class="live-status-text"><?php echo t("LIVE SESSIONS TIMETABLE", "ตารางการแสดงดนตรีสด"); ?></span>
         </div>
         <h1 class="font-anton text-light text-uppercase tracking-wide display-4 mb-3 lh-1">
             <?php echo t("Stage Lineup", "ตารางดนตรีสด"); ?>
