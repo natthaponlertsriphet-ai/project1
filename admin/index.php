@@ -525,17 +525,23 @@ try {
 ?>
 
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
-    <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
         <div>
-            <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Dashboard Overview", "ภาพรวมตารางแดชบอร์ด"); ?></h1>
-            <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Console / Main Analytics", "คอนโซลผู้จัดการ / ข้อมูลวิเคราะห์หลัก"); ?></p>
+            <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-400 text-2xl">dashboard</span>
+                <span><?php echo t("Dashboard Overview", "ภาพรวมตารางแดชบอร์ด"); ?></span>
+            </h1>
+            <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Console / Main Analytics", "คอนโซลผู้จัดการ / ข้อมูลวิเคราะห์หลัก"); ?></p>
         </div>
     </div>
 <?php else: ?>
-    <div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
         <div>
-            <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Reservation Management", "ระบบจัดการคิวจองโต๊ะ"); ?></h1>
-            <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Staff Console / Booking Queue Operations", "คอนโซลพนักงาน / จัดการคิวจองโต๊ะร้าน"); ?></p>
+            <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-400 text-2xl">table_restaurant</span>
+                <span><?php echo t("Reservation Management", "ระบบจัดการคิวจองโต๊ะ"); ?></span>
+            </h1>
+            <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Staff Console / Booking Queue Operations", "คอนโซลพนักงาน / จัดการคิวจองโต๊ะร้าน"); ?></p>
         </div>
     </div>
 <?php endif; ?>
