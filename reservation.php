@@ -433,8 +433,11 @@ require_once 'header.php';
     <?php endif; ?>
 
     <?php if ($booking_success): ?>
-        <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5">
-            <h4 class="font-anton text-success text-uppercase tracking-wider mb-2"><?php echo t("BOOKING CONFIRMED (PENDING APPROVAL)", "จองโต๊ะสำเร็จ (รอแอดมินอนุมัติ)"); ?></h4>
+        <div class="alert alert-warning bg-warning bg-opacity-15 border border-warning border-opacity-40 text-light p-4 rounded-3 mb-5 shadow-lg">
+            <h4 class="font-anton text-warning text-uppercase tracking-wider mb-3 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-warning fs-4">confirmation_number</span>
+                <span><?php echo t("BOOKING DETAILS & STATUS", "รายละเอียดและสถานการณ์จอง"); ?></span>
+            </h4>
             <div class="font-mono small">
                 <div><strong><?php echo t("Booking Ref ID", "รหัสการจอง"); ?>:</strong> <?php echo $booking_success['id']; ?></div>
                 <div><strong><?php echo t("Customer Name", "ชื่อลูกค้า"); ?>:</strong> <?php echo $booking_success['name']; ?></div>
