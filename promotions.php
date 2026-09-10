@@ -118,7 +118,7 @@ require_once 'header.php';
                 <div class="live-dot-core"></div>
                 <div class="live-dot-ring"></div>
             </div>
-            <span class="live-status-text"><?php echo t("LIVE REAL-TIME SYNC", "อัปเดตข้อมูลเรียลไทม์สด"); ?></span>
+            <span class="live-status-text"><?php echo t("Promotions List", "รายการโปรโมชั่น"); ?></span>
         </div>
         <span class="font-mono text-warning mb-2 d-block tracking-widest text-uppercase" style="font-size: 11px; font-weight: bold;">
             <?php echo t("Chit Hole Experiences", "ชิตโฮล ประสบการณ์พิเศษ"); ?>
