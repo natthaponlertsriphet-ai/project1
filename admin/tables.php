@@ -288,9 +288,9 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
     <?php if ($show_form): ?>
     <!-- Left Column: Add/Edit Form (Only visible to ADMIN) -->
     <div class="lg:col-span-4">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">table_restaurant</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">table_restaurant</span>
                 <span><?php echo $is_editing ? t("Edit Table Details", "แก้ไขข้อมูลโต๊ะ") : t("Register Table", "เพิ่มโต๊ะใหม่"); ?></span>
             </h3>
             
@@ -302,13 +302,19 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Table Number", "หมายเลขโต๊ะ"); ?></label>
-                    <input type="text" name="number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the table number code.', '⚠️ กรุณาระบุรหัสหมายเลขโต๊ะบริการ'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. T1" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" value="<?php echo htmlspecialchars($number); ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">tag</span>
+                        <span><?php echo t("Table Number", "หมายเลขโต๊ะ"); ?></span>
+                    </label>
+                    <input type="text" name="number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the table number code.', '⚠️ กรุณาระบุรหัสหมายเลขโต๊ะบริการ'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. T1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed font-mono" value="<?php echo htmlspecialchars($number); ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Zone / Area", "โซนที่ตั้งโต๊ะ"); ?></label>
-                    <select name="zone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select a table location zone.', '⚠️ กรุณาเลือกโซนพื้นที่ตั้งโต๊ะ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">location_on</span>
+                        <span><?php echo t("Zone / Area", "โซนที่ตั้งโต๊ะ"); ?></span>
+                    </label>
+                    <select name="zone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select a table location zone.', '⚠️ กรุณาเลือกโซนพื้นที่ตั้งโต๊ะ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                         <option value="INDOOR_CENTER" <?php echo $zone === 'INDOOR_CENTER' ? 'selected' : ''; ?>><?php echo t("INDOOR CENTER (ตรงกลางห้องแอร์)", "INDOOR CENTER (ตรงกลางห้องแอร์)"); ?></option>
                         <option value="INDOOR_WINDOW" <?php echo $zone === 'INDOOR_WINDOW' ? 'selected' : ''; ?>><?php echo t("INDOOR WINDOW (ติดกระจก)", "INDOOR WINDOW (ติดกระจก)"); ?></option>
                         <option value="INDOOR" <?php echo $zone === 'INDOOR' ? 'selected' : ''; ?>><?php echo t("INDOOR GENERAL (ห้องแอร์ทั่วไป)", "INDOOR GENERAL (ห้องแอร์ทั่วไป)"); ?></option>
@@ -320,33 +326,42 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Capacity (Seats)", "ความจุที่นั่ง (ท่าน)"); ?></label>
-                    <input type="number" name="capacity" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify maximum seat capacity.', '⚠️ กรุณาระบุจำนวนความจุที่นั่งสูงสุด'); ?>')" oninput="this.setCustomValidity('')" min="1" max="50" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" value="<?php echo $capacity; ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">groups</span>
+                        <span><?php echo t("Capacity (Seats)", "ความจุที่นั่ง (ท่าน)"); ?></span>
+                    </label>
+                    <input type="number" name="capacity" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify maximum seat capacity.', '⚠️ กรุณาระบุจำนวนความจุที่นั่งสูงสุด'); ?>')" oninput="this.setCustomValidity('')" min="1" max="50" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed font-mono" value="<?php echo $capacity; ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Table Image", "รูปภาพโต๊ะ"); ?></label>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">image</span>
+                        <span><?php echo t("Table Image", "รูปภาพโต๊ะ"); ?></span>
+                    </label>
                     <?php if ($image): ?>
-                        <div class="mb-2 relative w-32 aspect-video rounded overflow-hidden border border-zinc-800 bg-zinc-950">
+                        <div class="mb-2 relative w-32 aspect-video rounded overflow-hidden border border-zinc-700 bg-zinc-950">
                             <img src="../<?php echo htmlspecialchars($image); ?>" alt="Preview" class="w-full h-full object-cover">
                         </div>
                         <div class="flex items-center gap-2 mb-2">
-                            <input type="checkbox" name="remove_image" id="remove-image" value="1" class="w-4 h-4 accent-warning cursor-pointer">
-                            <label for="remove-image" class="text-xs uppercase text-red-400 font-medium cursor-pointer select-none"><?php echo t("Remove Image", "ลบรูปภาพออก"); ?></label>
+                            <input type="checkbox" name="remove_image" id="remove-image" value="1" class="w-4 h-4 accent-amber-400 cursor-pointer">
+                            <label for="remove-image" class="text-xs uppercase text-red-400 font-semibold cursor-pointer select-none"><?php echo t("Remove Image", "ลบรูปภาพออก"); ?></label>
                         </div>
                     <?php endif; ?>
-                    <input type="file" name="image_file" accept="image/*" class="shadcn-input disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <input type="file" name="image_file" accept="image/*" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Initial Status", "สถานะการจองโต๊ะ"); ?></label>
-                    <select name="status" required class="shadcn-input bg-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">toggle_on</span>
+                        <span><?php echo t("Initial Status", "สถานะการจองโต๊ะ"); ?></span>
+                    </label>
+                    <select name="status" required class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                         <option value="AVAILABLE" <?php echo $status === 'AVAILABLE' ? 'selected' : ''; ?>><?php echo t("AVAILABLE (ว่าง)", "AVAILABLE (ว่าง)"); ?></option>
                         <option value="OCCUPIED" <?php echo $status === 'OCCUPIED' ? 'selected' : ''; ?>><?php echo t("OCCUPIED (ไม่ว่าง)", "OCCUPIED (ไม่ว่าง)"); ?></option>
                     </select>
                 </div>
 
-                <div class="flex gap-2 mt-2">
+                <div class="flex gap-2 mt-4">
                     <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF'): ?>
                         <div class="bg-amber-500/10 border border-amber-500/25 text-amber-400 p-3 rounded-md text-xs font-mono text-center w-full uppercase">
                             [<?php echo t("ADMIN Privilege Required", "เฉพาะผู้ดูแลระบบ"); ?>]
