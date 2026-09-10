@@ -922,7 +922,7 @@ foreach ($chart_monthly as $m) {
 
     <!-- Pending Requests Tab -->
     <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-amber-400 border-amber-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Pending Requests", "รายการส่งคำขอรออนุมัติ"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
+        <?php echo t("Pending Requests", "จัดการการอนุมัติยื่นยันการจอง"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
     </a>
 
     <!-- Confirmed Bookings Tab -->
