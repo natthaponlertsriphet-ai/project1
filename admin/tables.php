@@ -391,7 +391,7 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
         <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
             <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-2 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
                 <span class="material-symbols-outlined text-amber-400 text-xl leading-none">grid_view</span>
-                <span><?php echo t("Visual Seat Map (Click to Toggle)", "ผังที่นั่งร้านแบบโต้ตอบ (คลิกที่โต๊ะเพื่อเปิด/ปิดให้บริการ)"); ?></span>
+                <span><?php echo t("Visual Seat Map (Click to Toggle)", "ปรับปรุงสถานะโต๊ะว่าง (คลิกที่โต๊ะเพื่อเปิด/ปิดให้บริการ)"); ?></span>
             </h3>
             <p class="text-zinc-300 text-xs mb-6">
                 <?php echo t("Green tables are Available. Red tables are Occupied. Click on any table to instantly toggle its status.", "สีเขียวหมายถึงโต๊ะว่าง สีแดงหมายถึงโต๊ะไม่ว่าง/ปิดบริการ คลิกที่โต๊ะใดก็ได้เพื่อสลับสถานะทันที"); ?>
