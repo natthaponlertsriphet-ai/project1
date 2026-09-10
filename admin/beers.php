@@ -189,9 +189,9 @@ $all_beers = $stmt->fetchAll();
     
     <!-- Left Column: Add/Edit Form -->
     <div class="lg:col-span-4">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">add_circle</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">sports_bar</span>
                 <span><?php echo $is_editing ? t("Edit Tap Configuration", "แก้ไขข้อมูลแท็ปเบียร์") : t("Register New Tap", "เพิ่มแท็ปเบียร์ใหม่"); ?></span>
             </h3>
             
@@ -202,35 +202,46 @@ $all_beers = $stmt->fetchAll();
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Tap Number", "เลขแท็ป"); ?></label>
-                    <input type="text" name="tap_number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the beer tap number.', '⚠️ กรุณาระบุหมายเลขแท็ปเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 01" class="shadcn-input" value="<?php echo htmlspecialchars($tap_number); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">tag</span>
+                        <span><?php echo t("Tap Number", "เลขแท็ป"); ?></span>
+                    </label>
+                    <input type="text" name="tap_number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the beer tap number.', '⚠️ กรุณาระบุหมายเลขแท็ปเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 01" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($tap_number); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Brand / Brewery", "แบรนด์ / โรงผลิต"); ?></label>
-                    <input type="text" name="type" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the brewery brand.', '⚠️ กรุณาระบุชื่อแบรนด์หรือโรงผลิตเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Moonshine" class="shadcn-input" value="<?php echo htmlspecialchars($type); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">factory</span>
+                        <span><?php echo t("Brand / Brewery", "แบรนด์ / โรงผลิต"); ?></span>
+                    </label>
+                    <input type="text" name="type" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the brewery brand.', '⚠️ กรุณาระบุชื่อแบรนด์หรือโรงผลิตเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Moonshine" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($type); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Beer Name", "ชื่อเบียร์"); ?></label>
-                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the craft beer name.', '⚠️ กรุณาระบุชื่อเมนูเบียร์คราฟต์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Lager Light" class="shadcn-input" value="<?php echo htmlspecialchars($name); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">sports_bar</span>
+                        <span><?php echo t("Beer Name", "ชื่อเบียร์"); ?></span>
+                    </label>
+                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the craft beer name.', '⚠️ กรุณาระบุชื่อเมนูเบียร์คราฟต์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Lager Light" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($name); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("ABV (%)", "ระดับแอลกอฮอล์ (ABV)"); ?></label>
-                    <input type="text" name="abv" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the ABV percentage.', '⚠️ กรุณาระบุเปอร์เซ็นต์แอลกอฮอล์ ABV'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 5.0%" class="shadcn-input" value="<?php echo htmlspecialchars($abv); ?>">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">percent</span>
+                        <span><?php echo t("ABV (%)", "ระดับแอลกอฮอล์ (ABV)"); ?></span>
+                    </label>
+                    <input type="text" name="abv" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the ABV percentage.', '⚠️ กรุณาระบุเปอร์เซ็นต์แอลกอฮอล์ ABV'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 5.0%" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($abv); ?>">
                 </div>
-
-
 
                 <div class="flex items-center gap-2 py-1">
-                    <input type="checkbox" name="active" id="beer-active" class="w-4 h-4 accent-warning cursor-pointer" <?php echo $active ? 'checked' : ''; ?>>
-                    <label for="beer-active" class="text-xs uppercase text-zinc-400 font-medium tracking-wider cursor-pointer select-none"><?php echo t("Active on tap", "กำลังเปิดขายแท็ปนี้"); ?></label>
+                    <input type="checkbox" name="active" id="beer-active" class="w-4 h-4 accent-amber-400 cursor-pointer" <?php echo $active ? 'checked' : ''; ?>>
+                    <label for="beer-active" class="text-xs uppercase text-zinc-200 font-semibold tracking-wider cursor-pointer select-none"><?php echo t("Active on tap", "กำลังเปิดขายแท็ปนี้"); ?></label>
                 </div>
 
-                <div class="flex gap-2 mt-2">
-                    <button type="submit" class="shadcn-btn-primary flex-grow">
-                        <?php echo $is_editing ? t("Update Tap", "อัปเดตแท็ปเบียร์") : t("Register Tap", "บันทึกแท็ปเบียร์"); ?>
+                <div class="flex gap-2 mt-4">
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        <span><?php echo $is_editing ? t("Update Tap", "อัปเดตแท็ปเบียร์") : t("Register Tap", "บันทึกแท็ปเบียร์"); ?></span>
                     </button>
                     <?php if ($is_editing): ?>
                         <a href="beers.php" class="shadcn-btn-outline"><?php echo t("Cancel", "ยกเลิก"); ?></a>
