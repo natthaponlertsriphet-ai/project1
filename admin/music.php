@@ -259,21 +259,21 @@ if (is_dir($gallery_dir)) {
 
     <!-- Right Column: Lineups Rotation Table -->
     <div class="lg:col-span-8">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">calendar_view_week</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">calendar_view_week</span>
                 <span><?php echo t("Weekly Gigs Rotation", "ตารางหมุนเวียนโชว์สัปดาห์นี้"); ?> (<?php echo count($music_events); ?>)</span>
             </h3>
             
             <div class="shadcn-table-container">
                 <table class="shadcn-table">
                     <thead>
-                        <tr>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Day", "วัน"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Time", "เวลา"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Artist / Band", "วงดนตรี"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Description", "คำอธิบาย"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
+                        <tr class="border-b border-zinc-800">
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Day", "วัน"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Time", "เวลา"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Artist / Band", "วงดนตรี"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Description", "คำอธิบาย"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
                         </tr>
                     </thead>
                     <tbody class="font-sans text-sm text-zinc-300">
@@ -286,13 +286,13 @@ if (is_dir($gallery_dir)) {
                         <?php else: ?>
                             <?php foreach ($music_events as $event): ?>
                                 <tr>
-                                    <td class="font-anton text-warning text-base"><?php echo t($event['day'], $event['day']); ?></td>
+                                    <td class="font-anton text-amber-400 text-base"><?php echo t($event['day'], $event['day']); ?></td>
                                     <td class="text-zinc-200"><?php echo htmlspecialchars($event['time']); ?></td>
                                     <td class="font-semibold text-zinc-100"><?php echo htmlspecialchars($event['artist']); ?></td>
                                     <td class="text-zinc-400" style="max-width: 200px;"><?php echo htmlspecialchars($event['description']); ?></td>
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
-                                            <a href="music.php?action=edit&id=<?php echo $event['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
+                                            <a href="music.php?action=edit&id=<?php echo $event['id']; ?>" class="p-1 text-zinc-400 hover:text-amber-400 transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
                                             <a href="javascript:void(0)" onclick="confirmDeleteMusic('<?php echo $event['id']; ?>', '<?php echo htmlspecialchars($event['artist']); ?>', '<?php echo htmlspecialchars($event['day']); ?>', '<?php echo htmlspecialchars($event['time']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Schedule', 'ลบกำหนดการแสดง'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
@@ -307,17 +307,20 @@ if (is_dir($gallery_dir)) {
 </div>
 
 <!-- Dynamic Atmosphere Photos Uploader Grid Section -->
-<div class="shadcn-card">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-900 pb-4 mb-6">
+<div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6 mt-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-zinc-800 pb-4 mb-6">
         <div>
-            <h3 class="font-anton text-warning text-uppercase tracking-wider m-0 text-lg"><?php echo t("Manage Stage Atmosphere Photos", "จัดการรูปภาพบรรยากาศเวทีและร้าน"); ?></h3>
-            <p class="text-zinc-500 text-xs m-0 mt-1"><?php echo t("Upload new photos to show in the live music atmosphere gallery.", "อัปโหลดรูปภาพใหม่เพื่อนำไปแสดงผลบนหน้าเว็บลูกค้า"); ?></p>
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider m-0 text-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">photo_library</span>
+                <span><?php echo t("Manage Stage Atmosphere Photos", "จัดการรูปภาพบรรยากาศเวทีและร้าน"); ?></span>
+            </h3>
+            <p class="text-zinc-300 text-xs m-0 mt-1"><?php echo t("Upload new photos to show in the live music atmosphere gallery.", "อัปโหลดรูปภาพใหม่เพื่อนำไปแสดงผลบนหน้าเว็บลูกค้า"); ?></p>
         </div>
         
         <!-- File Uploader Form Link -->
         <form action="music.php" method="POST" enctype="multipart/form-data" class="flex items-center gap-2 shrink-0">
             <input type="hidden" name="action" value="upload_photo">
-            <label class="shadcn-btn-primary py-2 px-4 flex items-center gap-2 cursor-pointer text-xs">
+            <label class="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center gap-2 text-xs uppercase tracking-wider cursor-pointer">
                 <span class="material-symbols-outlined text-base leading-none">upload</span>
                 <span><?php echo t("Select Photo", "เลือกรูปภาพใหม่"); ?></span>
                 <input type="file" name="file" accept="image/*,.heic,.heif" class="hidden" onchange="this.form.submit()">

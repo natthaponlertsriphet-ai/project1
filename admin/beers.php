@@ -253,22 +253,22 @@ $all_beers = $stmt->fetchAll();
 
     <!-- Right Column: Inventory Table -->
     <div class="lg:col-span-8">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">inventory_2</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">inventory_2</span>
                 <span><?php echo t("Beers Inventory", "รายการแท็ปเบียร์สดทั้งหมดในบอร์ด"); ?> (<?php echo count($all_beers); ?>)</span>
             </h3>
             
             <div class="shadcn-table-container">
                 <table class="shadcn-table">
                     <thead>
-                        <tr>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Tap", "แท็ป"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Name", "ชื่อเบียร์"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Brand", "แบรนด์"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("ABV", "แอลกอฮอล์"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center"><?php echo t("Status", "สถานะ"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
+                        <tr class="border-b border-zinc-800">
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Tap", "แท็ป"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Name", "ชื่อเบียร์"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Brand", "แบรนด์"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("ABV", "แอลกอฮอล์"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Status", "สถานะ"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
                         </tr>
                     </thead>
                     <tbody class="font-sans text-sm text-zinc-300">
