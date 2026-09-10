@@ -937,7 +937,7 @@ foreach ($chart_monthly as $m) {
 
     <!-- Cancel Requests Tab -->
     <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-400 border-sky-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Cancel Requests", "คำขอยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
+        <?php echo t("Cancel Requests", "จัดการยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
     </a>
 
     <!-- Cancelled Bookings Tab -->
