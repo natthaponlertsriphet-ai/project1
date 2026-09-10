@@ -124,12 +124,12 @@ require_once 'header.php';
             <?php echo t("Chit Hole Experiences", "ชิตโฮล ประสบการณ์พิเศษ"); ?>
         </span>
         <h1 class="font-anton text-light text-uppercase display-3 leading-none m-0">
-            <?php echo t("Promotions", "โปรโมชัน"); ?>
+            <?php echo t("Promotions", "โปรโมชั่น"); ?>
         </h1>
         <p class="mt-4 text-secondary fs-5 m-0" style="max-width: 600px;">
             <?php echo t(
               "Taste fresh craft flavors at even better value. Explore our latest special privileges and promotions listed below.",
-              "ลิ้มลองรสชาติสดใหม่ในราคาที่คุ้มค่ากว่า เลือกดูสิทธิพิเศษและโปรโมชันล่าสุดได้ที่รายการด้านล่าง"
+              "ลิ้มลองรสชาติสดใหม่ในราคาที่คุ้มค่ากว่า เลือกดูสิทธิพิเศษและโปรโมชั่นล่าสุดได้ที่รายการด้านล่าง"
             ); ?>
         </p>
     </div>
@@ -139,7 +139,7 @@ require_once 'header.php';
 <div class="container px-4 px-lg-5 pb-5 promos-bento-grid" id="promotions-container">
     <?php if (empty($promotions)): ?>
         <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded w-100">
-            <?php echo t("No promotions active at the moment.", "ไม่มีโปรโมชันเปิดใช้งานในขณะนี้"); ?>
+            <?php echo t("No promotions active at the moment.", "ไม่มีโปรโมชั่นเปิดใช้งานในขณะนี้"); ?>
         </div>
     <?php else: ?>
         <!-- Dynamic promotions rendering -->
@@ -214,7 +214,7 @@ require_once 'header.php';
         if (!promos || promos.length === 0) {
             container.innerHTML = `
                 <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded w-100">
-                    <?php echo t("No promotions active at the moment.", "ไม่มีโปรโมชันเปิดใช้งานในขณะนี้"); ?>
+                    <?php echo t("No promotions active at the moment.", "ไม่มีโปรโมชั่นเปิดใช้งานในขณะนี้"); ?>
                 </div>
             `;
             return;

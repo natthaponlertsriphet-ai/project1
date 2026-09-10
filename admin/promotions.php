@@ -21,7 +21,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     try {
         $stmt = $pdo->prepare("DELETE FROM promotion WHERE promo_id = ?");
         $stmt->execute([$del_id]);
-        $success = t("Promotion offer deleted successfully.", "ลบโปรโมชันเรียบร้อยแล้ว.");
+        $success = t("Promotion offer deleted successfully.", "ลบโปรโมชั่นเรียบร้อยแล้ว.");
     } catch (Exception $e) {
         $error = "Error: " . $e->getMessage();
     }
@@ -47,12 +47,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status' && isset($_GET
                 'success' => true,
                 'id' => $toggle_id,
                 'is_active' => $new_active,
-                'message' => t("Promotion status toggled successfully.", "สลับสถานะโปรโมชันสำเร็จ.")
+                'message' => t("Promotion status toggled successfully.", "สลับสถานะโปรโมชั่นสำเร็จ.")
             ]);
             exit;
         }
 
-        $success = t("Promotion status toggled successfully.", "สลับสถานะโปรโมชันสำเร็จ.");
+        $success = t("Promotion status toggled successfully.", "สลับสถานะโปรโมชั่นสำเร็จ.");
     } catch (Exception $e) {
         if ($is_ajax) {
             header('Content-Type: application/json');
@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     // Reset
                     $title = $description = $offer = $period = $image = '';
                     $active = 1;
-                    $success = t("Promotion registered successfully!", "สร้างโปรโมชันใหม่เรียบร้อยแล้ว!");
+                    $success = t("Promotion registered successfully!", "สร้างโปรโมชั่นใหม่เรียบร้อยแล้ว!");
                 } catch (Exception $e) {
                     $error = "Error: " . $e->getMessage();
                 }
@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $is_editing = false;
                     $title = $description = $offer = $period = $image = '';
                     $active = 1;
-                    $success = t("Promotion details updated successfully!", "แก้ไขโปรโมชันสำเร็จ!");
+                    $success = t("Promotion details updated successfully!", "แก้ไขโปรโมชั่นสำเร็จ!");
                 } catch (Exception $e) {
                     $error = "Error: " . $e->getMessage();
                 }
@@ -194,7 +194,7 @@ $all_promos = $stmt->fetchAll();
     <div>
         <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2.5">
             <span class="material-symbols-outlined text-amber-400 text-2xl leading-none">local_offer</span>
-            <span><?php echo t("Promotions Manager", "จัดการรายการโปรโมชัน"); ?></span>
+            <span><?php echo t("Promotions Manager", "จัดการรายการโปรโมชั่น"); ?></span>
         </h1>
         <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Promotions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการข้อเสนอและกิจกรรม"); ?></p>
     </div>
@@ -221,7 +221,7 @@ $all_promos = $stmt->fetchAll();
         <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
             <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
                 <span class="material-symbols-outlined text-amber-400 text-xl leading-none">local_offer</span>
-                <span><?php echo $is_editing ? t("Edit Promo Properties", "แก้ไขข้อมูลโปรโมชัน") : t("Create Promotion Offer", "สร้างโปรโมชันใหม่"); ?></span>
+                <span><?php echo $is_editing ? t("Edit Promo Properties", "แก้ไขข้อมูลโปรโมชั่น") : t("Create Promotion Offer", "สร้างโปรโมชั่นใหม่"); ?></span>
             </h3>
             
             <form action="promotions.php" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
@@ -233,9 +233,9 @@ $all_promos = $stmt->fetchAll();
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
                         <span class="material-symbols-outlined text-amber-400 text-sm">campaign</span>
-                        <span><?php echo t("Promotion Title", "หัวข้อโปรโมชัน"); ?></span>
+                        <span><?php echo t("Promotion Title", "หัวข้อโปรโมชั่น"); ?></span>
                     </label>
-                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($title); ?>">
+                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($title); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -243,7 +243,7 @@ $all_promos = $stmt->fetchAll();
                         <span class="material-symbols-outlined text-amber-400 text-sm">schedule</span>
                         <span><?php echo t("Period / Schedule", "ช่วงเวลาจัด"); ?></span>
                     </label>
-                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($period); ?>">
+                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($period); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -266,7 +266,7 @@ $all_promos = $stmt->fetchAll();
                         <span class="material-symbols-outlined text-amber-400 text-sm">description</span>
                         <span><?php echo t("Description", "คำอธิบายเงื่อนไข"); ?></span>
                     </label>
-                    <textarea name="description" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide detailed promo offer terms.', '⚠️ กรุณาระบุคำอธิบายเงื่อนไขและรายละเอียดโปรโมชัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="Double the impact..." class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
+                    <textarea name="description" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide detailed promo offer terms.', '⚠️ กรุณาระบุคำอธิบายเงื่อนไขและรายละเอียดโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="Double the impact..." class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 min-h-[80px]" rows="3" style="resize: none;"><?php echo htmlspecialchars($description); ?></textarea>
                 </div>
 
                 <div class="flex items-center gap-2 py-1">
@@ -277,7 +277,7 @@ $all_promos = $stmt->fetchAll();
                 <div class="flex gap-2 mt-4">
                     <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
                         <span class="material-symbols-outlined text-base">save</span>
-                        <span><?php echo $is_editing ? t("Update Promo", "อัปเดตโปรโมชัน") : t("Create Promo", "บันทึกโปรโมชัน"); ?></span>
+                        <span><?php echo $is_editing ? t("Update Promo", "อัปเดตโปรโมชั่น") : t("Create Promo", "บันทึกโปรโมชั่น"); ?></span>
                     </button>
                     <?php if ($is_editing): ?>
                         <a href="promotions.php" class="shadcn-btn-outline"><?php echo t("Cancel", "ยกเลิก"); ?></a>
@@ -299,7 +299,7 @@ $all_promos = $stmt->fetchAll();
                 <table class="shadcn-table">
                     <thead>
                         <tr class="border-b border-zinc-800">
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Title", "ชื่อโปรโมชัน"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Title", "ชื่อโปรโมชั่น"); ?></th>
                             <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Period", "ช่วงเวลา"); ?></th>
                             <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Status", "สถานะ"); ?></th>
                             <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
@@ -309,7 +309,7 @@ $all_promos = $stmt->fetchAll();
                         <?php if (empty($all_promos)): ?>
                             <tr>
                                 <td colspan="4" class="text-center py-8 text-zinc-500">
-                                    <?php echo t("No promotions registered.", "ยังไม่มีการเพิ่มกิจกรรมโปรโมชัน"); ?>
+                                    <?php echo t("No promotions registered.", "ยังไม่มีการเพิ่มกิจกรรมโปรโมชั่น"); ?>
                                 </td>
                             </tr>
                         <?php else: ?>
@@ -318,7 +318,7 @@ $all_promos = $stmt->fetchAll();
                                     <td class="font-semibold text-zinc-100"><?php echo htmlspecialchars($promo['title']); ?></td>
                                     <td class="text-zinc-400"><?php echo htmlspecialchars($promo['period']); ?></td>
                                      <td class="text-center">
-                                         <a href="javascript:void(0)" onclick="togglePromoStatusRealtime(event, '<?php echo $promo['id']; ?>', this)" class="inline-block text-decoration-none" data-promo-id="<?php echo $promo['id']; ?>" data-promo-active="<?php echo $promo['active'] ? '1' : '0'; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโปรโมชัน'); ?>">
+                                         <a href="javascript:void(0)" onclick="togglePromoStatusRealtime(event, '<?php echo $promo['id']; ?>', this)" class="inline-block text-decoration-none" data-promo-id="<?php echo $promo['id']; ?>" data-promo-active="<?php echo $promo['active'] ? '1' : '0'; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโปรโมชั่น'); ?>">
                                              <span class="promo-status-badge badge py-1 px-2.5 rounded text-xs transition-all hover:scale-105 cursor-pointer" style="
                                                  <?php echo $promo['active'] ? 'background-color: rgba(25, 135, 84, 0.1); border: 1px solid rgba(25, 135, 84, 0.25); color: #75b798;' : 'background-color: rgba(63, 63, 70, 0.2); border: 1px solid rgba(63, 63, 70, 0.3); color: #a1a1aa;'; ?>
                                              ">
@@ -329,7 +329,7 @@ $all_promos = $stmt->fetchAll();
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="promotions.php?action=edit&id=<?php echo $promo['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="javascript:void(0)" onclick="confirmDeletePromo('<?php echo $promo['id']; ?>', '<?php echo htmlspecialchars($promo['title']); ?>', '<?php echo htmlspecialchars($promo['period']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Promotion', 'ลบโปรโมชัน'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeletePromo('<?php echo $promo['id']; ?>', '<?php echo htmlspecialchars($promo['title']); ?>', '<?php echo htmlspecialchars($promo['period']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Promotion', 'ลบโปรโมชั่น'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -403,7 +403,7 @@ function togglePromoStatusRealtime(event, promoId, el) {
                 </div>
                 <div>
                     <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
-                        <?php echo t("Confirm Promotion Deletion", "ยืนยันการลบรายการโปรโมชัน"); ?>
+                        <?php echo t("Confirm Promotion Deletion", "ยืนยันการลบรายการโปรโมชั่น"); ?>
                     </h3>
                     <span class="text-zinc-400 text-xs font-mono block mt-1">
                         <?php echo t("Remove promotion campaign from store", "ลบสิทธิพิเศษออกจากหน้าร้าน"); ?>
@@ -418,13 +418,13 @@ function togglePromoStatusRealtime(event, promoId, el) {
         <!-- Modal Body -->
         <div class="p-5">
             <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
-                <?php echo t("Are you sure you want to delete this promotion campaign?", "คุณแน่ใจหรือไม่ว่าต้องการลบรายการโปรโมชันนี้ออกจากระบบ?"); ?>
+                <?php echo t("Are you sure you want to delete this promotion campaign?", "คุณแน่ใจหรือไม่ว่าต้องการลบรายการโปรโมชั่นนี้ออกจากระบบ?"); ?>
             </p>
 
             <!-- Promo Info Badge -->
             <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-2">
                 <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
-                    <span class="text-zinc-400"><?php echo t("Campaign Title:", "ชื่อโปรโมชัน:"); ?></span>
+                    <span class="text-zinc-400"><?php echo t("Campaign Title:", "ชื่อโปรโมชั่น:"); ?></span>
                     <span id="delete-promo-title-display" class="font-semibold text-zinc-100 text-sm"></span>
                 </div>
                 <div class="flex justify-between items-center pt-0.5">
@@ -436,7 +436,7 @@ function togglePromoStatusRealtime(event, promoId, el) {
             <!-- Caution Alert -->
             <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
                 <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
-                <span><?php echo t("Action cannot be undone. Customers will no longer see this offer.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ โปรโมชันจะถูกยกเลิกทันที"); ?></span>
+                <span><?php echo t("Action cannot be undone. Customers will no longer see this offer.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ โปรโมชั่นจะถูกยกเลิกทันที"); ?></span>
             </div>
         </div>
 
@@ -447,7 +447,7 @@ function togglePromoStatusRealtime(event, promoId, el) {
             </button>
             <a id="confirm-delete-promo-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
                 <span class="material-symbols-outlined text-base">delete</span>
-                <span><?php echo t("Confirm Delete", "ยืนยันการลบโปรโมชัน"); ?></span>
+                <span><?php echo t("Confirm Delete", "ยืนยันการลบโปรโมชั่น"); ?></span>
             </a>
         </div>
     </div>

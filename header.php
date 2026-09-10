@@ -258,7 +258,7 @@ function is_active($page) {
                         <a class="nav-link px-3 <?php echo is_active('tap-list.php'); ?>" href="tap-list.php"><?php echo t("Beer Menu", "เมนูเบียร์สด"); ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 <?php echo is_active('promotions.php'); ?>" href="promotions.php"><?php echo t("Promotions", "โปรโมชัน"); ?></a>
+                        <a class="nav-link px-3 <?php echo is_active('promotions.php'); ?>" href="promotions.php"><?php echo t("Promotions", "โปรโมชั่น"); ?></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link px-3 <?php echo is_active('live-music.php'); ?>" href="live-music.php"><?php echo t("Live Music", "ดนตรีสด"); ?></a>
