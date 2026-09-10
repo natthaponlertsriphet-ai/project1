@@ -386,7 +386,7 @@ function is_admin_active($page) {
                 <li>
                     <a class="py-2.5 px-3 rounded-lg flex items-center gap-3 transition-all <?php echo is_admin_active('index.php'); ?>" href="index.php">
                         <span class="material-symbols-outlined text-lg leading-none text-amber-400"><?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'assignment' : 'dashboard'; ?></span>
-                        <span><?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? t("Manage Queue", "จัดการคิวจองโต๊ะ") : t("Dashboard", "หน้าหลักแดชบอร์ด"); ?></span>
+                        <span><?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? t("Manage Queue", "จัดการข้อมูลด้านการจองของลูกค้า") : t("Dashboard", "หน้าหลักแดชบอร์ด"); ?></span>
                     </a>
                 </li>
                 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>

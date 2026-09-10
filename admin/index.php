@@ -539,9 +539,9 @@ try {
         <div>
             <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2">
                 <span class="material-symbols-outlined text-amber-400 text-2xl">table_restaurant</span>
-                <span><?php echo t("Reservation Management", "ระบบจัดการคิวจองโต๊ะ"); ?></span>
+                <span><?php echo t("Reservation Management", "จัดการข้อมูลด้านการจองของลูกค้า"); ?></span>
             </h1>
-            <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Staff Console / Booking Queue Operations", "คอนโซลพนักงาน / จัดการคิวจองโต๊ะร้าน"); ?></p>
+            <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Staff Console / Booking Queue Operations", "คอนโซลพนักงาน / จัดการข้อมูลด้านการจองของลูกค้า"); ?></p>
         </div>
     </div>
 <?php endif; ?>
