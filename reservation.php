@@ -130,8 +130,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'poll_booking_statuses') {
             SELECT b.reservation_id AS id, b.reservation_status AS status, b.cancel_reason, b.customer_phone 
             FROM reservation b 
             WHERE (b.reservation_id LIKE ? OR b.customer_phone LIKE ? OR b.customer_name LIKE ?)
-              AND b.reservation_date >= ?
-            ORDER BY b.created_at DESC
+              AND b.reservation_date = ?
+            ORDER BY b.created_at DESC, b.reservation_time DESC
         ");
         $like_query = "%" . $q . "%";
         $stmt->execute([$like_query, $like_query, $like_query, $today]);
