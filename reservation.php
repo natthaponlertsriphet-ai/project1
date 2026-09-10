@@ -634,12 +634,18 @@ require_once 'header.php';
                     <input type="hidden" name="table_id" id="form-table-id" value="">
 
                     <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Date", "วันที่ต้องการจอง"); ?></label>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
+                            <span class="material-symbols-outlined text-amber-400" style="font-size: 14px;">calendar_today</span>
+                            <span><?php echo t("Date", "วันที่ต้องการจอง"); ?></span>
+                        </label>
                         <input type="date" name="date" id="booking-date" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Time Slot", "เวลาจอง"); ?></label>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
+                            <span class="material-symbols-outlined text-amber-400" style="font-size: 14px;">schedule</span>
+                            <span><?php echo t("Time Slot", "เวลาจอง"); ?></span>
+                        </label>
                         <input type="time" name="time_slot" id="booking-time" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" onchange="updateAvailability()" value="19:00">
                     </div>
 
