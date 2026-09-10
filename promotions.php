@@ -159,7 +159,7 @@ require_once 'header.php';
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
                                     <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                     <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
-                                    <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
+                                    <a href="reservation" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
                                         <span class="material-symbols-outlined fs-6">local_bar</span>
                                         <?php echo t("Book a Table", "จองโต๊ะ"); ?>
                                     </a>
@@ -180,7 +180,7 @@ require_once 'header.php';
                                 <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                 <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                 <div class="mt-auto">
-                                    <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
+                                    <a href="reservation" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
                                         <span class="material-symbols-outlined fs-6">local_bar</span>
                                         <?php echo t("Book a Table", "จองโต๊ะ"); ?>
                                     </a>
@@ -242,7 +242,7 @@ require_once 'header.php';
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;">${period}</span>
                                     <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1">${title}</h2>
                                     <p class="text-secondary small mb-4">${desc}</p>
-                                    <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
+                                    <a href="reservation" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
                                         <span class="material-symbols-outlined fs-6">local_bar</span>
                                         ${bookText}
                                     </a>
@@ -264,7 +264,7 @@ require_once 'header.php';
                                 <h2 class="font-anton text-uppercase text-light fs-3 mb-3">${title}</h2>
                                 <p class="text-secondary small mb-4">${desc}</p>
                                 <div class="mt-auto">
-                                    <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
+                                    <a href="reservation" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
                                         <span class="material-symbols-outlined fs-6">local_bar</span>
                                         ${bookText}
                                     </a>

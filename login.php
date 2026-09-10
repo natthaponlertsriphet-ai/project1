@@ -287,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Top Language & Navigation Bar -->
     <div class="fixed top-0 inset-x-0 z-20 flex justify-between items-center px-6 py-4">
-        <a href="index.php" class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-amber-400 transition-colors">
+        <a href="./" class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-400 hover:text-amber-400 transition-colors">
             <span class="material-symbols-outlined text-sm">arrow_back</span>
             <span><?php echo t("Back to Site", "กลับหน้าเว็บหลัก"); ?></span>
         </a>
@@ -331,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <!-- Form -->
-        <form action="login.php" method="POST" novalidate class="flex flex-col gap-4">
+        <form action="login" method="POST" novalidate class="flex flex-col gap-4">
             
             <!-- Email Field -->
             <div class="input-wrapper flex flex-col gap-1.5">
@@ -370,7 +370,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Card Footer -->
         <div class="text-center pt-3 border-t border-zinc-800/80 flex justify-between items-center text-xs font-sans text-zinc-500">
             <span>© <?php echo date('Y'); ?> CHIT HOLE CNX</span>
-            <a href="index.php" class="hover:text-amber-400 transition-colors text-decoration-none">
+            <a href="./" class="hover:text-amber-400 transition-colors text-decoration-none">
                 <?php echo t("Taproom Website", "หน้าหลักร้าน"); ?> &rarr;
             </a>
         </div>

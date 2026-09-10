@@ -1,0 +1,12 @@
+RewriteEngine On
+Options +FollowSymLinks -MultiViews
+
+# 1. Redirect external requests for *.php to clean URL (without .php)
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\ ]+)\.php\ HTTP/ [NC]
+RewriteRule ^([^\ ]+)\.php$ /$1 [R=301,L]
+
+# 2. Resolve clean URL to .php file internally
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*?)/?$ $1.php [L]

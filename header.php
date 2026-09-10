@@ -33,8 +33,11 @@ function getLangUrl($target_lang) {
 $current_page = basename($_SERVER['PHP_SELF']);
 function is_active($page) {
     global $current_page;
-    return ($current_page === $page) ? 'text-warning border-bottom border-warning border-2' : 'text-light';
+    $clean_page = preg_replace('/\.php$/', '', $page);
+    $clean_current = preg_replace('/\.php$/', '', $current_page);
+    return ($clean_current === $clean_page) ? 'text-warning border-bottom border-warning border-2' : 'text-light';
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $lang; ?>">
@@ -289,7 +292,7 @@ function is_active($page) {
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top py-3 at-top">
         <div class="container px-4 px-lg-5">
             <!-- Brand Logo -->
-            <a href="index.php" class="navbar-brand d-flex align-items-center gap-3">
+            <a href="./" class="navbar-brand d-flex align-items-center gap-3">
                 <div class="rounded overflow-hidden border border-warning-subtle shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                     <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
@@ -306,16 +309,16 @@ function is_active($page) {
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto gap-2 text-uppercase font-anton">
                     <li class="nav-item">
-                        <a class="nav-link px-3 <?php echo is_active('reservation.php'); ?>" href="reservation.php"><?php echo t("Booking", "จองโต๊ะ"); ?></a>
+                        <a class="nav-link px-3 <?php echo is_active('reservation'); ?>" href="reservation"><?php echo t("Booking", "จองโต๊ะ"); ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 <?php echo is_active('tap-list.php'); ?>" href="tap-list.php"><?php echo t("Beer Menu", "รายการเครื่องดื่ม"); ?></a>
+                        <a class="nav-link px-3 <?php echo is_active('tap-list'); ?>" href="tap-list"><?php echo t("Beer Menu", "รายการเครื่องดื่ม"); ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 <?php echo is_active('promotions.php'); ?>" href="promotions.php"><?php echo t("Promotions", "รายการโปรโมชัน"); ?></a>
+                        <a class="nav-link px-3 <?php echo is_active('promotions'); ?>" href="promotions"><?php echo t("Promotions", "รายการโปรโมชัน"); ?></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 <?php echo is_active('live-music.php'); ?>" href="live-music.php"><?php echo t("Live Music", "ตารางเวลาการแสดงดนตรีสด"); ?></a>
+                        <a class="nav-link px-3 <?php echo is_active('live-music'); ?>" href="live-music"><?php echo t("Live Music", "ตารางเวลาการแสดงดนตรีสด"); ?></a>
                     </li>
                 </ul>
                 
@@ -329,7 +332,7 @@ function is_active($page) {
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <a href="admin/index.php" class="admin-nav-btn btn btn-outline-warning btn-sm font-anton text-uppercase px-3"><?php echo t("Console", "แดชบอร์ด"); ?></a>
                     <?php else: ?>
-                        <a href="login.php" class="admin-nav-btn btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Admin", "แอดมิน"); ?></a>
+                        <a href="login" class="admin-nav-btn btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Admin", "แอดมิน"); ?></a>
                     <?php endif; ?>
                 </div>
             </div>
