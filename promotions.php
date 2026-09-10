@@ -1,9 +1,22 @@
 <?php
 require_once 'db.php';
 
-// Fetch active promotions
+// Live Real-Time AJAX Sync Endpoint
+if (isset($_GET['action']) && $_GET['action'] === 'get_live_promotions') {
+    header('Content-Type: application/json');
+    try {
+        $stmt = $pdo->query("SELECT promo_id AS id, promo_title AS title, description, offer, promo_period AS period, image_path AS image FROM promotion WHERE is_active = 1 ORDER BY promo_id DESC");
+        $live_promos = $stmt->fetchAll();
+        echo json_encode(['success' => true, 'data' => $live_promos]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+// Fetch active promotions initially
 try {
-    $stmt = $pdo->query("SELECT * FROM promotion WHERE is_active = 1");
+    $stmt = $pdo->query("SELECT promo_id AS id, promo_title AS title, description, offer, promo_period AS period, image_path AS image FROM promotion WHERE is_active = 1 ORDER BY promo_id DESC");
     $promotions = $stmt->fetchAll();
 } catch (Exception $e) {
     $promotions = [];
@@ -45,6 +58,13 @@ require_once 'header.php';
         position: relative;
         z-index: 2;
     }
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(1.2); }
+    }
+    .live-pulse-dot {
+        animation: pulseDot 1.8s infinite ease-in-out;
+    }
 </style>
 
 <!-- Hero / Header Section -->
@@ -53,6 +73,10 @@ require_once 'header.php';
     <div class="promos-hero-overlay"></div>
     
     <div class="container px-4 px-lg-5" style="position: relative; z-index: 2;">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded-full font-mono text-xs mb-3 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 live-pulse-dot" style="width: 8px; height: 8px; display: inline-block;"></span>
+            <span class="tracking-wider uppercase" style="font-size: 11px; font-weight: 700;"><?php echo t("LIVE REAL-TIME SYNC", "อัปเดตข้อมูลเรียลไทม์สด"); ?></span>
+        </div>
         <span class="font-mono text-warning mb-2 d-block tracking-widest text-uppercase" style="font-size: 11px; font-weight: bold;">
             <?php echo t("Chit Hole Experiences", "ชิตโฮล ประสบการณ์พิเศษ"); ?>
         </span>
@@ -69,7 +93,7 @@ require_once 'header.php';
 </section>
 
 <!-- Featured Promotions Bento Grid -->
-<div class="container px-4 px-lg-5 pb-5 promos-bento-grid">
+<div class="container px-4 px-lg-5 pb-5 promos-bento-grid" id="promotions-container">
     <?php if (empty($promotions)): ?>
         <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded w-100">
             <?php echo t("No promotions active at the moment.", "ไม่มีโปรโมชันเปิดใช้งานในขณะนี้"); ?>
@@ -85,12 +109,12 @@ require_once 'header.php';
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
                                 <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image_path']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
+                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
                                     <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to right, transparent, #201f1f); opacity: 1;"></div>
                                 </div>
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10">
-                                    <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['promo_period']); ?></span>
-                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['promo_title']); ?></h2>
+                                    <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
+                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                     <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                     <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
                                         <span class="material-symbols-outlined fs-6">local_bar</span>
@@ -105,12 +129,12 @@ require_once 'header.php';
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
                             <div class="position-relative overflow-hidden" style="height: 200px;">
-                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image_path']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
+                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
                                 <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to bottom, transparent, #201f1f); opacity: 1;"></div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
-                                <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['promo_period']); ?></span>
-                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['promo_title']); ?></h2>
+                                <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
+                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                 <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                 <div class="mt-auto">
                                     <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
@@ -126,5 +150,109 @@ require_once 'header.php';
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+    let currentPromoHash = JSON.stringify(<?php echo json_encode($promotions); ?>);
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function renderLivePromotions(promos) {
+        const container = document.getElementById('promotions-container');
+        if (!container) return;
+
+        if (!promos || promos.length === 0) {
+            container.innerHTML = `
+                <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded w-100">
+                    <?php echo t("No promotions active at the moment.", "ไม่มีโปรโมชันเปิดใช้งานในขณะนี้"); ?>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="row g-4">';
+        promos.forEach((promo, index) => {
+            const isLarge = (index % 2 === 0);
+            const title = escapeHtml(promo.title);
+            const period = escapeHtml(promo.period);
+            const desc = escapeHtml(promo.description).replace(/\n/g, '<br>');
+            const image = escapeHtml(promo.image);
+            const bookText = "<?php echo t('Book a Table', 'จองโต๊ะ'); ?>";
+
+            if (isLarge) {
+                html += `
+                    <div class="col-xl-7">
+                        <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
+                            <div class="row g-0 h-100">
+                                <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
+                                    <div class="h-100 w-100" style="background-image: url('${image}'); background-size: cover; background-position: center; position:absolute;"></div>
+                                    <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to right, transparent, #201f1f); opacity: 1;"></div>
+                                </div>
+                                <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10">
+                                    <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;">${period}</span>
+                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1">${title}</h2>
+                                    <p class="text-secondary small mb-4">${desc}</p>
+                                    <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
+                                        <span class="material-symbols-outlined fs-6">local_bar</span>
+                                        ${bookText}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="col-xl-5">
+                        <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
+                            <div class="position-relative overflow-hidden" style="height: 200px;">
+                                <div class="h-100 w-100" style="background-image: url('${image}'); background-size: cover; background-position: center; position:absolute;"></div>
+                                <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to bottom, transparent, #201f1f); opacity: 1;"></div>
+                            </div>
+                            <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
+                                <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;">${period}</span>
+                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3">${title}</h2>
+                                <p class="text-secondary small mb-4">${desc}</p>
+                                <div class="mt-auto">
+                                    <a href="reservation.php" class="btn btn-custom-gold py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
+                                        <span class="material-symbols-outlined fs-6">local_bar</span>
+                                        ${bookText}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function checkLivePromotions() {
+        fetch('promotions.php?action=get_live_promotions')
+            .then(res => res.json())
+            .then(res => {
+                if (res.success && res.data) {
+                    const newHash = JSON.stringify(res.data);
+                    if (newHash !== currentPromoHash) {
+                        currentPromoHash = newHash;
+                        renderLivePromotions(res.data);
+                    }
+                }
+            })
+            .catch(err => console.log('Live sync error:', err));
+    }
+
+    // Auto sync every 3.5 seconds
+    setInterval(checkLivePromotions, 3500);
+</script>
 
 <?php require_once 'footer.php'; ?>
