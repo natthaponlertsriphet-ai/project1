@@ -433,7 +433,7 @@ require_once 'header.php';
     <?php endif; ?>
 
     <?php if ($booking_success): ?>
-        <div class="alert alert-warning bg-warning bg-opacity-15 border border-warning border-opacity-40 text-light p-4 rounded-3 mb-5 shadow-lg">
+        <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5 shadow-lg">
             <h4 class="font-anton text-warning text-uppercase tracking-wider mb-3 d-flex align-items-center gap-2">
                 <span class="material-symbols-outlined text-warning fs-4">confirmation_number</span>
                 <span><?php echo t("BOOKING DETAILS & STATUS", "รายละเอียดและสถานการณ์จอง"); ?></span>
@@ -445,11 +445,9 @@ require_once 'header.php';
                 <div><strong><?php echo t("Date & Slot", "วันและเวลา"); ?>:</strong> <?php echo $booking_success['date']; ?> @ <?php echo $booking_success['time_slot']; ?></div>
                 <div><strong><?php echo t("Table Number", "โต๊ะที่เลือก"); ?>:</strong> <?php echo $booking_success['table_number']; ?> (<?php echo $booking_success['pax']; ?> Pax)</div>
             </div>
-            <div class="mt-3 text-black" style="font-size: 18px;">
+            <div class="mt-3 text-light text-opacity-90" style="font-size: 15px;">
                 <?php echo t("Please take a screenshot of this receipt. Show it to our staff upon arrival.", "กรุณาแคปหน้าจอหลักฐานชิ้นนี้เพื่อยื่นให้พนักงานร้านตรวจสอบเมื่อคุณเดินทางมาถึง"); ?>
             </div>
-            
-
         </div>
     <?php endif; ?>
 
