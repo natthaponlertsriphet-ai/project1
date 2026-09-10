@@ -185,9 +185,9 @@ $all_staff = $stmt->fetchAll();
     
     <!-- Left Column: Add/Edit Form -->
     <div class="lg:col-span-4">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">manage_accounts</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">manage_accounts</span>
                 <span><?php echo $is_editing ? t("Edit User Details", "แก้ไขข้อมูลพนักงาน") : t("Register Team User", "เพิ่มบัญชีพนักงาน"); ?></span>
             </h3>
             
@@ -198,36 +198,49 @@ $all_staff = $stmt->fetchAll();
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Full Name", "ชื่อ-นามสกุล"); ?></label>
-                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify staff full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Somchai" class="shadcn-input" value="<?php echo htmlspecialchars($name); ?>">
-                </div>
-
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("Email Address", "อีเมลล็อกอิน"); ?></label>
-                    <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify login email address.', '⚠️ กรุณาระบุอีเมลล็อกอินของพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. staff@chithole.com" class="shadcn-input" value="<?php echo htmlspecialchars($email); ?>">
-                </div>
-
-                <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider">
-                        <?php echo t("Password", "รหัสผ่าน"); ?>
-                        <?php if ($is_editing): ?>
-                            <span class="text-zinc-500 text-[10px] lowercase normal-case"><?php echo t("(Leave blank to keep current)", "(เว้นว่างไว้เพื่อรักษารหัสผ่านเดิม)"); ?></span>
-                        <?php endif; ?>
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">badge</span>
+                        <span><?php echo t("Full Name", "ชื่อ-นามสกุล"); ?></span>
                     </label>
-                    <input type="password" name="password" placeholder="••••••••" class="shadcn-input" <?php echo $is_editing ? '' : 'required oninvalid="this.setCustomValidity(\'' . t('⚠️ Please specify account password.', '⚠️ กรุณาระบุรหัสผ่านเข้าใช้งาน') . '\')" oninput="this.setCustomValidity(\'\')"'; ?>>
+                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify staff full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Somchai" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($name); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                    <label class="text-xs uppercase text-zinc-400 font-medium tracking-wider"><?php echo t("System Role", "ระดับสิทธิ์ระบบ"); ?></label>
-                    <select name="role" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select a system role.', '⚠️ กรุณาเลือกระดับสิทธิ์เข้าถึงระบบ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input bg-zinc-950">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">mail</span>
+                        <span><?php echo t("Email Address", "อีเมลล็อกอิน"); ?></span>
+                    </label>
+                    <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify login email address.', '⚠️ กรุณาระบุอีเมลล็อกอินของพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. staff@chithole.com" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($email); ?>">
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">key</span>
+                        <span>
+                            <?php echo t("Password", "รหัสผ่าน"); ?>
+                            <?php if ($is_editing): ?>
+                                <span class="text-zinc-400 text-[10px] lowercase normal-case ml-1"><?php echo t("(Leave blank to keep current)", "(เว้นว่างไว้เพื่อรักษารหัสผ่านเดิม)"); ?></span>
+                            <?php endif; ?>
+                        </span>
+                    </label>
+                    <input type="password" name="password" placeholder="••••••••" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" <?php echo $is_editing ? '' : 'required oninvalid="this.setCustomValidity(\'' . t('⚠️ Please specify account password.', '⚠️ กรุณาระบุรหัสผ่านเข้าใช้งาน') . '\')" oninput="this.setCustomValidity(\'\')"'; ?>>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">admin_panel_settings</span>
+                        <span><?php echo t("System Role", "ระดับสิทธิ์ระบบ"); ?></span>
+                    </label>
+                    <select name="role" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select a system role.', '⚠️ กรุณาเลือกระดับสิทธิ์เข้าถึงระบบ'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 focus:border-amber-400">
                         <option value="STAFF" <?php echo $role === 'STAFF' ? 'selected' : ''; ?>><?php echo t("STAFF (พนักงานบริการลูกค้า)", "STAFF (พนักงานบริการลูกค้า)"); ?></option>
                         <option value="ADMIN" <?php echo $role === 'ADMIN' ? 'selected' : ''; ?>><?php echo t("ADMIN (ผู้ดูแลระบบหลังบ้าน)", "ADMIN (ผู้ดูแลระบบหลังบ้าน)"); ?></option>
                     </select>
                 </div>
 
-                <div class="flex gap-2 mt-2">
-                    <button type="submit" class="shadcn-btn-primary flex-grow">
-                        <?php echo $is_editing ? t("Update Staff", "อัปเดตสิทธิ์") : t("Register Staff", "บันทึกบัญชีพนักงาน"); ?>
+                <div class="flex gap-2 mt-4">
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                        <span class="material-symbols-outlined text-base">save</span>
+                        <span><?php echo $is_editing ? t("Update Staff", "อัปเดตสิทธิ์") : t("Register Staff", "บันทึกบัญชีพนักงาน"); ?></span>
                     </button>
                     <?php if ($is_editing): ?>
                         <a href="staff.php" class="shadcn-btn-outline"><?php echo t("Cancel", "ยกเลิก"); ?></a>
