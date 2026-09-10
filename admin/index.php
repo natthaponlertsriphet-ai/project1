@@ -904,7 +904,7 @@ foreach ($chart_monthly as $m) {
 <?php endif; ?>
 
 <!-- Reservation Management Tabs -->
-<div class="flex gap-2 mb-6 border-b border-zinc-900 pb-px">
+<div class="flex gap-2 mb-6 border-b border-zinc-800 pb-px flex-wrap">
     <?php 
     $p_count = count($pending_bookings);
     $c_count = count($confirmed_bookings);
@@ -915,33 +915,33 @@ foreach ($chart_monthly as $m) {
     ?>
 
     <!-- Pending Requests Tab -->
-    <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-warning border-warning' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-amber-400 border-amber-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
         <?php echo t("Pending Requests", "รายการส่งคำขอรออนุมัติ"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
     </a>
 
     <!-- Confirmed Bookings Tab -->
-    <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-500 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-400 border-emerald-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
         <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (<span id="count-confirmed"><?php echo $c_count; ?></span>)
     </a>
 
     <!-- Completed Bookings Tab -->
-    <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
         <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (<span id="count-completed"><?php echo $comp_count; ?></span>)
     </a>
 
     <!-- Cancel Requests Tab -->
-    <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-500 border-sky-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-400 border-sky-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
         <?php echo t("Cancel Requests", "คำขอยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
     </a>
 
     <!-- Cancelled Bookings Tab -->
-    <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton text-uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-500 border-rose-500' : 'text-zinc-500 border-transparent hover:text-zinc-300'; ?>">
+    <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-400 border-rose-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
         <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (<span id="count-cancelled"><?php echo $cl_count; ?></span>)
     </a>
 </div>
 
 <!-- Reservations Table Container -->
-<div class="shadcn-card">
+<div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
     <?php if (in_array($active_tab, ['completed', 'cancelled'])): ?>
         <?php
         // 1. Parse filter values
@@ -1009,24 +1009,24 @@ foreach ($chart_monthly as $m) {
         } catch (Exception $e) {}
         ?>
         
-        <div class="mb-6 pb-6 border-b border-zinc-900/60 flex flex-col md:flex-row gap-6 items-start w-full">
+        <div class="mb-6 pb-6 border-b border-zinc-800 flex flex-col md:flex-row gap-6 items-start w-full">
             <div class="w-full md:w-auto">
                 <!-- iOS Segmented Control -->
-                <div class="grid grid-cols-4 bg-zinc-950 p-1 rounded-xl w-full md:w-max border border-zinc-900">
+                <div class="grid grid-cols-4 bg-zinc-950 p-1 rounded-xl w-full md:w-max border border-zinc-800">
                     <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=all" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'all' ? 'bg-zinc-900 text-warning border border-zinc-800 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'; ?>">
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'all' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
                         <?php echo t("Show All", "ทั้งหมด"); ?>
                     </a>
                     <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $view_month; ?>" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'day' ? 'bg-zinc-900 text-warning border border-zinc-800 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'; ?>">
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'day' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
                         <?php echo t("Daily", "รายวัน"); ?>
                     </a>
                     <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $view_year; ?>" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'month' ? 'bg-zinc-900 text-warning border border-zinc-800 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'; ?>">
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'month' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
                         <?php echo t("Monthly", "รายเดือน"); ?>
                     </a>
                     <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=year&filter_val_year=<?php echo $selected_year; ?>" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'year' ? 'bg-zinc-900 text-warning border border-zinc-800 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'; ?>">
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'year' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
                         <?php echo t("Yearly", "รายปี"); ?>
                     </a>
                 </div>
@@ -1035,7 +1035,7 @@ foreach ($chart_monthly as $m) {
             <!-- Dynamic iOS Calendar Panel -->
             <div class="w-full max-w-[340px] bg-white p-4 rounded-2xl border border-zinc-200 shadow-lg text-zinc-950">
                 <?php if ($filter_type === 'all'): ?>
-                    <div class="text-zinc-400 text-xs font-mono text-center py-6">
+                    <div class="text-zinc-500 text-xs font-mono text-center py-6">
                         <?php echo t("Showing all records without date filtering.", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>
                     </div>
                 
@@ -1048,194 +1048,120 @@ foreach ($chart_monthly as $m) {
                                 1 => 'มกราคม', 2 => 'กุมภาพันธ์', 3 => 'มีนาคม', 4 => 'เมษายน', 5 => 'พฤษภาคม', 6 => 'มิถุนายน',
                                 7 => 'กรกฎาคม', 8 => 'สิงหาคม', 9 => 'กันยายน', 10 => 'ตุลาคม', 11 => 'พฤศจิกายน', 12 => 'ธันวาคม'
                             ];
-                            $en_month_names = [
-                                1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June',
-                                7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
-                            ];
-                            $disp_month = t($en_month_names[$c_month], $thai_month_names[$c_month]);
-                            $disp_year = $lang === 'th' ? ($c_year + 543) : $c_year;
-                            echo "$disp_month $disp_year";
+                            echo $thai_month_names[$c_month] . " " . ($c_year + 543);
                             ?>
                         </span>
-                        <div class="flex gap-3 text-zinc-500">
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $prev_month; ?>" 
-                               class="hover:text-warning transition-colors flex items-center justify-center p-1 rounded-full hover:bg-zinc-100">
-                                <span class="material-symbols-outlined text-base">chevron_left</span>
+                        <div class="flex gap-1">
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $prev_month; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
                             </a>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $next_month; ?>" 
-                               class="hover:text-warning transition-colors flex items-center justify-center p-1 rounded-full hover:bg-zinc-100">
-                                <span class="material-symbols-outlined text-base">chevron_right</span>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $next_month; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
                             </a>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-7 gap-1 text-[9px] uppercase font-bold tracking-wider text-zinc-950 text-center mb-2">
-                        <span><?php echo t("Su", "อา"); ?></span>
-                        <span><?php echo t("Mo", "จ"); ?></span>
-                        <span><?php echo t("Tu", "อ"); ?></span>
-                        <span><?php echo t("We", "พ"); ?></span>
-                        <span><?php echo t("Th", "พฤ"); ?></span>
-                        <span><?php echo t("Fr", "ศ"); ?></span>
-                        <span><?php echo t("Sa", "ส"); ?></span>
+
+                    <div class="grid grid-cols-7 gap-1 text-center font-mono text-[10px] text-zinc-400 mb-2 font-bold uppercase">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                     </div>
-                    
-                    <div class="grid grid-cols-7 gap-1 text-center text-xs">
+
+                    <div class="grid grid-cols-7 gap-1 text-center font-mono text-xs">
                         <?php for ($i = 0; $i < $first_day_of_week; $i++): ?>
-                            <span class="aspect-square flex items-center justify-center text-zinc-300">-</span>
+                            <div class="py-1.5 text-transparent">.</div>
                         <?php endfor; ?>
                         
-                        <?php for ($d = 1; $d <= $days_in_month; $d++): ?>
+                        <?php for ($day = 1; $day <= $days_in_month; $day++): ?>
                             <?php 
-                            $day_str = sprintf('%s-%02d', $view_month, $d);
-                            $is_active = ($day_str === $selected_date);
-                            $is_today = ($day_str === date('Y-m-d'));
-                            $has_events = isset($event_days[$day_str]);
+                            $d_str = sprintf("%02d", $day);
+                            $date_key = "$view_month-$d_str";
+                            $is_selected = ($date_key === $selected_date);
+                            $has_event = isset($event_days[$date_key]);
                             ?>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $day_str; ?>&view_month=<?php echo $view_month; ?>" 
-                               class="aspect-square flex flex-col items-center justify-center rounded-full relative transition-all text-decoration-none <?php 
-                                   echo $is_active 
-                                       ? 'bg-warning text-zinc-950 font-bold shadow-md' 
-                                       : ($is_today 
-                                           ? 'border border-warning text-warning font-bold' 
-                                           : 'text-zinc-800 hover:bg-zinc-100'); 
-                               ?>" style="width: 100%;">
-                                <span class="leading-none mt-[-2px]"><?php echo $d; ?></span>
-                                <?php if ($has_events): ?>
-                                    <span class="w-1 h-1 rounded-full absolute bottom-1 <?php echo $is_active ? 'bg-zinc-950' : 'bg-zinc-400'; ?>"></span>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $date_key; ?>&view_month=<?php echo $view_month; ?>" 
+                               class="py-1.5 rounded-lg font-medium transition-all relative flex items-center justify-center text-decoration-none
+                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
+                                <span><?php echo $day; ?></span>
+                                <?php if ($has_event): ?>
+                                    <span class="absolute bottom-0.5 w-1 h-1 rounded-full <?php echo $is_selected ? 'bg-zinc-950' : 'bg-amber-500'; ?>"></span>
                                 <?php endif; ?>
                             </a>
                         <?php endfor; ?>
                     </div>
-                    
-                    <div class="mt-4 pt-4 border-t border-zinc-100 flex justify-between items-center">
-                        <span class="text-[10px] text-zinc-400"><?php echo t("Select other date:", "เลือกวันที่อื่น:"); ?></span>
-                        <input type="date" value="<?php echo $selected_date; ?>" 
-                               onchange="window.location.href='index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=' + this.value + '&view_month=' + this.value.substring(0,7)" 
-                               class="max-w-[140px] text-xs font-mono bg-zinc-50 text-zinc-800 border border-zinc-200 rounded p-1" style="height: 28px;">
-                    </div>
-                    
+
                 <?php elseif ($filter_type === 'month'): ?>
-                    <!-- iPhone Month Grid (12 Months of the selected year) -->
+                    <!-- iPhone Year Grid Calendar -->
                     <div class="flex justify-between items-center mb-4 px-1">
                         <span class="text-xs font-bold text-zinc-800">
-                            <?php echo t("Select Month of ", "เลือกเดือนของปี ") . ($lang === 'th' ? ($view_year + 543) : $view_year); ?>
+                            <?php echo t("Year ", "ปี ค.ศ. ") . $view_year . " (" . ($view_year + 543) . ")"; ?>
                         </span>
-                        <div class="flex gap-3 text-zinc-500">
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $prev_year; ?>" 
-                               class="hover:text-warning transition-colors flex items-center justify-center p-1 rounded-full hover:bg-zinc-100">
-                                <span class="material-symbols-outlined text-base">chevron_left</span>
+                        <div class="flex gap-1">
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $prev_year; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
                             </a>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $next_year; ?>" 
-                               class="hover:text-warning transition-colors flex items-center justify-center p-1 rounded-full hover:bg-zinc-100">
-                                <span class="material-symbols-outlined text-base">chevron_right</span>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $next_year; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
                             </a>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+
+                    <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
                         <?php 
-                        $thai_months = [
-                            1 => 'ม.ค.', 2 => 'ก.พ.', 3 => 'มี.ค.', 4 => 'เม.ย.', 5 => 'พ.ค.', 6 => 'มิ.ย.',
-                            7 => 'ก.ค.', 8 => 'ส.ค.', 9 => 'ก.ย.', 10 => 'ต.ค.', 11 => 'พ.ย.', 12 => 'ธ.ค.'
-                        ];
-                        $en_months = [
-                            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'May', 6 => 'Jun',
-                            7 => 'Jul', 8 => 'Aug', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dec'
-                        ];
-                        
-                        for ($m = 1; $m <= 12; $m++):
-                            $m_str = sprintf('%d-%02d', $view_year, $m);
-                            $is_active = ($m_str === $selected_month);
-                            $is_current_month = ($m_str === date('Y-m'));
-                            $has_events = isset($event_months[$m_str]);
-                            $m_label = t($en_months[$m], $thai_months[$m]);
-                            ?>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $m_str; ?>&view_year=<?php echo $view_year; ?>" 
-                               class="h-10 rounded-xl border flex flex-col items-center justify-center relative transition-all text-decoration-none <?php 
-                                   echo $is_active 
-                                       ? 'bg-warning text-zinc-950 font-bold border-warning shadow-sm' 
-                                       : ($is_current_month 
-                                           ? 'border border-warning text-warning font-bold' 
-                                           : 'text-zinc-800 border-zinc-200 hover:bg-zinc-100'); 
-                               ?>">
-                                <span class="leading-none"><?php echo $m_label; ?></span>
-                                <?php if ($has_events): ?>
-                                    <span class="w-1 h-1 rounded-full absolute bottom-1 <?php echo $is_active ? 'bg-zinc-950' : 'bg-zinc-400'; ?>"></span>
+                        $m_short = ['01'=>'ม.ค.', '02'=>'ก.พ.', '03'=>'มี.ค.', '04'=>'เม.ย.', '05'=>'พ.ค.', '06'=>'มิ.ย.', '07'=>'ก.ค.', '08'=>'ส.ค.', '09'=>'ก.ย.', '10'=>'ต.ค.', '11'=>'พ.ย.', '12'=>'ธ.ค.'];
+                        foreach ($m_short as $m_num => $m_lbl): 
+                            $m_key = "$view_year-$m_num";
+                            $is_selected = ($m_key === $selected_month);
+                            $has_event = isset($event_months[$m_key]);
+                        ?>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $m_key; ?>&view_year=<?php echo $view_year; ?>" 
+                               class="py-3 rounded-xl font-medium transition-all relative flex flex-col items-center justify-center text-decoration-none
+                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
+                                <span><?php echo $m_lbl; ?></span>
+                                <?php if ($has_event): ?>
+                                    <span class="absolute bottom-1 w-1 h-1 rounded-full <?php echo $is_selected ? 'bg-zinc-950' : 'bg-amber-500'; ?>"></span>
                                 <?php endif; ?>
                             </a>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </div>
-                
+
                 <?php elseif ($filter_type === 'year'): ?>
-                    <!-- iPhone Year Grid (Last 6 Years) -->
-                    <div class="text-xs font-bold text-zinc-800 mb-4 px-1">
-                        <?php echo t("Select Year", "เลือกปีจอง"); ?>
+                    <!-- iPhone Yearly Grid Picker -->
+                    <div class="text-xs font-bold text-zinc-800 mb-3 px-1">
+                        <?php echo t("Select Year", "เลือกปีสถิติสรุป"); ?>
                     </div>
-                    
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="grid grid-cols-2 gap-2 text-center font-mono text-xs">
                         <?php 
-                        $curr_year = (int)date('Y');
-                        for ($y = $curr_year; $y >= $curr_year - 5; $y--):
-                            $is_active = ((string)$y === (string)$selected_year);
-                            $is_current_year = ($y === (int)date('Y'));
-                            $th_y = $y + 543;
-                            $disp_y = $lang === 'th' ? $th_y : $y;
-                            ?>
+                        $current_yr = (int)date('Y');
+                        for ($y = $current_yr; $y >= $current_yr - 5; $y--):
+                            $is_selected = ((string)$y === (string)$selected_year);
+                        ?>
                             <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=year&filter_val_year=<?php echo $y; ?>" 
-                               class="h-10 rounded-xl border flex items-center justify-center transition-all text-decoration-none <?php 
-                                   echo $is_active 
-                                       ? 'bg-warning text-zinc-950 font-bold border-warning shadow-sm' 
-                                       : ($is_current_year 
-                                           ? 'border border-warning text-warning font-bold' 
-                                           : 'text-zinc-800 border-zinc-200 hover:bg-zinc-100'); 
-                               ?>">
-                                <span><?php echo $disp_y; ?></span>
+                               class="py-3 rounded-xl font-medium transition-all relative flex flex-col items-center justify-center text-decoration-none
+                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
+                                <span><?php echo $y; ?> (<?php echo $y + 543; ?>)</span>
                             </a>
                         <?php endfor; ?>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
-        
-        <?php if ($filter_type !== 'all' && !empty($filter_val)): ?>
-            <div class="text-xs text-zinc-500 font-mono mb-4 uppercase tracking-wider flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-sm leading-none text-zinc-600">filter_alt</span>
-                <span>
-                    <?php 
-                    $count_display = count($display_bookings);
-                    if ($filter_type === 'day') {
-                        $formatted_val = date('d/m/Y', strtotime($filter_val));
-                        echo t("Filtered by day: $formatted_val (Found $count_display items)", "กรองข้อมูลรายวัน: $formatted_val (พบ $count_display รายการ)");
-                    } elseif ($filter_type === 'month') {
-                        $formatted_val = formatMonth($filter_val);
-                        echo t("Filtered by month: $formatted_val (Found $count_display items)", "กรองข้อมูลรายเดือน: $formatted_val (พบ $count_display รายการ)");
-                    } elseif ($filter_type === 'year') {
-                        $th_y = (int)$filter_val + 543;
-                        $formatted_val = $lang === 'th' ? $th_y : $filter_val;
-                        echo t("Filtered by year: $formatted_val (Found $count_display items)", "กรองข้อมูลรายปี: $formatted_val (พบ $count_display รายการ)");
-                    }
-                    ?>
-                </span>
-            </div>
-        <?php endif; ?>
     <?php endif; ?>
 
     <div class="shadcn-table-container">
         <table class="shadcn-table">
             <thead>
-                <tr>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Customer", "ชื่อลูกค้า"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Phone", "เบอร์โทรศัพท์"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Date & Time", "วัน / เวลา"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center"><?php echo t("Table", "โต๊ะ"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center"><?php echo t("Pax", "จำนวนคน"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center" style="width: 25%;"><?php echo t("Review Operations", "การจัดการอนุมัติ"); ?></th>
+                <tr class="border-b border-zinc-800">
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Customer", "ชื่อลูกค้า"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Phone", "เบอร์โทรศัพท์"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Date & Time", "วัน / เวลา"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Table", "โต๊ะ"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Pax", "จำนวนคน"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 25%;"><?php echo t("Review Operations", "การจัดการอนุมัติ"); ?></th>
                 </tr>
             </thead>
             <tbody class="font-sans text-sm text-zinc-300">
                 <?php if (empty($display_bookings)): ?>
                     <tr>
-                        <td colspan="6" class="text-center py-8 text-zinc-500">
+                        <td colspan="6" class="text-center py-8 text-zinc-400 font-medium">
                             <?php 
                             if ($active_tab === 'pending') {
                                 echo t("No pending reservations at the moment.", "ขณะนี้ไม่มีคิวจองโต๊ะที่รอตรวจสอบ");
@@ -1333,9 +1259,9 @@ foreach ($chart_monthly as $m) {
 
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF'): ?>
 <!-- STAFF View: Visual Seat Map Control Card (Merged from tables.php) -->
-<div class="shadcn-card border border-warning/10 shadow-lg mt-8">
-    <h3 class="font-anton text-warning text-uppercase tracking-wider mb-2 flex items-center gap-2 text-lg">
-        <span class="material-symbols-outlined text-xl leading-none">grid_view</span>
+<div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6 mt-8">
+    <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-2 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+        <span class="material-symbols-outlined text-amber-400 text-xl leading-none">grid_view</span>
         <span><?php echo t("Visual Seat Map (Click to Toggle)", "ผังที่นั่งร้านแบบโต้ตอบ (คลิกที่โต๊ะเพื่อเปิด/ปิดให้บริการ)"); ?></span>
     </h3>
     <p class="text-zinc-400 text-xs mb-6">
