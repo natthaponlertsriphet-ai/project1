@@ -91,6 +91,44 @@ function is_active($page) {
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .navbar-custom.at-top {
+            background-color: rgba(19, 19, 19, 0.45) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
+        }
+        .navbar-custom.scrolled {
+            background-color: rgba(19, 19, 19, 0.94) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom-color: rgba(255, 215, 130, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        .admin-nav-btn {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .navbar-custom.at-top .admin-nav-btn {
+            opacity: 0;
+            max-width: 0;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin: 0 !important;
+            border-width: 0 !important;
+            pointer-events: none;
+            transform: scale(0.9);
+        }
+        .navbar-custom.scrolled .admin-nav-btn {
+            opacity: 1;
+            max-width: 160px;
+            pointer-events: auto;
+            transform: scale(1);
         }
         .btn-custom-gold {
             background-color: #ffd782;
@@ -115,6 +153,7 @@ function is_active($page) {
         .glass-card {
             background: rgba(32, 31, 31, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.05);
+        }
         /* Premium Validation Error Styles */
         @keyframes premiumShake {
             0%, 100% { transform: translateX(0); }
@@ -134,6 +173,21 @@ function is_active($page) {
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Header scroll handler to hide/show extra elements (e.g. Admin button) when at top vs scrolled down
+        function handleHeaderScroll() {
+            var nav = document.querySelector('.navbar-custom');
+            if (!nav) return;
+            if (window.scrollY > 30) {
+                nav.classList.add('scrolled');
+                nav.classList.remove('at-top');
+            } else {
+                nav.classList.add('at-top');
+                nav.classList.remove('scrolled');
+            }
+        }
+        window.addEventListener('scroll', handleHeaderScroll, { passive: true });
+        handleHeaderScroll();
+
         document.querySelectorAll('form').forEach(function(f) {
             f.setAttribute('novalidate', 'novalidate');
         });
@@ -232,7 +286,7 @@ function is_active($page) {
 <body>
 
     <!-- Header Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top py-3">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top py-3 at-top">
         <div class="container px-4 px-lg-5">
             <!-- Brand Logo -->
             <a href="index.php" class="navbar-brand d-flex align-items-center gap-3">
@@ -273,9 +327,9 @@ function is_active($page) {
                     
                     <!-- Admin Login/Console Button -->
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <a href="admin/index.php" class="btn btn-outline-warning btn-sm font-anton text-uppercase px-3"><?php echo t("Console", "แดชบอร์ด"); ?></a>
+                        <a href="admin/index.php" class="admin-nav-btn btn btn-outline-warning btn-sm font-anton text-uppercase px-3"><?php echo t("Console", "แดชบอร์ด"); ?></a>
                     <?php else: ?>
-                        <a href="login.php" class="btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Admin", "แอดมิน"); ?></a>
+                        <a href="login.php" class="admin-nav-btn btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Admin", "แอดมิน"); ?></a>
                     <?php endif; ?>
                 </div>
             </div>
