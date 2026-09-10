@@ -625,47 +625,60 @@ require_once 'header.php';
 
         <!-- Right Side: Booking Details Input Form -->
         <div class="col-lg-4">
-            <div class="glass-card p-4 border border-warning border-opacity-25 relative">
-                <div class="absolute top-0 start-0 end-0 bg-warning" style="height: 3px;"></div>
-                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 mt-2"><?php echo t("Booking Details", "รายละเอียดการจอง"); ?></h3>
+            <div class="shadcn-card border border-amber-500/40 bg-zinc-900/95 shadow-2xl shadow-amber-500/10 rounded-2xl p-5 md:p-6 relative overflow-hidden">
+                <div class="absolute top-0 start-0 end-0 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600" style="height: 3.5px;"></div>
                 
-                <form action="reservation.php" method="POST" onsubmit="return validateBookingForm()" novalidate>
+                <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-5 mt-1 flex items-center gap-2.5 text-xl border-b border-zinc-800 pb-3">
+                    <span class="material-symbols-outlined text-amber-400 text-2xl leading-none">edit_calendar</span>
+                    <span><?php echo t("Booking Details", "รายละเอียดการจอง"); ?></span>
+                </h3>
+                
+                <form action="reservation.php" method="POST" onsubmit="return validateBookingForm()" novalidate class="flex flex-col gap-4">
                     <input type="hidden" name="action" value="create_booking">
                     <input type="hidden" name="table_id" id="form-table-id" value="">
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-amber-400" style="font-size: 14px;">calendar_today</span>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">calendar_today</span>
                             <span><?php echo t("Date", "วันที่ต้องการจอง"); ?></span>
                         </label>
-                        <input type="date" name="date" id="booking-date" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
+                        <input type="date" name="date" id="booking-date" required class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 focus:border-amber-400 font-mono" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-amber-400" style="font-size: 14px;">schedule</span>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">schedule</span>
                             <span><?php echo t("Time Slot", "เวลาจอง"); ?></span>
                         </label>
-                        <input type="time" name="time_slot" id="booking-time" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" onchange="updateAvailability()" value="19:00">
+                        <input type="time" name="time_slot" id="booking-time" required class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 focus:border-amber-400 font-mono" onchange="updateAvailability()" value="19:00">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Number of Guests (Pax)", "จำนวนคน (ท่าน)"); ?></label>
-                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" value="2">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">groups</span>
+                            <span><?php echo t("Number of Guests (Pax)", "จำนวนคน (ท่าน)"); ?></span>
+                        </label>
+                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 focus:border-amber-400 font-mono" value="2">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Customer Name", "ชื่อลูกค้า"); ?></label>
-                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">person</span>
+                            <span><?php echo t("Customer Name", "ชื่อลูกค้า"); ?></span>
+                        </label>
+                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Phone Number", "เบอร์โทรศัพท์"); ?></label>
-                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">phone</span>
+                            <span><?php echo t("Phone Number", "เบอร์โทรศัพท์"); ?></span>
+                        </label>
+                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono">
                     </div>
 
                     <!-- Beautiful Inline Form Validation Alert Box -->
-                    <div id="form-inline-alert" class="d-none mb-3 p-3 bg-warning bg-opacity-15 border border-warning border-opacity-70 rounded-3 text-warning font-sans transition-all">
+                    <div id="form-inline-alert" class="d-none p-3 bg-warning bg-opacity-15 border border-warning border-opacity-70 rounded-3 text-warning font-sans transition-all">
                         <div class="d-flex align-items-start gap-2.5">
                             <span id="form-alert-icon" class="material-symbols-outlined text-black fs-5 mt-0.5 shrink-0 me-2">warning</span>
                             <div>
@@ -679,29 +692,35 @@ require_once 'header.php';
                         </div>
                     </div>
 
-                    <div class="mb-4 p-3 bg-black bg-opacity-50 border border-secondary border-opacity-25 rounded">
-                        <div class="small text-secondary text-uppercase font-anton tracking-wider mb-1"><?php echo t("Selected Spot", "โต๊ะที่คุณเลือก"); ?>:</div>
-                        <div id="selection-summary" class="fs-5 font-anton text-warning text-uppercase">
+                    <div class="p-3.5 bg-zinc-950/90 border border-amber-500/30 rounded-xl shadow-inner my-1">
+                        <div class="text-xs uppercase text-zinc-300 font-semibold tracking-wider mb-1 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-amber-400 text-sm">chair</span>
+                            <span><?php echo t("Selected Spot", "โต๊ะที่คุณเลือก"); ?>:</span>
+                        </div>
+                        <div id="selection-summary" class="fs-5 font-anton text-amber-400 text-uppercase tracking-wide">
                             <?php echo t("NONE SELECT", "กรุณาเลือกโต๊ะด้านซ้าย"); ?>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-custom-gold w-100 py-3 text-uppercase font-anton tracking-wider fs-5">
-                        <?php echo t("Submit Reservation", "ส่งยืนยันจองโต๊ะ"); ?>
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-amber-500/25 transition-all flex items-center justify-center gap-2 text-base uppercase tracking-wider cursor-pointer">
+                        <span class="material-symbols-outlined text-xl">send</span>
+                        <span><?php echo t("Submit Reservation", "ส่งยืนยันจองโต๊ะ"); ?></span>
                     </button>
                 </form>
 
                 <!-- Booking Conditions Footer -->
-                <div class="mt-4 pt-3 border-top border-secondary border-opacity-10 text-secondary" style="font-size: 12px; line-height: 1.5;">
-                    <div class="font-anton text-warning text-uppercase tracking-wider mb-1.5" style="font-size: 11px; font-weight: bold;">
-                        <?php echo t("Booking Conditions", "เงื่อนไขการจอง"); ?>
+                <div class="mt-5 pt-3 border-t border-zinc-800 text-zinc-400" style="font-size: 12px; line-height: 1.5;">
+                    <div class="font-anton text-amber-400 text-uppercase tracking-wider mb-2 flex items-center gap-1.5" style="font-size: 12px; font-weight: bold;">
+                        <span class="material-symbols-outlined text-amber-400 text-sm">info</span>
+                        <span><?php echo t("Booking Conditions", "เงื่อนไขการจอง"); ?></span>
                     </div>
-                    <ul class="mb-2 ps-3">
+                    <ul class="mb-2 ps-3 space-y-1 text-zinc-300">
                         <li><?php echo t("Please arrive 1 hour prior to your booking time.", "มารับโต๊ะ ก่อน 1 ชั่วโมง"); ?></li>
                         <li><?php echo t("Guests must be 20 years of age or older.", "อายุ 20 ปี บริบูรณ์ขึ้นไป"); ?></li>
                     </ul>
-                    <div class="font-sans text-warning mt-2 small">
-                        📞 <?php echo t("Tel: 064 9546 616", "ติดต่อสอบถามเพิ่มเติม Tel: 064 9546 616"); ?>
+                    <div class="font-sans text-amber-400 mt-2.5 small flex items-center gap-1">
+                        <span>📞</span>
+                        <span><?php echo t("Tel: 064 9546 616", "ติดต่อสอบถามเพิ่มเติม Tel: 064 9546 616"); ?></span>
                     </div>
                 </div>
             </div>
