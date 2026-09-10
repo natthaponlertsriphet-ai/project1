@@ -252,20 +252,20 @@ $all_staff = $stmt->fetchAll();
 
     <!-- Right Column: Inventory Table -->
     <div class="lg:col-span-8">
-        <div class="shadcn-card">
-            <h3 class="font-anton text-warning text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg">
-                <span class="material-symbols-outlined text-xl leading-none">groups</span>
+        <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
+            <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
+                <span class="material-symbols-outlined text-amber-400 text-xl leading-none">groups</span>
                 <span><?php echo t("Team Accounts Inventory", "รายชื่อผู้มีสิทธิ์ใช้งานหลังบ้านทั้งหมด"); ?> (<?php echo count($all_staff); ?>)</span>
             </h3>
             
             <div class="shadcn-table-container">
                 <table class="shadcn-table">
                     <thead>
-                        <tr>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Name", "ชื่อพนักงาน"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400"><?php echo t("Email", "อีเมล"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center"><?php echo t("Role", "ระดับสิทธิ์"); ?></th>
-                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-400 text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
+                        <tr class="border-b border-zinc-800">
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Name", "ชื่อพนักงาน"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Email", "อีเมล"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Role", "ระดับสิทธิ์"); ?></th>
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 15%;"><?php echo t("Actions", "จัดการ"); ?></th>
                         </tr>
                     </thead>
                     <tbody class="font-sans text-sm text-zinc-300">
