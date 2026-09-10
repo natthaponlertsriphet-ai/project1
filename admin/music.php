@@ -169,10 +169,13 @@ if (is_dir($gallery_dir)) {
 }
 ?>
 
-<div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
+<div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Live Music Manager", "จัดการตารางเวลาการแสดงดนตรีสด"); ?></h1>
-        <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Live Sessions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการวงดนตรีสดและการขึ้นโชว์"); ?></p>
+        <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-amber-400 text-2xl leading-none">music_note</span>
+            <span><?php echo t("Live Music Manager", "จัดการตารางเวลาการแสดงดนตรีสด"); ?></span>
+        </h1>
+        <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Live Sessions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการวงดนตรีสดและการขึ้นโชว์"); ?></p>
     </div>
 </div>
 

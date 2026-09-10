@@ -190,10 +190,13 @@ $stmt = $pdo->query("SELECT promo_id AS id, promo_title AS title, description, o
 $all_promos = $stmt->fetchAll();
 ?>
 
-<div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
+<div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Promotions Manager", "จัดการรายการโปรโมชัน"); ?></h1>
-        <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Promotions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการข้อเสนอและกิจกรรม"); ?></p>
+        <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-amber-400 text-2xl leading-none">local_offer</span>
+            <span><?php echo t("Promotions Manager", "จัดการรายการโปรโมชัน"); ?></span>
+        </h1>
+        <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Promotions Control", "แผงควบคุมผู้ดูแลระบบ / จัดการข้อเสนอและกิจกรรม"); ?></p>
     </div>
 </div>
 

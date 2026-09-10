@@ -160,10 +160,13 @@ $stmt = $pdo->query("
 $all_staff = $stmt->fetchAll();
 ?>
 
-<div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
+<div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Staff Credentials Manager", "จัดการข้อมูลพนักงาน"); ?></h1>
-        <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / User Accounts", "แผงควบคุมผู้ดูแลระบบ / จัดการสิทธิ์และบัญชีพนักงาน"); ?></p>
+        <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-amber-400 text-2xl leading-none">badge</span>
+            <span><?php echo t("Staff Credentials Manager", "จัดการข้อมูลพนักงาน"); ?></span>
+        </h1>
+        <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / User Accounts", "แผงควบคุมผู้ดูแลระบบ / จัดการสิทธิ์และบัญชีพนักงาน"); ?></p>
     </div>
 </div>
 

@@ -259,10 +259,13 @@ usort($all_tables, function($a, $b) {
 require_once 'admin_header.php';
 ?>
 
-<div class="flex justify-between items-center border-b border-zinc-900 pb-4 mb-6">
+<div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
     <div>
-        <h1 class="font-anton text-warning text-uppercase tracking-wider text-2xl m-0"><?php echo t("Table Layout Manager", "จัดการข้อมูลผังที่นั่งและระบบหมายเลขโต๊ะ"); ?></h1>
-        <p class="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Seat Map Control", "แผงควบคุมผู้ดูแลระบบ / จัดการโต๊ะและแผนผังที่นั่ง"); ?></p>
+        <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-amber-400 text-2xl leading-none">table_restaurant</span>
+            <span><?php echo t("Table Layout Manager", "จัดการข้อมูลผังที่นั่งและระบบหมายเลขโต๊ะ"); ?></span>
+        </h1>
+        <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Dashboard / Seat Map Control", "แผงควบคุมผู้ดูแลระบบ / จัดการโต๊ะและแผนผังที่นั่ง"); ?></p>
     </div>
 </div>
 
@@ -367,8 +370,9 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                             [<?php echo t("ADMIN Privilege Required", "เฉพาะผู้ดูแลระบบ"); ?>]
                         </div>
                     <?php else: ?>
-                        <button type="submit" class="shadcn-btn-primary flex-grow">
-                            <?php echo $is_editing ? t("Update Table", "อัปเดตข้อมูลโต๊ะ") : t("Register Table", "บันทึกโต๊ะใหม่"); ?>
+                        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-base">save</span>
+                            <span><?php echo $is_editing ? t("Update Table", "อัปเดตข้อมูลโต๊ะ") : t("Register Table", "บันทึกโต๊ะใหม่"); ?></span>
                         </button>
                         <?php if ($is_editing): ?>
                             <a href="tables.php" class="shadcn-btn-outline"><?php echo t("Cancel", "ยกเลิก"); ?></a>
