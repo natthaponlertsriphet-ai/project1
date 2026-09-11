@@ -82,19 +82,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
     }
 }
 
-// Handle Gallery Photo Delete (Separated: strictly applies to /images/live-music/)
+// Handle Gallery Photo Delete (Applies to both /images/live-music/ and /images/atmosphere/)
 if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET['filename'])) {
-    $filename = basename(rawurldecode($_GET['filename'])); // Prevent directory traversal
-    $photo_path_live = __DIR__ . '/../images/live-music/' . $filename;
+    $raw_param = $_GET['filename'];
+    $fn1 = basename($raw_param);
+    $fn2 = basename(urldecode($raw_param));
+    $fn3 = basename(rawurldecode($raw_param));
     
-    if (file_exists($photo_path_live) && @unlink($photo_path_live)) {
+    $filenames = array_unique([$fn1, $fn2, $fn3]);
+    $deleted = false;
+    
+    foreach ($filenames as $filename) {
+        $path_live = __DIR__ . '/../images/live-music/' . $filename;
+        $path_atmo = __DIR__ . '/../images/atmosphere/' . $filename;
+        
+        if (file_exists($path_live) && @unlink($path_live)) {
+            $deleted = true;
+        }
+        if (file_exists($path_atmo) && @unlink($path_atmo)) {
+            $deleted = true;
+        }
+    }
+    
+    if ($deleted) {
         $success = t("Atmosphere photo deleted successfully.", "ลบรูปภาพบรรยากาศเรียบร้อยแล้ว.");
     } else {
         $error = t("Photo file not found or could not be deleted.", "ไม่พบไฟล์รูปภาพหรือไม่สามารถลบไฟล์ได้");
     }
 }
 
-// Handle Photo Upload (Separated: strictly uploads to /images/live-music/)
+// Handle Photo Upload (Uploads and mirrors photo to both /images/live-music/ and /images/atmosphere/)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'upload_photo') {
     if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
         $file_tmp = $_FILES['file']['tmp_name'];
@@ -106,9 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $error = "Please upload a valid image file.";
         } else {
             $upload_dir_live = __DIR__ . '/../images/live-music/';
-            if (!is_dir($upload_dir_live)) {
-                mkdir($upload_dir_live, 0777, true);
-            }
+            $upload_dir_atmo = __DIR__ . '/../images/atmosphere/';
+            if (!is_dir($upload_dir_live)) mkdir($upload_dir_live, 0777, true);
+            if (!is_dir($upload_dir_atmo)) mkdir($upload_dir_atmo, 0777, true);
             
             $raw_filename = pathinfo($file_name, PATHINFO_FILENAME);
             $clean_name = preg_replace("/[^a-zA-Z0-9.-]/", "_", $raw_filename);
@@ -116,10 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if ($ext === 'heic' || $ext === 'heif') {
                 $new_name = 'uploaded_' . time() . '_' . $clean_name . '.jpg';
                 $dest_path_live = $upload_dir_live . $new_name;
+                $dest_path_atmo = $upload_dir_atmo . $new_name;
                 $temp_heic = $upload_dir_live . 'temp_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
                 
                 if (move_uploaded_file($file_tmp, $temp_heic)) {
                     exec('sips -s format jpeg ' . escapeshellarg($temp_heic) . ' --out ' . escapeshellarg($dest_path_live));
+                    @copy($dest_path_live, $dest_path_atmo);
                     @unlink($temp_heic);
                     $success = t("Photo uploaded and converted to JPG successfully!", "อัปโหลดและแปลงไฟล์รูปภาพบรรยากาศสำเร็จ!");
                 } else {
@@ -128,8 +147,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             } else {
                 $new_name = 'uploaded_' . time() . '_' . $clean_name . '.' . $ext;
                 $dest_path_live = $upload_dir_live . $new_name;
+                $dest_path_atmo = $upload_dir_atmo . $new_name;
                 
                 if (move_uploaded_file($file_tmp, $dest_path_live)) {
+                    @copy($dest_path_live, $dest_path_atmo);
                     $success = t("Photo uploaded successfully!", "อัปโหลดรูปภาพบรรยากาศสำเร็จ!");
                 } else {
                     $error = "Failed to save uploaded photo.";
@@ -154,14 +175,23 @@ $stmt = $pdo->query("SELECT music_id AS id, show_day AS day, show_time AS time, 
     END, show_time");
 $music_events = $stmt->fetchAll();
 
-// Scan gallery photos strictly from live-music directory
-$gallery_dir = __DIR__ . '/../images/live-music';
+// Scan gallery photos from both live-music and atmosphere directories
+$dir_live = __DIR__ . '/../images/live-music';
+$dir_atmo = __DIR__ . '/../images/atmosphere';
 $gallery_images = [];
-if (is_dir($gallery_dir)) {
-    $files = scandir($gallery_dir);
-    foreach ($files as $file) {
+
+if (is_dir($dir_live)) {
+    foreach (scandir($dir_live) as $file) {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && !in_array($file, $gallery_images)) {
+            $gallery_images[] = $file;
+        }
+    }
+}
+if (is_dir($dir_atmo)) {
+    foreach (scandir($dir_atmo) as $file) {
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && !in_array($file, $gallery_images)) {
             $gallery_images[] = $file;
         }
     }
@@ -334,7 +364,9 @@ if (is_dir($gallery_dir)) {
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         <?php foreach ($gallery_images as $img): ?>
             <?php 
-            $img_path = '../images/live-music/' . htmlspecialchars($img);
+            $img_path = file_exists(__DIR__ . '/../images/live-music/' . $img) 
+                ? '../images/live-music/' . htmlspecialchars($img) 
+                : '../images/atmosphere/' . htmlspecialchars($img);
             ?>
             <div class="relative overflow-hidden rounded-lg bg-zinc-950 border border-zinc-900 aspect-square group">
                 <img src="<?php echo $img_path; ?>" alt="Gallery" class="w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-300">
