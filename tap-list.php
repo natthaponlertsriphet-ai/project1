@@ -361,7 +361,6 @@ require_once 'header.php';
                                 <!-- 4. ABV -->
                                 <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
                                     <div class="abv-pill-badge">
-                                        <span class="text-secondary small font-sans me-1">ABV</span>
                                         <span class="text-warning"><?php echo htmlspecialchars($b['abv']); ?></span>
                                     </div>
                                 </div>
@@ -429,16 +428,6 @@ require_once 'header.php';
                                 </div>
                                 <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
                                     <div class="abv-pill-badge">
-                                        <span class="text-secondary small font-sans me-1">ABV</span>
-                                        <span class="text-warning">${escapeHtml(b.abv)}</span>
-                                    </div>
-                                </div>
-                            </div>`;
-                    });
-                }              </div>
-                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 100px; flex-shrink: 0;">
-                                    <div class="abv-pill-badge">
-                                        <span class="text-secondary small font-sans me-1">ABV</span>
                                         <span class="text-warning">${escapeHtml(b.abv)}</span>
                                     </div>
                                 </div>
