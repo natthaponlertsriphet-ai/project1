@@ -61,16 +61,22 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_music_html') {
             <?php else: ?>
                 <div class="d-flex flex-column gap-3">
                     <?php foreach ($events_by_day[$d] as $event): ?>
-                        <div class="d-flex align-items-center justify-content-between p-3 bg-black bg-opacity-40 border border-secondary border-opacity-10 rounded">
-                            <div class="d-flex flex-column">
-                                <div class="d-flex align-items-center gap-2 mb-1">
-                                    <span class="font-anton text-warning text-uppercase fs-5"><?php echo htmlspecialchars($event['artist']); ?></span>
+                        <div class="gig-schedule-card d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-10 h-10 rounded-circle bg-warning bg-opacity-15 border border-warning border-opacity-30 d-flex align-items-center justify-content-center shrink-0" style="width: 40px; height: 40px;">
+                                    <span class="material-symbols-outlined text-warning fs-5">music_note</span>
                                 </div>
-                                <span class="text-secondary small font-sans mt-0.5"><?php echo htmlspecialchars($event['description']); ?></span>
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex align-items-center gap-2 mb-0.5">
+                                        <span class="font-anton text-warning text-uppercase tracking-wide fs-4 m-0" style="text-shadow: 0 0 10px rgba(255, 215, 130, 0.2);"><?php echo htmlspecialchars($event['artist']); ?></span>
+                                    </div>
+                                    <span class="text-light text-opacity-80 small font-sans"><?php echo htmlspecialchars($event['description']); ?></span>
+                                </div>
                             </div>
-                            <span class="font-anton text-light fs-5 tracking-wide bg-dark bg-opacity-70 border border-secondary border-opacity-20 px-3 py-1.5" style="border-radius: 4px;">
-                                <?php echo htmlspecialchars($event['show_time']); ?>
-                            </span>
+                            <div class="gig-time-badge font-anton text-light fs-5 tracking-wide ms-auto ms-sm-0">
+                                <span class="material-symbols-outlined text-warning fs-6">schedule</span>
+                                <span><?php echo htmlspecialchars($event['show_time']); ?></span>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -148,6 +154,50 @@ require_once 'header.php';
         box-shadow: 0 0 20px rgba(245, 158, 11, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4) !important;
         transform: translateY(-3px) scale(1.04) !important;
         font-weight: 800;
+    }
+
+    /* Luxury Gig Timetable Cards */
+    .gig-schedule-card {
+        background: linear-gradient(135deg, rgba(26, 26, 34, 0.9) 0%, rgba(14, 14, 18, 0.95) 100%);
+        border: 1px solid rgba(255, 215, 130, 0.2);
+        border-radius: 16px;
+        padding: 16px 22px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .gig-schedule-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, #ffd782, #f59e0b);
+        border-radius: 4px 0 0 4px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    .gig-schedule-card:hover {
+        transform: translateX(6px);
+        border-color: rgba(255, 215, 130, 0.45);
+        box-shadow: 0 8px 25px rgba(255, 215, 130, 0.15), 0 4px 15px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(135deg, rgba(34, 34, 44, 0.95) 0%, rgba(20, 20, 26, 0.98) 100%);
+    }
+    .gig-schedule-card:hover::before {
+        opacity: 1;
+        width: 6px;
+        box-shadow: 0 0 12px #ffd782;
+    }
+    .gig-time-badge {
+        background: rgba(10, 10, 14, 0.9);
+        border: 1px solid rgba(255, 215, 130, 0.35);
+        border-radius: 30px;
+        padding: 6px 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
     .gallery-img-container {
         position: relative;
@@ -342,16 +392,22 @@ require_once 'header.php';
                             <?php else: ?>
                                 <div class="d-flex flex-column gap-3">
                                     <?php foreach ($events_by_day[$d] as $event): ?>
-                                        <div class="d-flex align-items-center justify-content-between p-3 bg-black bg-opacity-40 border border-secondary border-opacity-10 rounded">
-                                            <div class="d-flex flex-column">
-                                                <div class="d-flex align-items-center gap-2 mb-1">
-                                                    <span class="font-anton text-warning text-uppercase fs-5"><?php echo htmlspecialchars($event['artist']); ?></span>
+                                        <div class="gig-schedule-card d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="w-10 h-10 rounded-circle bg-warning bg-opacity-15 border border-warning border-opacity-30 d-flex align-items-center justify-content-center shrink-0" style="width: 40px; height: 40px;">
+                                                    <span class="material-symbols-outlined text-warning fs-5">music_note</span>
                                                 </div>
-                                                <span class="text-secondary small font-sans mt-0.5"><?php echo htmlspecialchars($event['description']); ?></span>
+                                                <div class="d-flex flex-column">
+                                                    <div class="d-flex align-items-center gap-2 mb-0.5">
+                                                        <span class="font-anton text-warning text-uppercase tracking-wide fs-4 m-0" style="text-shadow: 0 0 10px rgba(255, 215, 130, 0.2);"><?php echo htmlspecialchars($event['artist']); ?></span>
+                                                    </div>
+                                                    <span class="text-light text-opacity-80 small font-sans"><?php echo htmlspecialchars($event['description']); ?></span>
+                                                </div>
                                             </div>
-                                            <span class="font-anton text-light fs-5 tracking-wide bg-dark bg-opacity-70 border border-secondary border-opacity-20 px-3 py-1.5" style="border-radius: 4px;">
-                                                <?php echo htmlspecialchars($event['show_time']); ?>
-                                            </span>
+                                            <div class="gig-time-badge font-anton text-light fs-5 tracking-wide ms-auto ms-sm-0">
+                                                <span class="material-symbols-outlined text-warning fs-6">schedule</span>
+                                                <span><?php echo htmlspecialchars($event['show_time']); ?></span>
+                                            </div>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
