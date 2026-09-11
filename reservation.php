@@ -432,6 +432,36 @@ require_once 'header.php';
         color: #ffffff !important;
     }
 
+    .input-group-smooth {
+        background: rgba(14, 14, 18, 0.75) !important;
+        border: 1px solid rgba(255, 215, 130, 0.25) !important;
+        border-radius: 12px !important;
+        padding: 2px 14px !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .input-group-smooth:focus-within {
+        border-color: #ffd782 !important;
+        box-shadow: 0 0 18px rgba(255, 215, 130, 0.35) !important;
+        background: rgba(22, 22, 28, 0.95) !important;
+    }
+    .input-group-smooth input {
+        background: transparent !important;
+        border: none !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+        font-size: 14px;
+        color-scheme: dark;
+        width: 100%;
+    }
+    .input-group-smooth input:focus {
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    .input-group-smooth input::placeholder {
+        color: #9ca3af !important;
+        opacity: 0.8;
+    }
+
     /* Premium Toast Notification Keyframes */
     @keyframes toastSlideDown {
         from { transform: translate(-50%, -25px); opacity: 0; scale: 0.95; }
@@ -702,43 +732,53 @@ require_once 'header.php';
                     <input type="hidden" name="table_id" id="form-table-id" value="">
 
                     <div class="mb-3.5">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">calendar_today</span>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5 mb-1.5" style="font-size: 11px;">
                             <span><?php echo t("Date", "วันที่ต้องการจอง"); ?></span>
                         </label>
-                        <input type="date" name="date" id="booking-date" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
+                        <div class="input-group-smooth d-flex align-items-center">
+                            <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">calendar_today</span>
+                            <input type="date" name="date" id="booking-date" required class="form-control text-light font-sans py-2.5 px-0" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
+                        </div>
                     </div>
 
                     <div class="mb-3.5">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">schedule</span>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5 mb-1.5" style="font-size: 11px;">
                             <span><?php echo t("Time Slot", "เวลาจอง"); ?></span>
                         </label>
-                        <input type="time" name="time_slot" id="booking-time" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans" onchange="updateAvailability()" value="19:00">
+                        <div class="input-group-smooth d-flex align-items-center">
+                            <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">schedule</span>
+                            <input type="time" name="time_slot" id="booking-time" required class="form-control text-light font-sans py-2.5 px-0" onchange="updateAvailability()" value="19:00">
+                        </div>
                     </div>
 
                     <div class="mb-3.5">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">groups</span>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5 mb-1.5" style="font-size: 11px;">
                             <span><?php echo t("Number of Guests (Pax)", "จำนวนคน (ท่าน)"); ?></span>
                         </label>
-                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans" value="2">
+                        <div class="input-group-smooth d-flex align-items-center">
+                            <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">groups</span>
+                            <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control text-light font-sans py-2.5 px-0" value="2">
+                        </div>
                     </div>
 
                     <div class="mb-3.5">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">person</span>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5 mb-1.5" style="font-size: 11px;">
                             <span><?php echo t("Customer Name", "ชื่อลูกค้า"); ?></span>
                         </label>
-                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans">
+                        <div class="input-group-smooth d-flex align-items-center">
+                            <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">person</span>
+                            <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control text-light font-sans py-2.5 px-0">
+                        </div>
                     </div>
 
                     <div class="mb-3.5">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">call</span>
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5 mb-1.5" style="font-size: 11px;">
                             <span><?php echo t("Phone Number", "เบอร์โทรศัพท์"); ?></span>
                         </label>
-                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans">
+                        <div class="input-group-smooth d-flex align-items-center">
+                            <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">call</span>
+                            <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control text-light font-sans py-2.5 px-0">
+                        </div>
                     </div>
 
                     <!-- Inline Form Validation Alert Box -->
