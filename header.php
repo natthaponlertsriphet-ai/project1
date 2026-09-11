@@ -171,11 +171,29 @@ function is_active($page) {
         }
         @keyframes fadeInSlide {
             from { opacity: 0; transform: translateY(-4px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        /* Header Navbar Staggered Scroll Entrance Reveal Animation */
+        .nav-reveal-item {
+            opacity: 0;
+            transform: translateY(-16px) scale(0.94);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .nav-reveal-item.nav-revealed {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Staggered 70ms Entrance Reveal for Navbar Elements
+        var navItems = document.querySelectorAll('.navbar-brand, .navbar-nav .nav-item, .navbar-custom .d-flex.align-items-center > a, .navbar-custom .d-flex.align-items-center > button');
+        navItems.forEach(function(el, index) {
+            el.classList.add('nav-reveal-item');
+            setTimeout(function() {
+                el.classList.add('nav-revealed');
+            }, 100 + (index * 70));
+        });
+
         // Header scroll handler to hide/show extra elements (e.g. Admin button) when at top vs scrolled down
         function handleHeaderScroll() {
             var nav = document.querySelector('.navbar-custom');
