@@ -204,27 +204,45 @@ require_once 'header.php';
         position: relative;
         aspect-ratio: 16 / 9;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1.5px solid rgba(255, 215, 130, 0.35) !important;
         background-color: #121414;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         cursor: pointer;
+    }
+    .gallery-img-container::after {
+        content: '\e8ff';
+        font-family: 'Material Symbols Outlined';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        color: #ffd782;
+        font-size: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
     }
     .gallery-img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
-        filter: brightness(0.8) contrast(1.05);
+        filter: brightness(0.85) contrast(1.05);
     }
     .gallery-img-container:hover {
-        border-color: rgba(255, 215, 130, 0.35);
-        box-shadow: 0 8px 25px rgba(255, 215, 130, 0.12);
-        transform: translateY(-4px);
+        border-color: #ffd782 !important;
+        box-shadow: 0 0 25px rgba(255, 215, 130, 0.4), 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+        transform: translateY(-5px) scale(1.02);
+    }
+    .gallery-img-container:hover::after {
+        opacity: 1;
     }
     .gallery-img-container:hover .gallery-img {
-        transform: scale(1.04);
+        transform: scale(1.08);
         filter: brightness(1) contrast(1.05);
     }
     
@@ -427,8 +445,12 @@ require_once 'header.php';
 
         <!-- Stage Atmosphere Gallery (Full Width Below) -->
         <div class="col-lg-12">
-            <div class="glass-card p-4 p-md-5">
-                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4"><?php echo t("Live Music Atmosphere", "ภาพบรรยากาศการแสดงดนตรีสด"); ?></h3>
+            <div class="glass-card p-4 p-md-5 border border-warning border-opacity-30 position-relative overflow-hidden shadow-lg">
+                <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #10b981, #ffd782, #10b981);"></div>
+                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined text-warning fs-4">photo_camera</span>
+                    <span><?php echo t("Live Music Atmosphere", "ภาพบรรยากาศการแสดงดนตรีสด"); ?></span>
+                </h3>
                 
                 <div class="row g-4">
                     <?php if (empty($gallery_images)): ?>
