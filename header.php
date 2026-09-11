@@ -110,76 +110,40 @@ function is_active($page) {
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
         .admin-nav-btn {
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             white-space: nowrap;
         }
-        .navbar-custom.at-top .admin-nav-btn {
-            opacity: 0;
-            max-width: 0;
+        .navbar-custom.scrolled .admin-nav-btn {
+            opacity: 0 !important;
+            max-width: 0 !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
-            margin: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
             border-width: 0 !important;
             pointer-events: none;
-            transform: scale(0.9);
+            transform: scale(0.85);
         }
-        .navbar-custom.scrolled .admin-nav-btn {
+        .navbar-custom.at-top .admin-nav-btn {
             opacity: 1;
             max-width: 160px;
             pointer-events: auto;
             transform: scale(1);
         }
-        .btn-custom-gold {
-            background-color: #ffd782;
-            color: #3f2e00;
-            font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
-            border: none;
-            transition: all 0.3s;
-            border-radius: 4px;
-            font-size: 14px;
-            letter-spacing: 0.05em;
-        }
-        .btn-custom-gold:hover {
-            background-color: #fff6df;
-            box-shadow: 0 0 20px rgba(255, 215, 130, 0.4);
-            color: #3f2e00;
-        }
-        .hover-gold:hover {
-            color: #ffd782 !important;
-            transition: color 0.2s ease-in-out;
-        }
-        /* Glassmorphism containers */
-        .glass-card {
-            background: rgba(32, 31, 31, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        /* Premium Validation Error Styles */
-        @keyframes premiumShake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-4px); }
-            40%, 80% { transform: translateX(4px); }
-        }
-        .animate-premium-shake {
-            animation: premiumShake 0.35s ease-in-out;
-        }
-        .premium-field-error-badge {
-            animation: fadeInSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes fadeInSlide {
-            from { opacity: 0; transform: translateY(-4px) scale(0.98); }
-        /* Header Navbar Staggered Scroll Entrance Reveal Animation */
+
+        /* Header Navbar Staggered 70ms Entrance Reveal Animation */
         .brand-logo-badge,
         .brand-title-text,
         .brand-sub-text,
         .nav-reveal-item {
-            display: inline-block;
+            display: inline-block !important;
             opacity: 0;
-            transform: translateY(-22px) scale(0.85);
-            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-16px) scale(0.94);
+            transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform;
         }
         .brand-logo-badge.nav-revealed,
@@ -187,19 +151,19 @@ function is_active($page) {
         .brand-sub-text.nav-revealed,
         .nav-reveal-item.nav-revealed {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0) scale(1.0);
         }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Staggered Entrance Reveal for Navbar Brand Elements (Logo, Title, Subtitle, Nav Links)
+        // Staggered 70ms Entrance Reveal for Navbar Elements
         requestAnimationFrame(function() {
-            var navItems = document.querySelectorAll('.brand-logo-badge, .brand-title-text, .brand-sub-text, .navbar-nav .nav-item, .navbar-custom .d-flex.align-items-center > a, .navbar-custom .d-flex.align-items-center > button');
+            var navItems = document.querySelectorAll('.brand-logo-badge, .brand-title-text, .brand-sub-text, .navbar-nav .nav-item, .lang-toggle-btn, .admin-nav-btn');
             navItems.forEach(function(el, index) {
                 el.classList.add('nav-reveal-item');
                 setTimeout(function() {
                     el.classList.add('nav-revealed');
-                }, 100 + (index * 90));
+                }, 80 + (index * 70));
             });
         });
 
@@ -354,7 +318,7 @@ function is_active($page) {
                 
                 <div class="d-flex align-items-center gap-3">
                     <!-- Language Selection Toggle Link -->
-                    <a href="<?php echo getLangUrl($lang === 'en' ? 'th' : 'en'); ?>" class="text-warning text-decoration-none font-anton tracking-wider text-uppercase" style="font-size: 13px;">
+                    <a href="<?php echo getLangUrl($lang === 'en' ? 'th' : 'en'); ?>" class="lang-toggle-btn text-warning text-decoration-none font-anton tracking-wider text-uppercase" style="font-size: 13px;">
                         <?php echo $lang === 'en' ? 'TH 🇹🇭' : 'EN 🇺🇸'; ?>
                     </a>
                     
