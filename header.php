@@ -153,23 +153,39 @@ function is_active($page) {
         }
 
         /* Header Navbar Staggered 70ms Entrance Reveal Animation */
-        .brand-logo-badge,
-        .brand-title-text,
-        .brand-sub-text,
-        .nav-reveal-item {
-            display: inline-block !important;
+        /* Header Navbar Entrance Animation */
+        .navbar-custom .brand-logo-badge,
+        .navbar-custom .brand-title-text,
+        .navbar-custom .brand-sub-text,
+        .navbar-custom .nav-reveal-item {
             opacity: 0;
-            transform: translateY(-16px) scale(0.94);
-            transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-10px) scale(0.97);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform;
         }
-        .brand-logo-badge.nav-revealed,
-        .brand-title-text.nav-revealed,
-        .brand-sub-text.nav-revealed,
-        .nav-reveal-item.nav-revealed {
+        .navbar-custom .brand-logo-badge.nav-revealed,
+        .navbar-custom .brand-title-text.nav-revealed,
+        .navbar-custom .brand-sub-text.nav-revealed,
+        .navbar-custom .nav-reveal-item.nav-revealed {
             opacity: 1;
             transform: translateY(0) scale(1.0);
         }
+
+        /* Utility Helpers & Tailwind Compatibility Classes */
+        .z-20 { z-index: 20 !important; }
+        .z-10 { z-index: 10 !important; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .inset-x-0 { left: 0; right: 0; }
+        .max-w-xs { max-width: 20rem; }
+        .max-w-sm { max-width: 24rem; }
+        .max-w-md { max-width: 28rem; }
+        .max-w-lg { max-width: 32rem; }
+        .max-w-xl { max-width: 36rem; }
+        .max-w-2xl { max-width: 42rem; }
+        .max-w-3xl { max-width: 48rem; }
+        .hover-opacity-100:hover { opacity: 1 !important; }
+        .backdrop-blur-sm { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .transition-all { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 
         /* Custom Button Utility Classes */
         .btn-custom-green-outline {
@@ -214,14 +230,14 @@ function is_active($page) {
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Staggered 70ms Entrance Reveal for Navbar Elements
+        // Fast Entrance Reveal for Navbar Elements
         requestAnimationFrame(function() {
-            var navItems = document.querySelectorAll('.brand-logo-badge, .brand-title-text, .brand-sub-text, .navbar-nav .nav-item, .lang-toggle-btn, .admin-nav-btn');
+            var navItems = document.querySelectorAll('.navbar-custom .brand-logo-badge, .navbar-custom .brand-title-text, .navbar-custom .brand-sub-text, .navbar-custom .navbar-nav .nav-item, .navbar-custom .lang-toggle-btn, .navbar-custom .admin-nav-btn');
             navItems.forEach(function(el, index) {
                 el.classList.add('nav-reveal-item');
                 setTimeout(function() {
                     el.classList.add('nav-revealed');
-                }, 80 + (index * 70));
+                }, 30 + (index * 30));
             });
         });
 
