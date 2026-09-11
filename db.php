@@ -49,12 +49,6 @@ try {
 
 function run_mysql_migration($pdo) {
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-    $pdo->exec("DROP TABLE IF EXISTS bookings, reservations, reservation;");
-    $pdo->exec("DROP TABLE IF EXISTS tables, `table`;");
-    $pdo->exec("DROP TABLE IF EXISTS beers, menu;");
-    $pdo->exec("DROP TABLE IF EXISTS promotions, promotion;");
-    $pdo->exec("DROP TABLE IF EXISTS live_music, music;");
-    $pdo->exec("DROP TABLE IF EXISTS users, admin, staff;");
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS admin (
