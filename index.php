@@ -44,22 +44,23 @@ if (is_dir($atmosphere_dir)) {
 
 .hero-banner-container {
     position: relative;
-    min-height: 88vh;
+    min-height: 92vh;
+    height: 92vh;
     background: radial-gradient(circle at 50% 30%, rgba(245, 158, 11, 0.15) 0%, rgba(19, 19, 19, 1) 85%),
                 linear-gradient(to bottom, rgba(19, 19, 19, 0.5), rgba(19, 19, 19, 1));
     overflow: hidden;
 }
 
 .hero-carousel-item {
-    height: 88vh;
-    min-height: 580px;
+    height: 92vh;
+    min-height: 720px;
 }
 
 .hero-carousel-item img {
     object-fit: cover;
     height: 100%;
     width: 100%;
-    filter: brightness(0.42) contrast(1.1);
+    filter: brightness(0.45) contrast(1.1);
 }
 
 .hero-overlay-content {
@@ -71,13 +72,16 @@ if (is_dir($atmosphere_dir)) {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: linear-gradient(180deg, rgba(19, 19, 19, 0.4) 0%, rgba(19, 19, 19, 0.85) 100%);
+    background: linear-gradient(180deg, rgba(19, 19, 19, 0.35) 0%, rgba(19, 19, 19, 0.88) 100%);
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 .glow-title {
     color: #ffd782;
-    text-shadow: 0 0 25px rgba(255, 215, 130, 0.45), 0 0 50px rgba(245, 158, 11, 0.25);
+    text-shadow: 0 0 30px rgba(255, 215, 130, 0.5), 0 0 65px rgba(245, 158, 11, 0.35);
     letter-spacing: 0.08em;
+    font-size: clamp(3.2rem, 8vw, 6.2rem);
 }
 
 .glass-card-hover {
@@ -99,7 +103,8 @@ if (is_dir($atmosphere_dir)) {
     color: #111113;
     font-weight: 700;
     border: none;
-    padding: 14px 32px;
+    padding: 16px 36px;
+    font-size: 1.1rem;
     border-radius: 50px;
     letter-spacing: 0.05em;
     box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35);
