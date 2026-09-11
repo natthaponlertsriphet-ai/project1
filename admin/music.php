@@ -84,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
 
 // Handle Gallery Photo Delete (Strictly applies to /images/live-music/)
 if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET['filename'])) {
+    $is_ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || isset($_GET['ajax']);
     $raw_param = $_GET['filename'];
     $fn1 = basename($raw_param);
     $fn2 = basename(urldecode($raw_param));
@@ -93,10 +94,21 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET[
     $deleted = false;
     
     foreach ($filenames as $filename) {
+        if (!$filename || $filename === '.' || $filename === '..') continue;
         $path_live = __DIR__ . '/../images/live-music/' . $filename;
         if (file_exists($path_live) && @unlink($path_live)) {
             $deleted = true;
         }
+    }
+    
+    if ($is_ajax) {
+        header('Content-Type: application/json');
+        if ($deleted) {
+            echo json_encode(['success' => true, 'message' => t("Photo deleted successfully.", "ลบรูปภาพเรียบร้อยแล้ว.")]);
+        } else {
+            echo json_encode(['success' => false, 'error' => t("Photo file not found or could not be deleted.", "ไม่พบไฟล์รูปภาพหรือไม่สามารถลบไฟล์ได้")]);
+        }
+        exit;
     }
     
     if ($deleted) {
@@ -345,11 +357,12 @@ if (is_dir($dir_live)) {
         <?php foreach ($gallery_images as $img): ?>
             <?php 
             $img_path = '../images/live-music/' . htmlspecialchars($img);
+            $card_id = 'photo-card-' . md5($img);
             ?>
-            <div class="relative overflow-hidden rounded-lg bg-zinc-950 border border-zinc-900 aspect-square group">
+            <div class="relative overflow-hidden rounded-lg bg-zinc-950 border border-zinc-900 aspect-square group transition-all duration-300" id="<?php echo $card_id; ?>">
                 <img src="<?php echo $img_path; ?>" alt="Gallery" class="w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-300">
                 <div class="absolute bottom-0 left-0 right-0 p-2 bg-zinc-950/90 flex justify-center items-center border-t border-zinc-900">
-                    <a href="javascript:void(0)" onclick="confirmDeletePhoto('<?php echo rawurlencode($img); ?>')" class="shadcn-btn-destructive py-1 px-2.5 text-[10px] w-full text-center"><?php echo t("Delete", "ลบภาพ"); ?></a>
+                    <a href="javascript:void(0)" onclick="confirmDeletePhoto('<?php echo rawurlencode($img); ?>', '<?php echo $card_id; ?>')" class="shadcn-btn-destructive py-1 px-2.5 text-[10px] w-full text-center"><?php echo t("Delete", "ลบภาพ"); ?></a>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -368,7 +381,12 @@ if (is_dir($dir_live)) {
         document.getElementById('deleteMusicModal').classList.add('hidden');
     }
 
-    function confirmDeletePhoto(filename) {
+    let activeDeleteFilename = '';
+    let activeDeleteCardId = '';
+
+    function confirmDeletePhoto(filename, cardId) {
+        activeDeleteFilename = filename;
+        activeDeleteCardId = cardId;
         document.getElementById('confirm-delete-photo-btn').href = 'music.php?action=delete_photo&filename=' + filename;
         document.getElementById('deletePhotoModal').classList.remove('hidden');
     }
@@ -376,6 +394,48 @@ if (is_dir($dir_live)) {
     function closeDeletePhotoModal() {
         document.getElementById('deletePhotoModal').classList.add('hidden');
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmBtn = document.getElementById('confirm-delete-photo-btn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!activeDeleteFilename) return;
+
+                const cardEl = document.getElementById(activeDeleteCardId);
+                if (cardEl) {
+                    cardEl.style.opacity = '0.3';
+                    cardEl.style.pointerEvents = 'none';
+                }
+
+                closeDeletePhotoModal();
+
+                fetch('music.php?action=delete_photo&filename=' + activeDeleteFilename + '&ajax=1')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (cardEl) {
+                                cardEl.style.transition = 'all 0.3s ease';
+                                cardEl.style.transform = 'scale(0.7)';
+                                cardEl.style.opacity = '0';
+                                setTimeout(() => cardEl.remove(), 300);
+                            }
+                        } else {
+                            alert(data.error || '<?php echo t("Failed to delete photo.", "ลบรูปภาพไม่สำเร็จ"); ?>');
+                            if (cardEl) {
+                                cardEl.style.opacity = '1';
+                                cardEl.style.pointerEvents = 'auto';
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Delete photo error:", err);
+                        // Fallback to normal URL navigation if AJAX fails
+                        window.location.href = 'music.php?action=delete_photo&filename=' + activeDeleteFilename;
+                    });
+            });
+        }
+    });
 </script>
 
 <!-- Custom Delete Live Music Schedule Modal -->
