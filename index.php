@@ -178,6 +178,19 @@ if (is_dir($atmosphere_dir)) {
     color: #ffd782;
     margin-bottom: 20px;
 }
+
+/* Scroll-Reveal & Cinematic Smooth Entrance Effect */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(35px) scale(0.95);
+    transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
 </style>
 
 <!-- 1. HERO BANNER SECTION (แบนเนอร์ภาพสไลด์ตระการตา) -->
@@ -401,6 +414,29 @@ function openPhotoModal(imgUrl) {
     var photoModal = new bootstrap.Modal(document.getElementById('photoModal'));
     photoModal.show();
 }
+
+// Cinematic Smooth Scroll Entrance Reveal Script
+document.addEventListener('DOMContentLoaded', function () {
+    const revealTargets = document.querySelectorAll('.glass-card-hover, .gallery-grid-item, section:not(.hero-banner-container) h2, section:not(.hero-banner-container) .max-w-3xl');
+    
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, idx) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('is-visible');
+                }, (idx % 4) * 70);
+            }
+        });
+    }, {
+        threshold: 0.08,
+        rootMargin: '0px 0px -30px 0px'
+    });
+
+    revealTargets.forEach(el => {
+        el.classList.add('scroll-reveal');
+        revealObserver.observe(el);
+    });
+});
 </script>
 
 <?php require_once 'footer.php'; ?>
