@@ -17,10 +17,7 @@ project.db
 *.db
 chithole_db.sqlite
 
-# Dynamic Uploaded User Media
-images/live-music/uploaded_*
-images/promotions/uploaded_*
-images/tables/uploaded_*
+# Dynamic Uploaded User Media (Tracked for server deployments)
 
 # dependencies
 /node_modules

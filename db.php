@@ -273,8 +273,33 @@ function seed_database_records($pdo, $is_sqlite = false) {
     $promo_count = $pdo->query("SELECT COUNT(*) FROM promotion")->fetchColumn();
     if ($promo_count == 0) {
         $promotions = [
-            ['p-1', 'Happy Hour: Buy 1 Get 1', 'Double the impact. Buy any pint from our selected industrial tap list and receive a second on the house. Fuel the evening shift.', 'BUY 1 GET 1', 'Daily • 5PM - 7PM', 'images/promotions/751026922_122278510508129427_3687616286560289044_n.jpg', 1],
-            ['p-2', 'Craft Night', 'A gathering for the enthusiasts. Flash your brewing guild card or demonstrate your palate to receive 15% off all tasting flights.', '15% OFF', 'Every Wednesday', 'images/home-booking/735563412_122276495840129427_6246480903433139955_n.jpg', 1],
+            [
+                'promo_6aa12cd375577',
+                'PROMOTION HAPPY HOUR (ลดราคาตะวันแดง)',
+                "คำอธิบายเงื่อนไข\n\nรายการราคาพิเศษช่วง Happy Hour:\n\nแก้วเล็ก (350 ML): 99 บาท (จากปกติ 149 บาท)\n\nเหยือก (1000 ML): 289 บาท (จากปกติ 399 บาท)\n\nทาวเวอร์ (3000 ML): 859 บาท (จากปกติ 999 บาท)\n\nสิทธิ์นี้ใช้ได้เฉพาะช่วงเวลา HAPPY HOUR 17:00 – 21:00 น. เท่านั้น\n\nไม่สามารถใช้ร่วมกับโปรโมชันอื่นได้",
+                '',
+                '17:00 – 21:00 น.',
+                'images/promotions/uploaded_1788947667_IMG_0181.JPG',
+                1
+            ],
+            [
+                'promo_6a9835f77c650',
+                'เดือนนี้เดือนเกิด... ต้องจัดที่ CHIT HOLE! 🎂🍻',
+                'วันเกิดปีนี้ พาเพื่อนมาเลี้ยงฉลองกันให้เต็มที่! รับส่วนลดค่าอาหาร 10% ทันที เมื่อมาฉลองวันเกิดที่ CHIT HOLE เชียงใหม่ สันทราย 📍 เฉพาะสาขา CHIT HOLE เชียงใหม่ สันทราย 🎁 สิทธิพิเศษ: ลดค่าอาหาร 10% 📝 แสดงบัตรประชาชนก่อนใช้สิทธิ',
+                '',
+                'ตลอดเดือนเกิด',
+                'images/promotions/uploaded_1788360183_756444299_122279188670129427_5185743561094400021_n.jpg',
+                1
+            ],
+            [
+                'promo_6a98354bc5a10',
+                '3 สาว ก่อน 3 ทุ่ม ฟรี 1 เหยือก',
+                'สาว ๆ มา 3 คน ก่อน 21:00 น. รับฟรี ตะวันแดง 1 Pitcher! (มูลค่า 399.-) เฉพาะวันจันทร์และอังคารเท่านั้น! คราฟต์เบียร์เย็นๆ บรรยากาศดี ดนตรีเพราะ... จะรออะไร!',
+                '',
+                'ทุกวันจันทร์และอังคาร ก่อนเวลา 21:00 น.',
+                'images/promotions/uploaded_1788360011_791383960_122283290132129427_324725330320101261_n.jpg',
+                1
+            ]
         ];
         $stmt = $pdo->prepare("INSERT INTO promotion (promo_id, promo_title, description, offer, promo_period, image_path, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)");
         foreach ($promotions as $p) {
