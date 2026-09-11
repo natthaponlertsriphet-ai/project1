@@ -645,8 +645,8 @@ require_once 'header.php';
                     <?php endforeach; ?>
                 </div>
 
-                <div class="text-light text-opacity-80 small d-flex align-items-center gap-1.5 font-sans">
-                    <span class="material-symbols-outlined text-warning fs-6">info</span>
+                <div class="text-light text-opacity-80 small d-flex align-items-center gap-2.5 font-sans">
+                    <span class="material-symbols-outlined text-warning fs-5 shrink-0 opacity-90">info</span>
                     <span><?php echo t("Please select Date and Time Slot first to see live availability status.", "กรุณาเลือกวันที่และเวลาจองเพื่ออัปเดตสถานะความว่างของโต๊ะแบบเรียลไทม์"); ?></span>
                 </div>
             </div>
