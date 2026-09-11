@@ -66,10 +66,13 @@ try {
         throw new \PDOException("Unable to establish MySQL connection to chithole_db.");
     }
     
-    // Run migration/seeding ONLY if running this script directly from CLI
-    if (php_sapi_name() === 'cli' && isset($_SERVER['SCRIPT_FILENAME']) && realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'])) {
-        run_mysql_migration($pdo);
-    }
+    // Auto-run migration if MySQL tables do not exist yet
+    try {
+        $checkTable = $pdo->query("SHOW TABLES LIKE 'admin'")->fetch();
+        if (!$checkTable || (php_sapi_name() === 'cli' && isset($_SERVER['SCRIPT_FILENAME']) && realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME']))) {
+            run_mysql_migration($pdo);
+        }
+    } catch (\Exception $migEx) {}
 } catch (\PDOException $e) {
     // 2. Fallback to embedded SQLite database if MySQL daemon is unavailable (e.g. cloud container without MySQL)
     try {
@@ -80,9 +83,12 @@ try {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]);
 
-        if ($is_new_sqlite || (php_sapi_name() === 'cli' && isset($_SERVER['SCRIPT_FILENAME']) && realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME']))) {
-            init_sqlite_db($pdo);
-        }
+        try {
+            $checkSqliteTable = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='admin'")->fetch();
+            if (!$checkSqliteTable || $is_new_sqlite || (php_sapi_name() === 'cli' && isset($_SERVER['SCRIPT_FILENAME']) && realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME']))) {
+                init_sqlite_db($pdo);
+            }
+        } catch (\Exception $sqEx) {}
     } catch (\PDOException $sqlite_ex) {
         die("Database Connection / Setup Failed: " . $e->getMessage());
     }
