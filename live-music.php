@@ -159,12 +159,13 @@ require_once 'header.php';
     /* Luxury Gig Timetable Cards */
     .gig-schedule-card {
         background: linear-gradient(135deg, rgba(26, 26, 34, 0.9) 0%, rgba(14, 14, 18, 0.95) 100%);
-        border: 1px solid rgba(255, 215, 130, 0.2);
+        border: 1.5px solid rgba(255, 215, 130, 0.35) !important;
         border-radius: 16px;
         padding: 16px 22px;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     .gig-schedule-card::before {
         content: '';
@@ -175,14 +176,14 @@ require_once 'header.php';
         width: 4px;
         background: linear-gradient(180deg, #ffd782, #f59e0b);
         border-radius: 4px 0 0 4px;
-        opacity: 0.8;
+        opacity: 0.9;
         transition: all 0.3s ease;
     }
     .gig-schedule-card:hover {
         transform: translateX(6px);
-        border-color: rgba(255, 215, 130, 0.45);
-        box-shadow: 0 8px 25px rgba(255, 215, 130, 0.15), 0 4px 15px rgba(0, 0, 0, 0.4);
-        background: linear-gradient(135deg, rgba(34, 34, 44, 0.95) 0%, rgba(20, 20, 26, 0.98) 100%);
+        border-color: #ffd782 !important;
+        box-shadow: 0 0 20px rgba(255, 215, 130, 0.35), 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+        background: linear-gradient(135deg, rgba(36, 36, 46, 0.95) 0%, rgba(20, 20, 26, 0.98) 100%);
     }
     .gig-schedule-card:hover::before {
         opacity: 1;
@@ -357,7 +358,8 @@ require_once 'header.php';
         
         <!-- Interactive Timetable Day Tabs -->
         <div class="col-lg-12">
-            <div class="glass-card p-4 p-md-5">
+            <div class="glass-card p-4 p-md-5 border border-warning border-opacity-30 position-relative overflow-hidden shadow-lg">
+                <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #f59e0b, #ffd782, #f59e0b);"></div>
                 <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4"><?php echo t("Weekly Gigs Timetable", "ตารางแสดงรอบดนตรีสด"); ?></h3>
                 
                 <!-- Day Select buttons -->
