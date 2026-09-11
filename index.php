@@ -171,7 +171,7 @@ if (is_dir($atmosphere_dir)) {
 
 <!-- 1. HERO BANNER SECTION (แบนเนอร์ภาพสไลด์ตระการตา) -->
 <section class="hero-banner-container position-relative">
-    <div id="heroCarousel" class="carousel slide carousel-fade h-100" data-bs-ride="carousel" data-bs-interval="4500">
+    <div id="heroCarousel" class="carousel slide carousel-fade h-100" data-bs-ride="carousel" data-bs-interval="2500">
         <div class="carousel-indicators mb-4 z-20">
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
