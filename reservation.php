@@ -485,6 +485,16 @@ require_once 'header.php';
                 <!-- Visual Grid Layout -->
                 <div class="d-flex flex-wrap justify-content-start gap-2 p-3 bg-black bg-opacity-50 border border-secondary border-opacity-25 rounded mb-4">
                     <?php foreach ($tables as $t): ?>
+                        <?php 
+                        $table_img_src = $t['image'] ?? '';
+                        if (!$table_img_src) {
+                            $fmt_num = strtolower($t['number']);
+                            $def_path = "images/tables/table_{$fmt_num}.jpg";
+                            if (file_exists(__DIR__ . '/' . $def_path)) {
+                                $table_img_src = $def_path;
+                            }
+                        }
+                        ?>
                         <div 
                             id="table-<?php echo $t['id']; ?>"
                             class="table-btn <?php echo $t['status'] === 'OCCUPIED' ? 'table-reserved' : 'table-available'; ?>"
@@ -492,7 +502,7 @@ require_once 'header.php';
                             data-number="<?php echo $t['number']; ?>"
                             data-capacity="<?php echo $t['capacity']; ?>"
                             data-zone="<?php echo $t['zone']; ?>"
-                            data-image="<?php echo htmlspecialchars($t['image'] ?? ''); ?>"
+                            data-image="<?php echo htmlspecialchars($table_img_src); ?>"
                             onclick="selectTable(this)"
                         >
                             <span><?php echo $t['number']; ?></span>

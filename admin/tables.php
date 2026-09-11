@@ -142,7 +142,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $clean_name = preg_replace("/[^a-zA-Z0-9.-]/", "_", $file_name);
                 $ext = strtolower(pathinfo($clean_name, PATHINFO_EXTENSION));
                 
-                if (strpos($file_type, 'image/') === 0 || in_array($ext, ['heic', 'heif'])) {
+                $allowed_exts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
+                if (in_array($ext, $allowed_exts) || strpos($file_type, 'image/') === 0) {
                     $upload_dir = __DIR__ . '/../images/tables/';
                     if (!is_dir($upload_dir)) {
                         mkdir($upload_dir, 0777, true);
@@ -162,8 +163,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             $cmd = "sips -s format jpeg " . escapeshellarg($full_heic_path) . " --out " . escapeshellarg($full_jpg_path) . " 2>&1";
                             exec($cmd, $output, $return_var);
                             
-                            if ($return_var === 0 && file_exists($full_jpg_path)) {
-                                unlink($full_heic_path);
+                            if (file_exists($full_jpg_path)) {
+                                @unlink($full_heic_path);
                                 $image_path = 'images/tables/' . $jpg_name;
                             }
                         }
