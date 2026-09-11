@@ -113,22 +113,41 @@ require_once 'header.php';
         background: linear-gradient(to top, #131313, rgba(19, 19, 19, 0.6) 50%, transparent);
         z-index: 1;
     }
+    .day-tabs-wrapper {
+        background: rgba(14, 14, 18, 0.85);
+        border: 1px solid rgba(255, 215, 130, 0.25);
+        border-radius: 16px;
+        padding: 12px 16px;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+    }
     .day-tab-btn {
         font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
-        text-transform: uppercase;
-        font-size: 14px;
-        letter-spacing: 0.05em;
-        border-radius: 4px;
-        transition: all 0.2s ease-in-out;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        background-color: #1b1b1b;
-        color: #e5e2e1;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        border-radius: 10px;
+        padding: 8px 18px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(255, 215, 130, 0.25);
+        background: rgba(26, 26, 32, 0.9);
+        color: #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+    .day-tab-btn:hover {
+        background: rgba(45, 45, 55, 0.95);
+        color: #ffd782;
+        border-color: #ffd782;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 215, 130, 0.25);
     }
     .day-tab-btn.active {
-        background-color: #ffd782;
-        color: #3f2e00;
-        border-color: #ffd782;
-        box-shadow: 0 0 12px rgba(255, 215, 130, 0.3);
+        background: linear-gradient(135deg, #ffd782 0%, #f59e0b 100%) !important;
+        color: #000000 !important;
+        border: 2px solid #ffffff !important;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+        transform: translateY(-3px) scale(1.04) !important;
+        font-weight: 800;
     }
     .gallery-img-container {
         position: relative;
@@ -292,11 +311,11 @@ require_once 'header.php';
                 <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4"><?php echo t("Weekly Gigs Timetable", "ตารางแสดงรอบดนตรีสด"); ?></h3>
                 
                 <!-- Day Select buttons -->
-                <div class="d-flex flex-wrap gap-2 mb-4">
+                <div class="day-tabs-wrapper d-flex flex-wrap gap-2.5 mb-4 align-items-center">
                     <?php foreach ($days_list as $d): ?>
                         <button 
                             id="btn-day-<?php echo $d; ?>"
-                            class="btn day-tab-btn px-3 py-2 <?php echo $d === $current_day ? 'active' : ''; ?>"
+                            class="btn day-tab-btn px-3.5 py-2 <?php echo $d === $current_day ? 'active' : ''; ?>"
                             onclick="selectActiveDay('<?php echo $d; ?>')"
                         >
                             <?php 
