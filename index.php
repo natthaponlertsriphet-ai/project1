@@ -293,7 +293,7 @@ if (is_dir($hero_dir)) {
     <div class="container px-4 px-lg-5 py-4">
         <div class="row g-4 justify-content-center">
             <!-- Feature 1 -->
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-4">
                 <div class="glass-card-hover p-4 rounded-4 h-100 d-flex flex-column align-items-center text-center">
                     <div class="feature-icon-badge">
                         <span class="material-symbols-outlined fs-2">local_bar</span>
@@ -306,7 +306,7 @@ if (is_dir($hero_dir)) {
             </div>
 
             <!-- Feature 2 -->
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-4">
                 <div class="glass-card-hover p-4 rounded-4 h-100 d-flex flex-column align-items-center text-center">
                     <div class="feature-icon-badge">
                         <span class="material-symbols-outlined fs-2">music_note</span>
@@ -319,7 +319,7 @@ if (is_dir($hero_dir)) {
             </div>
 
             <!-- Feature 3 -->
-            <div class="col-md-6 col-lg-3">
+            <div class="col-md-4">
                 <div class="glass-card-hover p-4 rounded-4 h-100 d-flex flex-column align-items-center text-center">
                     <div class="feature-icon-badge">
                         <span class="material-symbols-outlined fs-2">chair</span>
@@ -327,19 +327,6 @@ if (is_dir($hero_dir)) {
                     <h4 class="font-anton text-warning text-uppercase mb-2 fs-5"><?php echo t("Indoor & Outdoor Zones", "โซนแอร์ & โซนรับลมชิล"); ?></h4>
                     <p class="text-secondary small font-sans m-0">
                         <?php echo t("Choose indoor AC tables, window sides, front stage, or open-air garden breeze.", "เลือกที่นั่งได้ตามสไตล์ ทั้งห้องแอร์เย็นฉ่ำ หน้าบาร์ หน้าเวที หรือโซนรับลมธรรมชาติ"); ?>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Feature 4 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="glass-card-hover p-4 rounded-4 h-100 d-flex flex-column align-items-center text-center">
-                    <div class="feature-icon-badge">
-                        <span class="material-symbols-outlined fs-2">restaurant</span>
-                    </div>
-                    <h4 class="font-anton text-warning text-uppercase mb-2 fs-5"><?php echo t("Signature Snacks", "กับแกล้มและอาหารโฮมเมด"); ?></h4>
-                    <p class="text-secondary small font-sans m-0">
-                        <?php echo t("Pair your craft beers with freshly cooked signature dishes and delicious snacks.", "อร่อยลงตัวกับเมนูกับแกล้มและอาหารจานเด็ดที่รังสรรค์มาทานคู่กับคราฟต์เบียร์"); ?>
                     </p>
                 </div>
             </div>
@@ -392,45 +379,7 @@ if (is_dir($hero_dir)) {
 </section>
 <?php endif; ?>
 
-<!-- 4. ON TAP BEER SHOWCASE SECTION (ตัวอย่างเบียร์สดไฮไลท์) -->
-<?php if (!empty($beers)): ?>
-<section class="py-5 bg-black position-relative">
-    <div class="container px-4 px-lg-5 py-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 border-bottom border-secondary border-opacity-25 pb-3">
-            <div>
-                <span class="text-warning font-mono text-uppercase tracking-widest small fw-bold">[ FRESH DRAFT BEERS ]</span>
-                <h2 class="font-anton text-uppercase text-light display-6 m-0 mt-1"><?php echo t("On Tap Showcase", "รายการเบียร์สดแนะนำ"); ?></h2>
-            </div>
-            <a href="tap-list" class="btn btn-outline-warning btn-sm font-anton text-uppercase px-3 rounded-pill mt-2 mt-sm-0">
-                <?php echo t("Full Beer Menu", "ดูเมนูเบียร์ทั้งหมด"); ?> &rarr;
-            </a>
-        </div>
 
-        <div class="row g-3">
-            <?php foreach ($beers as $beer): ?>
-                <div class="col-6 col-md-4 col-lg-3">
-                    <div class="glass-card-hover p-3.5 rounded-4 h-100 d-flex flex-column border border-secondary border-opacity-25">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="badge bg-warning bg-opacity-20 border border-warning text-warning font-mono px-2.5 py-1 rounded" style="font-size: 12px; font-weight: 700;">
-                                TAP #<?php echo htmlspecialchars($beer['tap_number']); ?>
-                            </span>
-                            <span class="badge bg-secondary bg-opacity-30 text-light font-mono px-2 py-1 rounded" style="font-size: 11px;">
-                                ABV <?php echo htmlspecialchars($beer['abv']); ?>
-                            </span>
-                        </div>
-                        <h4 class="font-anton text-light fs-5 mb-1 text-uppercase text-truncate" title="<?php echo htmlspecialchars($beer['menu_name']); ?>">
-                            <?php echo htmlspecialchars($beer['menu_name']); ?>
-                        </h4>
-                        <p class="text-warning text-opacity-90 small font-sans m-0 text-truncate">
-                            <?php echo htmlspecialchars($beer['beer_type']); ?>
-                        </p>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
 
 <!-- 5. ATMOSPHERE & GALLERY SHOWCASE (ภาพบรรยากาศร้านสุดชิล - รวมรูปถ่ายทั้งหมดที่มี!) -->
 <?php if (!empty($gallery_images)): ?>
@@ -467,46 +416,7 @@ if (is_dir($hero_dir)) {
 </section>
 <?php endif; ?>
 
-<!-- 6. LIVE MUSIC SCHEDULE SHOWCASE SECTION (ตารางเวลาการแสดงดนตรีสด) -->
-<?php if (!empty($music_schedule)): ?>
-<section class="py-5 bg-black position-relative border-top border-secondary border-opacity-10">
-    <div class="container px-4 px-lg-5 py-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 border-bottom border-secondary border-opacity-25 pb-3">
-            <div>
-                <span class="text-warning font-mono text-uppercase tracking-widest small fw-bold">[ LIVE MUSIC SCHEDULE ]</span>
-                <h2 class="font-anton text-uppercase text-light display-6 m-0 mt-1"><?php echo t("Weekly Acoustic Lineup", "ตารางแสดงดนตรีสดสัปดาห์นี้"); ?></h2>
-            </div>
-            <a href="live-music" class="btn btn-outline-warning btn-sm font-anton text-uppercase px-3 rounded-pill mt-2 mt-sm-0">
-                <?php echo t("Full Music Schedule", "ดูตารางดนตรีทั้งหมด"); ?> &rarr;
-            </a>
-        </div>
 
-        <div class="row g-3">
-            <?php foreach ($music_schedule as $item): ?>
-                <div class="col-md-6 col-lg-4">
-                    <div class="glass-card-hover p-4 rounded-4 h-100 d-flex align-items-center justify-content-between border border-secondary border-opacity-25">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="rounded-3 bg-warning text-dark font-anton fs-5 d-flex align-items-center justify-content-center px-3 py-2 shadow-sm" style="min-width: 60px;">
-                                <?php echo htmlspecialchars($item['show_day']); ?>
-                            </div>
-                            <div>
-                                <h4 class="font-anton text-light fs-5 m-0 text-uppercase"><?php echo htmlspecialchars($item['artist']); ?></h4>
-                                <span class="text-warning font-mono small d-flex align-items-center gap-1 mt-1">
-                                    <span class="material-symbols-outlined fs-6">schedule</span>
-                                    <span><?php echo htmlspecialchars($item['show_time']); ?> น.</span>
-                                </span>
-                            </div>
-                        </div>
-                        <a href="reservation" class="btn btn-sm btn-outline-warning rounded-circle p-2 d-flex align-items-center justify-content-center" title="Book Table">
-                            <span class="material-symbols-outlined fs-6">chevron_right</span>
-                        </a>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
 
 <!-- 7. CALL TO ACTION & LOCATION BANNER SECTION (แผนที่และข้อมูลติดต่อสาขาสันทราย) -->
 <section class="py-5 position-relative" style="background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12) 0%, rgba(10, 10, 10, 1) 90%);">
