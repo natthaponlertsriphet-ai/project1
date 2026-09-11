@@ -330,7 +330,7 @@ require_once 'header.php';
                     <div style="width: 54px; flex-shrink: 0; text-align: center;"><?php echo t("NO", "NO"); ?></div>
                     <div style="width: 130px; flex-shrink: 0;"><?php echo t("BRAND", "BRAND"); ?></div>
                     <div class="flex-grow-1"><?php echo t("BEERS", "BEERS"); ?></div>
-                    <div style="width: 110px; flex-shrink: 0; text-align: right;"><?php echo t("ABV", "ABV"); ?></div>
+                    <div style="width: 110px; flex-shrink: 0; text-align: center;"><?php echo t("ABV", "ABV"); ?></div>
                 </div>
 
                 <div id="beer-cards-container" class="d-flex flex-column gap-3">
@@ -359,8 +359,8 @@ require_once 'header.php';
                                     <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0 text-truncate"><?php echo htmlspecialchars($b['menu_name']); ?></h4>
                                 </div>
                                 <!-- 4. ABV -->
-                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
-                                    <div class="abv-pill-badge">
+                                <div class="d-flex align-items-center justify-content-center ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
+                                    <div class="abv-pill-badge justify-content-center" style="min-width: 65px; text-align: center;">
                                         <span class="text-warning"><?php echo htmlspecialchars($b['abv']); ?></span>
                                     </div>
                                 </div>
@@ -426,8 +426,8 @@ require_once 'header.php';
                                 <div class="flex-grow-1 min-w-0">
                                     <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0 text-truncate">${escapeHtml(b.menu_name)}</h4>
                                 </div>
-                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
-                                    <div class="abv-pill-badge">
+                                <div class="d-flex align-items-center justify-content-center ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
+                                    <div class="abv-pill-badge justify-content-center" style="min-width: 65px; text-align: center;">
                                         <span class="text-warning">${escapeHtml(b.abv)}</span>
                                     </div>
                                 </div>
