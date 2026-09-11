@@ -22,9 +22,10 @@ try {
     $hosts = array_unique(array_filter($hosts));
     $connected = false;
 
+    // First attempt: Connect directly with dbname=chithole_db
     foreach ($hosts as $h) {
         try {
-            $dsn = "mysql:host=$h;port=$port;charset=$charset";
+            $dsn = "mysql:host=$h;port=$port;dbname=$db;charset=$charset";
             $pdo = new PDO($dsn, $user, $pass, $options);
             $connected = true;
             break;
@@ -33,25 +34,37 @@ try {
         }
     }
 
-    // Try XAMPP unix socket fallback if host connections fail
+    // Try XAMPP unix socket with dbname=chithole_db
     if (!$connected) {
         $xampp_socket = '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock';
         if (file_exists($xampp_socket)) {
             try {
-                $dsn = "mysql:unix_socket=$xampp_socket;charset=$charset";
+                $dsn = "mysql:unix_socket=$xampp_socket;dbname=$db;charset=$charset";
                 $pdo = new PDO($dsn, $user, $pass, $options);
                 $connected = true;
             } catch (\PDOException $ex) {}
         }
     }
 
+    // Second attempt: If database does not exist yet, connect without dbname to create it
+    if (!$connected) {
+        foreach ($hosts as $h) {
+            try {
+                $dsn = "mysql:host=$h;port=$port;charset=$charset";
+                $pdo = new PDO($dsn, $user, $pass, $options);
+                $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+                $pdo->exec("USE `$db`");
+                $connected = true;
+                break;
+            } catch (\PDOException $ex) {
+                continue;
+            }
+        }
+    }
+
     if (!$connected || !$pdo) {
         throw new \PDOException("Unable to establish MySQL connection to chithole_db.");
     }
-    
-    // Create database if it does not exist and use it
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo->exec("USE `$db`");
     
     // Run migration/seeding ONLY if running this script directly from CLI
     if (php_sapi_name() === 'cli' && isset($_SERVER['SCRIPT_FILENAME']) && realpath(__FILE__) === realpath($_SERVER['SCRIPT_FILENAME'])) {
