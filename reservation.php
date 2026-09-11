@@ -767,7 +767,7 @@ require_once 'header.php';
                         </label>
                         <div class="input-group-smooth d-flex align-items-center">
                             <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">person</span>
-                            <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control text-light font-sans py-2.5 px-0">
+                            <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" class="form-control text-light font-sans py-2.5 px-0">
                         </div>
                     </div>
 
@@ -777,7 +777,7 @@ require_once 'header.php';
                         </label>
                         <div class="input-group-smooth d-flex align-items-center">
                             <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">call</span>
-                            <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control text-light font-sans py-2.5 px-0">
+                            <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" class="form-control text-light font-sans py-2.5 px-0">
                         </div>
                     </div>
 
