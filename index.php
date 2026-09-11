@@ -334,50 +334,7 @@ if (is_dir($hero_dir)) {
     </div>
 </section>
 
-<!-- 3. FEATURED PROMOTIONS SECTION (รายการโปรโมชันสุดพิเศษ) -->
-<?php if (!empty($promotions)): ?>
-<section class="py-5 position-relative" style="background-color: #161515;">
-    <div class="container px-4 px-lg-5 py-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 border-bottom border-secondary border-opacity-25 pb-3">
-            <div>
-                <span class="text-warning font-mono text-uppercase tracking-widest small fw-bold">[ SPECIAL OFFERS ]</span>
-                <h2 class="font-anton text-uppercase text-light display-6 m-0 mt-1"><?php echo t("Active Promotions", "รายการโปรโมชันพิเศษประจำเดือน"); ?></h2>
-            </div>
-            <a href="promotions" class="btn btn-outline-warning btn-sm font-anton text-uppercase px-3 rounded-pill mt-2 mt-sm-0">
-                <?php echo t("View All Promotions", "ดูโปรโมชันทั้งหมด"); ?> &rarr;
-            </a>
-        </div>
 
-        <div class="row g-4">
-            <?php foreach ($promotions as $promo): ?>
-                <div class="col-md-6 col-lg-4">
-                    <div class="glass-card-hover rounded-4 overflow-hidden h-100 d-flex flex-column">
-                        <div class="position-relative overflow-hidden" style="height: 220px;">
-                            <img src="<?php echo htmlspecialchars($promo['image_path']); ?>" alt="<?php echo htmlspecialchars($promo['promo_title']); ?>" style="width: 100%; height: 100%; object-fit: cover;">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning text-dark font-mono text-uppercase px-2.5 py-1.5 shadow fw-bold">
-                                    <?php echo htmlspecialchars($promo['offer']); ?>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="p-4 d-flex flex-column flex-grow-1">
-                            <span class="text-warning font-mono small mb-2 d-inline-block fw-bold"><?php echo htmlspecialchars($promo['promo_period']); ?></span>
-                            <h3 class="font-anton text-light fs-4 mb-2 text-uppercase"><?php echo htmlspecialchars($promo['promo_title']); ?></h3>
-                            <p class="text-secondary small mb-4 font-sans line-clamp-2"><?php echo htmlspecialchars($promo['description']); ?></p>
-                            <div class="mt-auto">
-                                <a href="reservation" class="btn btn-custom-gold w-100 py-2.5 font-anton text-uppercase rounded-3 d-flex align-items-center justify-content-center gap-2">
-                                    <span class="material-symbols-outlined fs-6">local_bar</span>
-                                    <span><?php echo t("Book Table For Promo", "จองโต๊ะรับสิทธิ์"); ?></span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
 
 
 
