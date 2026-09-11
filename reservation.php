@@ -274,6 +274,19 @@ require_once 'header.php';
 ?>
 
 <style>
+    .glass-card-reservation {
+        background: rgba(22, 22, 26, 0.82) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 215, 130, 0.2) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), 0 0 30px rgba(245, 158, 11, 0.08) !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .glass-card-reservation:hover {
+        border-color: rgba(255, 215, 130, 0.4) !important;
+        box-shadow: 0 25px 55px rgba(0, 0, 0, 0.85), 0 0 40px rgba(245, 158, 11, 0.15) !important;
+    }
     .hero-slider {
         position: relative;
         top: 0;
@@ -307,47 +320,73 @@ require_once 'header.php';
         padding-top: 100px;
     }
     .table-btn {
-        width: 60px;
-        height: 60px;
-        margin: 5px;
+        width: 64px;
+        height: 64px;
+        margin: 4px;
         font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
-        font-size: 16px;
-        border-radius: 6px;
-        transition: all 0.2s;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 12px;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         cursor: pointer;
         display: inline-flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        position: relative;
+        overflow: hidden;
     }
     .table-capacity {
-        font-size: 9px;
+        font-size: 10px;
         font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
-        opacity: 0.8;
+        opacity: 0.9;
+        font-weight: 600;
     }
     .table-available {
-        background-color: #212529;
-        color: #fff;
+        background: linear-gradient(145deg, #1f1f24 0%, #131316 100%);
+        color: #ffd782;
+        border-color: rgba(255, 215, 130, 0.25);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
     .table-available:hover {
-        background-color: #ffd782;
-        color: #3f2e00;
-        border-color: #ffd782;
-        box-shadow: 0 0 10px rgba(255, 215, 130, 0.5);
+        background: linear-gradient(145deg, #ffd782 0%, #f59e0b 100%) !important;
+        color: #111113 !important;
+        border-color: #ffd782 !important;
+        transform: translateY(-4px) scale(1.08) !important;
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5) !important;
     }
     .table-selected {
-        background-color: #ffd782 !important;
-        color: #3f2e00 !important;
-        border-color: #ffd782 !important;
-        box-shadow: 0 0 15px rgba(255, 215, 130, 0.8);
+        background: linear-gradient(145deg, #ffd782 0%, #f59e0b 100%) !important;
+        color: #000000 !important;
+        border-color: #ffffff !important;
+        transform: translateY(-4px) scale(1.1) !important;
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.75), 0 0 20px rgba(255, 255, 255, 0.4) !important;
     }
     .table-reserved {
-        background-color: #842029 !important;
-        color: #f8d7da !important;
-        border-color: #842029 !important;
+        background: linear-gradient(145deg, #2c1214 0%, #1a0a0b 100%) !important;
+        color: #f87171 !important;
+        border-color: rgba(239, 68, 68, 0.3) !important;
         cursor: not-allowed !important;
-        opacity: 0.5;
+        opacity: 0.65;
+    }
+
+    .zone-btn-custom {
+        background: rgba(30, 30, 35, 0.6);
+        border: 1px solid rgba(255, 215, 130, 0.25);
+        color: #e5e7eb;
+        border-radius: 30px;
+        padding: 7px 18px;
+        font-size: 13px;
+        transition: all 0.3s ease;
+    }
+    .zone-btn-custom:hover,
+    .zone-btn-custom.active {
+        background: linear-gradient(135deg, #ffd782 0%, #f59e0b 100%) !important;
+        color: #000000 !important;
+        border-color: #ffd782 !important;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+        font-weight: 700;
     }
 
     /* Interactive Table Tooltip styling */
@@ -460,30 +499,36 @@ require_once 'header.php';
     <?php endif; ?>
 
     <div class="row g-5">
-        <!-- Left Side: Table Map Selection -->
+        <!-- Left Side: Table Map Selection & Status Checker -->
         <div class="col-lg-8">
-            <div class="glass-card p-4 p-md-5">
-                <div class="border-bottom border-secondary border-opacity-25 pb-3 mb-4 d-flex justify-content-between align-items-center">
-                    <h2 class="font-anton text-warning text-uppercase tracking-wider m-0"><?php echo t("Select Your Table", "เลือกโต๊ะนั่ง"); ?></h2>
-                    <div class="d-flex gap-3 small">
-                        <span class="d-flex align-items-center gap-1"><span class="badge bg-dark border border-secondary" style="width: 12px; height: 12px; display:inline-block;"></span> <?php echo t("Available", "ว่าง"); ?></span>
-                        <span class="d-flex align-items-center gap-1"><span class="badge bg-danger" style="width: 12px; height: 12px; display:inline-block;"></span> <?php echo t("Reserved", "ไม่ว่าง"); ?></span>
+            <!-- 1. TABLE MAP SELECTION BOX (กล่อง เลือกโต๊ะนั่ง) -->
+            <div class="glass-card-reservation p-4 p-md-5 position-relative overflow-hidden mb-4">
+                <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #f59e0b, #ffd782, #f59e0b);"></div>
+                <div class="border-bottom border-secondary border-opacity-25 pb-3 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <h2 class="font-anton text-warning text-uppercase tracking-wider m-0 d-flex align-items-center gap-2 fs-3">
+                        <span class="material-symbols-outlined text-warning fs-3">table_restaurant</span>
+                        <span><?php echo t("Select Your Table", "เลือกโต๊ะนั่ง"); ?></span>
+                    </h2>
+                    <div class="d-flex gap-3 small font-sans">
+                        <span class="d-flex align-items-center gap-1.5"><span class="badge rounded-circle bg-success" style="width: 10px; height: 10px; padding: 0;"></span> <span class="text-light text-opacity-90"><?php echo t("Available", "ว่าง"); ?></span></span>
+                        <span class="d-flex align-items-center gap-1.5"><span class="badge rounded-circle bg-danger" style="width: 10px; height: 10px; padding: 0;"></span> <span class="text-light text-opacity-90"><?php echo t("Reserved", "ไม่ว่าง"); ?></span></span>
+                        <span class="d-flex align-items-center gap-1.5"><span class="badge rounded-circle bg-warning" style="width: 10px; height: 10px; padding: 0;"></span> <span class="text-warning fw-bold"><?php echo t("Selected", "ที่เลือก"); ?></span></span>
                     </div>
                 </div>
 
-                <!-- Interactive Zone Filter -->
+                <!-- Interactive Zone Filter Pills -->
                 <div class="d-flex flex-wrap gap-2 mb-4">
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase active px-3" onclick="filterZone('ALL', this)"><?php echo t("All Zones", "ทุกโซน"); ?></button>
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase px-3" onclick="filterZone('OUTDOOR', this)"><?php echo t("Outdoor", "ด้านนอก"); ?></button>
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase px-3" onclick="filterZone('INDOOR_WINDOW', this)"><?php echo t("Window Side", "ติดกระจก"); ?></button>
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase px-3" onclick="filterZone('INDOOR_CENTER', this)"><?php echo t("Center", "ตรงกลาง"); ?></button>
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase px-3" onclick="filterZone('STAGE', this)"><?php echo t("Stage", "หน้าเวที"); ?></button>
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase px-3" onclick="filterZone('BAR', this)"><?php echo t("Bar Front", "หน้าบาร์"); ?></button>
-                    <button class="btn btn-sm btn-outline-warning font-anton text-uppercase px-3" onclick="filterZone('WALKWAY', this)"><?php echo t("Walkway", "โซนทางเดิน"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase active" onclick="filterZone('ALL', this)"><?php echo t("All Zones", "ทุกโซน"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase" onclick="filterZone('OUTDOOR', this)"><?php echo t("Outdoor", "ด้านนอก"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase" onclick="filterZone('INDOOR_WINDOW', this)"><?php echo t("Window Side", "ติดกระจก"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase" onclick="filterZone('INDOOR_CENTER', this)"><?php echo t("Center", "ตรงกลาง"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase" onclick="filterZone('STAGE', this)"><?php echo t("Stage", "หน้าเวที"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase" onclick="filterZone('BAR', this)"><?php echo t("Bar Front", "หน้าบาร์"); ?></button>
+                    <button class="btn zone-btn-custom font-anton text-uppercase" onclick="filterZone('WALKWAY', this)"><?php echo t("Walkway", "โซนทางเดิน"); ?></button>
                 </div>
 
-                <!-- Visual Grid Layout -->
-                <div class="d-flex flex-wrap justify-content-start gap-2 p-3 bg-black bg-opacity-50 border border-secondary border-opacity-25 rounded mb-4">
+                <!-- Visual Grid Layout Container -->
+                <div class="d-flex flex-wrap justify-content-start gap-2 p-3.5 bg-black bg-opacity-60 border border-secondary border-opacity-25 rounded-4 mb-4 shadow-inner">
                     <?php foreach ($tables as $t): ?>
                         <?php 
                         $table_img_src = $t['image'] ?? '';
@@ -511,85 +556,92 @@ require_once 'header.php';
                     <?php endforeach; ?>
                 </div>
 
-                <div class="text-light text-opacity-90 small">
-                    * <?php echo t("Please select Date and Time Slot first to see live availability status.", "กรุณาเลือกวันที่และเวลาจองเพื่ออัปเดตสถานะความว่างของโต๊ะแบบเรียลไทม์"); ?>
+                <div class="text-light text-opacity-80 small d-flex align-items-center gap-1.5 font-sans">
+                    <span class="material-symbols-outlined text-warning fs-6">info</span>
+                    <span><?php echo t("Please select Date and Time Slot first to see live availability status.", "กรุณาเลือกวันที่และเวลาจองเพื่ออัปเดตสถานะความว่างของโต๊ะแบบเรียลไทม์"); ?></span>
                 </div>
             </div>
             
-            <!-- Booking Status Checker Card -->
-            <div class="glass-card p-4 p-md-5 border border-secondary border-opacity-25 mt-4 relative overflow-hidden">
-                <div class="absolute top-0 start-0 end-0 bg-warning" style="height: 3px; position:absolute;"></div>
-                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-2 mt-1"><?php echo t("Check Booking Status", "ตรวจสอบสถานะการจองโต๊ะ"); ?></h3>
-                <p class="text-white small mb-4 opacity-90"><?php echo t("Enter your Booking Ref ID or Phone Number to verify your reservation status.", "กรอกรหัสการจองหรือเบอร์โทรศัพท์ของคุณเพื่อตรวจสอบสถานะการอนุมัติโต๊ะนั่ง"); ?></p>
+            <!-- 2. BOOKING STATUS CHECKER BOX (กล่อง ตรวจสอบสถานะการจองโต๊ะ) -->
+            <div class="glass-card-reservation p-4 p-md-5 position-relative overflow-hidden">
+                <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #10b981, #ffd782, #10b981);"></div>
+                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-2 mt-1 d-flex align-items-center gap-2 fs-3">
+                    <span class="material-symbols-outlined text-warning fs-3">find_in_page</span>
+                    <span><?php echo t("Check Booking Status", "ตรวจสอบสถานะการจองโต๊ะ"); ?></span>
+                </h3>
+                <p class="text-light text-opacity-90 small mb-4 font-sans lh-relaxed"><?php echo t("Enter your Booking Ref ID or Phone Number to verify your reservation status.", "กรอกรหัสการจองหรือเบอร์โทรศัพท์ของคุณเพื่อตรวจสอบสถานะการอนุมัติโต๊ะนั่ง"); ?></p>
                 
                 <form id="search-booking-form" onsubmit="performBookingSearch(event)" action="reservation.php" method="GET" class="row g-2 mb-3">
                     <input type="hidden" name="action" value="search_booking">
                     <div class="col-sm-9">
-                        <input type="text" id="search-query-input" name="q" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify Booking ID or phone number.', '⚠️ กรุณาระบุรหัสการจอง หรือ เบอร์โทรศัพท์ที่ใช้จอง'); ?>')" oninput="this.setCustomValidity('')" class="form-control bg-dark border-secondary border-opacity-50 text-white rounded-0 py-2.5 font-sans" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
+                        <input type="text" id="search-query-input" name="q" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify Booking ID or phone number.', '⚠️ กรุณาระบุรหัสการจอง หรือ เบอร์โทรศัพท์ที่ใช้จอง'); ?>')" oninput="this.setCustomValidity('')" class="form-control bg-dark border-secondary border-opacity-50 text-white rounded-3 py-3 px-3.5 font-sans" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
                     </div>
                     <div class="col-sm-3">
-                        <button type="submit" id="search-submit-btn" class="btn btn-custom-green-outline w-100 py-2.5 text-uppercase font-anton">
-                            <?php echo t("Search", "ค้นหาข้อมูล"); ?>
+                        <button type="submit" id="search-submit-btn" class="btn btn-custom-green-outline w-100 py-3 rounded-3 text-uppercase font-anton shadow-sm d-flex align-items-center justify-content-center gap-1.5">
+                            <span class="material-symbols-outlined fs-5">search</span>
+                            <span><?php echo t("Search", "ค้นหาข้อมูล"); ?></span>
                         </button>
                     </div>
                 </form>
 
                 <div id="search-results-container">
-
-
                 <?php if ($searched && !$search_error): ?>
                     <div class="d-flex flex-column gap-4 mt-4">
                         <?php if (empty($search_bookings)): ?>
-                            <div class="text-center py-5 bg-black bg-opacity-30 border border-secondary border-opacity-10 rounded">
-                                <p class="text-secondary small m-0"><?php echo t("No reservations found matching your query.", "ไม่พบประวัติการจองที่ตรงกับข้อมูลดังกล่าว"); ?></p>
+                            <div class="text-center py-5 bg-black bg-opacity-40 border border-secondary border-opacity-20 rounded-4 shadow-sm">
+                                <span class="material-symbols-outlined fs-1 text-secondary mb-2">search_off</span>
+                                <p class="text-secondary small m-0 font-sans"><?php echo t("No reservations found matching your query.", "ไม่พบประวัติการจองที่ตรงกับข้อมูลดังกล่าว"); ?></p>
                             </div>
                         <?php else: ?>
                             <?php foreach ($search_bookings as $b): ?>
-                                <div class="p-4 bg-black bg-opacity-40 border border-secondary border-opacity-25 rounded font-mono text-sm" id="booking-card-<?php echo $b['id']; ?>">
-                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-10 pb-3">
-                                        <span class="text-light font-bold fs-6">Ref ID: <?php echo $b['id']; ?></span>
+                                <div class="p-4 bg-black bg-opacity-60 border border-secondary border-opacity-30 rounded-4 font-sans shadow-lg" id="booking-card-<?php echo $b['id']; ?>">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 border-bottom border-secondary border-opacity-20 pb-3">
+                                        <span class="text-light font-bold fs-6 font-mono d-flex align-items-center gap-1.5">
+                                            <span class="material-symbols-outlined text-warning fs-5">confirmation_number</span>
+                                            <span>Ref ID: <?php echo $b['id']; ?></span>
+                                        </span>
                                         <div class="d-flex gap-2 align-items-center mt-2 mt-sm-0">
                                             <div id="status-badge-<?php echo $b['id']; ?>">
                                                 <?php if ($b['status'] === 'CONFIRMED'): ?>
-                                                    <span class="badge bg-success border border-success text-black px-2.5 py-1.5 rounded font-sans">
-                                                        <?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?>
+                                                    <span class="badge bg-success bg-opacity-20 border border-success text-success px-3 py-1.5 rounded-pill font-sans fw-bold">
+                                                        ✓ <?php echo t("CONFIRMED (APPROVED)", "ยืนยันแล้ว (ได้รับอนุมัติ)"); ?>
                                                     </span>
                                                 <?php elseif ($b['status'] === 'COMPLETED'): ?>
-                                                    <span class="badge bg-secondary border border-secondary text-white px-2.5 py-1.5 rounded font-sans">
+                                                    <span class="badge bg-secondary bg-opacity-20 border border-secondary text-light px-3 py-1.5 rounded-pill font-sans fw-bold">
                                                         <?php echo t("COMPLETED", "เสร็จสิ้นการใช้งานแล้ว"); ?>
                                                     </span>
                                                 <?php elseif ($b['status'] === 'CANCELLED'): ?>
-                                                    <span class="badge bg-danger border border-danger text-black px-2.5 py-1.5 rounded font-sans">
-                                                        <?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?>
+                                                    <span class="badge bg-danger bg-opacity-20 border border-danger text-danger px-3 py-1.5 rounded-pill font-sans fw-bold">
+                                                        ✕ <?php echo t("CANCELLED (REJECTED)", "ยกเลิกแล้ว"); ?>
                                                     </span>
                                                 <?php elseif ($b['status'] === 'CANCEL_REQUESTED'): ?>
-                                                    <span class="badge bg-info border border-info text-black px-2.5 py-1.5 rounded font-sans">
-                                                        <?php echo t("CANCEL REQUESTED (PENDING)", "ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)"); ?>
+                                                    <span class="badge bg-info bg-opacity-20 border border-info text-info px-3 py-1.5 rounded-pill font-sans fw-bold">
+                                                        ⏳ <?php echo t("CANCEL REQUESTED (PENDING)", "ส่งคำขอยกเลิกแล้ว (รอพนักงานอนุมัติ)"); ?>
                                                     </span>
                                                 <?php else: ?>
-                                                    <span class="badge bg-warning border border-warning text-black px-2.5 py-1.5 rounded font-sans">
-                                                        <?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?>
+                                                    <span class="badge bg-warning bg-opacity-20 border border-warning text-warning px-3 py-1.5 rounded-pill font-sans fw-bold">
+                                                        ⏳ <?php echo t("PENDING APPROVAL", "รอการอนุมัติ"); ?>
                                                     </span>
                                                 <?php endif; ?>
                                             </div>
                                             
                                             <div id="cancel-btn-container-<?php echo $b['id']; ?>">
                                                 <?php if ($b['status'] === 'PENDING' || $b['status'] === 'CONFIRMED'): ?>
-                                                    <button class="btn btn-sm btn-outline-danger font-sans px-2.5 py-1 rounded" onclick="requestCancelBooking('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_phone']); ?>')">
+                                                    <button class="btn btn-sm btn-outline-danger font-sans px-3 py-1 rounded-pill" onclick="requestCancelBooking('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_phone']); ?>')">
                                                         <?php echo t("Cancel Booking", "ยกเลิกจอง"); ?>
                                                     </button>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row g-3 text-secondary">
+                                    <div class="row g-3 text-secondary font-sans small">
                                         <div class="col-sm-6">
-                                            <strong><?php echo t("Customer Name", "ชื่อผู้จอง"); ?>:</strong> 
-                                            <span class="text-light font-sans"><?php echo htmlspecialchars($b['customer_name']); ?></span>
+                                            <strong class="text-light-opacity-80"><?php echo t("Customer Name", "ชื่อผู้จอง"); ?>:</strong> 
+                                            <span class="text-light fw-semibold ms-1"><?php echo htmlspecialchars($b['customer_name']); ?></span>
                                         </div>
                                         <div class="col-sm-6">
-                                            <strong><?php echo t("Phone", "เบอร์โทร"); ?>:</strong> 
-                                            <span class="text-light font-sans">
+                                            <strong class="text-light-opacity-80"><?php echo t("Phone", "เบอร์โทร"); ?>:</strong> 
+                                            <span class="text-light fw-semibold ms-1">
                                                 <?php 
                                                 $phone = htmlspecialchars($b['customer_phone']);
                                                 echo (strlen($phone) > 3) ? substr($phone, 0, -3) . 'xxx' : '***';
@@ -597,12 +649,12 @@ require_once 'header.php';
                                             </span>
                                         </div>
                                         <div class="col-sm-6">
-                                            <strong><?php echo t("Reservation Date & Time", "วันเวลาจอง"); ?>:</strong> 
-                                            <span class="text-warning"><?php echo $b['date']; ?> @ <?php echo $b['time_slot']; ?></span>
+                                            <strong class="text-light-opacity-80"><?php echo t("Reservation Date & Time", "วันเวลาจอง"); ?>:</strong> 
+                                            <span class="text-warning fw-bold ms-1"><?php echo $b['date']; ?> @ <?php echo $b['time_slot']; ?></span>
                                         </div>
                                         <div class="col-sm-6">
-                                            <strong><?php echo t("Table & Size", "โต๊ะและจำนวนที่นั่ง"); ?>:</strong> 
-                                            <span class="text-light font-sans">
+                                            <strong class="text-light-opacity-80"><?php echo t("Table & Size", "โต๊ะและจำนวนที่นั่ง"); ?>:</strong> 
+                                            <span class="text-light fw-semibold ms-1">
                                                 Table <?php echo htmlspecialchars($b['table_number'] ?? 'N/A'); ?> 
                                                 (<?php echo $b['pax']; ?> Pax) - 
                                                 <?php 
@@ -620,7 +672,7 @@ require_once 'header.php';
                                         
                                         <div class="col-12 mt-3 pt-3 border-top border-secondary border-opacity-10 <?php echo (($b['status'] === 'CANCELLED' || $b['status'] === 'CANCEL_REQUESTED') && !empty($b['cancel_reason'])) ? '' : 'd-none'; ?>" id="cancel-reason-container-<?php echo $b['id']; ?>">
                                             <strong class="text-danger"><?php echo t("Cancellation Reason", "เหตุผลที่ยกเลิก/หมายเหตุ"); ?>:</strong>
-                                            <span class="text-light font-sans" id="cancel-reason-text-<?php echo $b['id']; ?>"><?php echo htmlspecialchars($b['cancel_reason'] ?? ''); ?></span>
+                                            <span class="text-light font-sans ms-1" id="cancel-reason-text-<?php echo $b['id']; ?>"><?php echo htmlspecialchars($b['cancel_reason'] ?? ''); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -628,7 +680,7 @@ require_once 'header.php';
                         <?php endif; ?>
                     </div>
                 <?php elseif ($search_error): ?>
-                    <div class="alert alert-danger bg-danger bg-opacity-10 border border-danger text-light p-3 rounded-0 font-mono mt-3">
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border border-danger text-light p-3.5 rounded-3 font-mono mt-3">
                         [ERROR]: <?php echo $search_error; ?>
                     </div>
                 <?php endif; ?>
@@ -636,53 +688,65 @@ require_once 'header.php';
             </div>
         </div>
 
-        <!-- Right Side: Booking Details Input Form -->
+        <!-- 3. BOOKING DETAILS BOX (กล่อง รายละเอียดการจอง) -->
         <div class="col-lg-4">
-            <div class="glass-card p-4 border border-warning border-opacity-25 relative">
-                <div class="absolute top-0 start-0 end-0 bg-warning" style="height: 3px;"></div>
-                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 mt-2"><?php echo t("Booking Details", "รายละเอียดการจอง"); ?></h3>
+            <div class="glass-card-reservation p-4 p-md-4 border border-warning border-opacity-30 position-relative overflow-hidden shadow-lg">
+                <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #ffd782, #f59e0b, #ffd782);"></div>
+                <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 mt-2 d-flex align-items-center gap-2 fs-4">
+                    <span class="material-symbols-outlined text-warning fs-4">edit_calendar</span>
+                    <span><?php echo t("Booking Details", "รายละเอียดการจอง"); ?></span>
+                </h3>
                 
                 <form action="reservation.php" method="POST" onsubmit="return validateBookingForm()" novalidate>
                     <input type="hidden" name="action" value="create_booking">
                     <input type="hidden" name="table_id" id="form-table-id" value="">
 
-                    <div class="mb-3">
+                    <div class="mb-3.5">
                         <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-amber-400" style="font-size: 14px;">calendar_today</span>
+                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">calendar_today</span>
                             <span><?php echo t("Date", "วันที่ต้องการจอง"); ?></span>
                         </label>
-                        <input type="date" name="date" id="booking-date" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
+                        <input type="date" name="date" id="booking-date" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3.5">
                         <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
-                            <span class="material-symbols-outlined text-amber-400" style="font-size: 14px;">schedule</span>
+                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">schedule</span>
                             <span><?php echo t("Time Slot", "เวลาจอง"); ?></span>
                         </label>
-                        <input type="time" name="time_slot" id="booking-time" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" onchange="updateAvailability()" value="19:00">
+                        <input type="time" name="time_slot" id="booking-time" required class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans" onchange="updateAvailability()" value="19:00">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Number of Guests (Pax)", "จำนวนคน (ท่าน)"); ?></label>
-                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0" value="2">
+                    <div class="mb-3.5">
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
+                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">groups</span>
+                            <span><?php echo t("Number of Guests (Pax)", "จำนวนคน (ท่าน)"); ?></span>
+                        </label>
+                        <input type="number" name="pax" id="booking-pax" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify total guest count.', '⚠️ กรุณาระบุจำนวนผู้ร่วมโต๊ะ'); ?>')" oninput="this.setCustomValidity('')" min="1" max="15" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans" value="2">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Customer Name", "ชื่อลูกค้า"); ?></label>
-                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
+                    <div class="mb-3.5">
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
+                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">person</span>
+                            <span><?php echo t("Customer Name", "ชื่อลูกค้า"); ?></span>
+                        </label>
+                        <input type="text" name="customer_name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please provide the customer\'s full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลของผู้ทำการจอง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. John" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans">
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider" style="font-size: 11px;"><?php echo t("Phone Number", "เบอร์โทรศัพท์"); ?></label>
-                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-0">
+                    <div class="mb-3.5">
+                        <label class="form-label text-uppercase text-secondary font-anton tracking-wider d-flex align-items-center gap-1.5" style="font-size: 11px;">
+                            <span class="material-symbols-outlined text-warning" style="font-size: 15px;">call</span>
+                            <span><?php echo t("Phone Number", "เบอร์โทรศัพท์"); ?></span>
+                        </label>
+                        <input type="tel" name="customer_phone" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter a valid phone number.', '⚠️ กรุณาระบุเบอร์โทรศัพท์สำหรับติดต่อยืนยัน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 0812345678" class="form-control bg-dark border-secondary border-opacity-50 text-light rounded-3 py-2.5 px-3 font-sans">
                     </div>
 
-                    <!-- Beautiful Inline Form Validation Alert Box -->
+                    <!-- Inline Form Validation Alert Box -->
                     <div id="form-inline-alert" class="d-none mb-3 p-3 bg-warning bg-opacity-15 border border-warning border-opacity-70 rounded-3 text-warning font-sans transition-all">
                         <div class="d-flex align-items-start gap-2.5">
-                            <span id="form-alert-icon" class="material-symbols-outlined text-black fs-5 mt-0.5 shrink-0 me-2">warning</span>
+                            <span id="form-alert-icon" class="material-symbols-outlined text-warning fs-5 mt-0.5 shrink-0 me-2">warning</span>
                             <div>
-                                <h5 id="form-alert-title" class="font-anton text-black text-uppercase tracking-wider fs-6 mb-1 m-0">
+                                <h5 id="form-alert-title" class="font-anton text-warning text-uppercase tracking-wider fs-6 mb-1 m-0">
                                     <?php echo t("Table Selection Required", "กรุณาเลือกโต๊ะนั่ง"); ?>
                                 </h5>
                                 <div id="form-alert-msg" class="small text-warning font-sans font-bold leading-relaxed">
@@ -692,20 +756,28 @@ require_once 'header.php';
                         </div>
                     </div>
 
-                    <div class="mb-4 p-3 bg-black bg-opacity-50 border border-secondary border-opacity-25 rounded">
-                        <div class="small text-secondary text-uppercase font-anton tracking-wider mb-1"><?php echo t("Selected Spot", "โต๊ะที่คุณเลือก"); ?>:</div>
-                        <div id="selection-summary" class="fs-5 font-anton text-warning text-uppercase">
-                            <?php echo t("NONE SELECT", "กรุณาเลือกโต๊ะด้านซ้าย"); ?>
+                    <!-- Selected Spot Live Card Preview Box -->
+                    <div class="mb-4 p-3.5 bg-black bg-opacity-60 border border-warning border-opacity-30 rounded-3 shadow-inner">
+                        <div class="small text-secondary text-uppercase font-anton tracking-wider mb-2 d-flex align-items-center gap-1">
+                            <span class="material-symbols-outlined text-warning fs-6">chair</span>
+                            <span><?php echo t("Selected Spot", "โต๊ะที่คุณเลือก"); ?>:</span>
+                        </div>
+                        <div id="selection-summary" class="font-sans text-warning">
+                            <div class="d-flex align-items-center gap-2 py-1 text-secondary small">
+                                <span class="material-symbols-outlined text-secondary fs-5">ads_click</span>
+                                <span><?php echo t("Click any table on the left layout map", "กรุณาเลือกโต๊ะจากผังทางด้านซ้าย"); ?></span>
+                            </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-custom-green-outline w-100 py-3 text-uppercase font-anton tracking-wider fs-5">
-                        <?php echo t("Submit Reservation", "ส่งยืนยันจองโต๊ะ"); ?>
+                    <button type="submit" class="btn btn-cta-gold w-100 py-3.5 text-uppercase font-anton tracking-wider fs-5 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2">
+                        <span class="material-symbols-outlined fs-5">send</span>
+                        <span><?php echo t("Submit Reservation", "ส่งยืนยันจองโต๊ะ"); ?></span>
                     </button>
                 </form>
 
                 <!-- Booking Conditions Footer -->
-                <div class="mt-4 pt-3 border-top border-secondary border-opacity-10 text-secondary" style="font-size: 12px; line-height: 1.5;">
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-15 text-secondary font-sans" style="font-size: 12px; line-height: 1.6;">
                     <div class="font-anton text-warning text-uppercase tracking-wider mb-1.5" style="font-size: 11px; font-weight: bold;">
                         <?php echo t("Booking Conditions", "เงื่อนไขการจอง"); ?>
                     </div>
@@ -713,14 +785,16 @@ require_once 'header.php';
                         <li><?php echo t("Please arrive 1 hour prior to your booking time.", "มารับโต๊ะ ก่อน 1 ชั่วโมง"); ?></li>
                         <li><?php echo t("Guests must be 20 years of age or older.", "อายุ 20 ปี บริบูรณ์ขึ้นไป"); ?></li>
                     </ul>
-                    <div class="font-sans text-warning mt-2 small">
-                        📞 <?php echo t("Tel: 064 9546 616", "ติดต่อสอบถามเพิ่มเติม Tel: 064 9546 616"); ?>
+                    <div class="font-sans text-warning mt-2 small d-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined fs-6">call</span>
+                        <span><?php echo t("Tel: 064 9546 616", "ติดต่อสอบถามเพิ่มเติม Tel: 064 9546 616"); ?></span>
                     </div>
                 </div>
             </div>
 
         </div>
     </div>
+</div>
 </div>
 
 <script>
@@ -820,7 +894,27 @@ require_once 'header.php';
         else zoneTh = zone;
         const zoneText = langSummary === 'th' ? zoneTh : zone;
         
-        document.getElementById('selection-summary').innerText = `Table ${number} (${zoneText} - Max ${capacity} Guests)`;
+        const imgUrl = element.getAttribute('data-image') || '';
+        let imgHtml = '';
+        if (imgUrl) {
+            imgHtml = `<img src="${imgUrl}" alt="Table ${number}" class="rounded-3 shadow me-3" style="width: 54px; height: 54px; object-fit: cover; border: 1px solid rgba(255,215,130,0.4); flex-shrink: 0;">`;
+        }
+
+        document.getElementById('selection-summary').innerHTML = `
+            <div class="d-flex align-items-center py-1">
+                ${imgHtml}
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-warning text-black font-anton px-2.5 py-1 fs-6">โต๊ะ ${number}</span>
+                        <span class="badge bg-dark border border-secondary text-warning font-sans small">${zoneText}</span>
+                    </div>
+                    <div class="small text-light text-opacity-90 font-mono d-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined text-warning" style="font-size: 15px;">groups</span>
+                        <span>รองรับ ${capacity} ท่าน</span>
+                    </div>
+                </div>
+            </div>
+        `;
         hideInlineFormAlert();
     }
 
@@ -854,7 +948,12 @@ require_once 'header.php';
             selectedTableBtn.classList.remove('table-selected');
             selectedTableBtn = null;
             document.getElementById('form-table-id').value = '';
-            document.getElementById('selection-summary').innerText = "<?php echo t('NONE SELECT', 'กรุณาเลือกโต๊ะด้านซ้าย'); ?>";
+            document.getElementById('selection-summary').innerHTML = `
+                <div class="d-flex align-items-center gap-2 py-1 text-secondary small">
+                    <span class="material-symbols-outlined text-secondary fs-5">ads_click</span>
+                    <span><?php echo t("Click any table on the left layout map", "กรุณาเลือกโต๊ะจากผังทางด้านซ้าย"); ?></span>
+                </div>
+            `;
         }
         
         fetch(`reservation.php?action=get_booked_tables&date=${date}&time_slot=${timeSlot}`)
