@@ -161,10 +161,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $ext = strtolower(pathinfo($clean_name, PATHINFO_EXTENSION));
                 
                 $allowed_exts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif'];
-                if (in_array($ext, $allowed_exts) || strpos($file_type, 'image/') === 0) {
+                $is_image_mime = (!empty($file_type) && is_string($file_type) && strpos($file_type, 'image/') === 0);
+                if (in_array($ext, $allowed_exts) || $is_image_mime) {
                     $upload_dir = __DIR__ . '/../images/tables/';
                     if (!is_dir($upload_dir)) {
-                        mkdir($upload_dir, 0777, true);
+                        @mkdir($upload_dir, 0777, true);
                     }
                     
                     $new_name = 'uploaded_' . time() . '_' . $clean_name;
