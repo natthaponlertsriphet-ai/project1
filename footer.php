@@ -1,5 +1,5 @@
     <!-- Footer Section -->
-    <footer class="w-100 bg-black border-top border-secondary border-opacity-25 py-5 mt-5">
+    <footer class="w-100 bg-black border-top border-secondary border-opacity-25 py-5 m-0">
         <div class="container px-4 px-lg-5">
             <div class="row g-4 justify-content-between">
                 <div class="col-md-4">
