@@ -120,10 +120,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($upload_err === UPLOAD_ERR_OK) {
                 $file_tmp = $_FILES['image_file']['tmp_name'];
                 $file_name = $_FILES['image_file']['name'];
+                $file_type = $_FILES['image_file']['type'] ?? '';
                 $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
                 $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'avif', 'svg'];
                 
-                if (strpos($file_type, 'image/') === 0 || in_array($file_ext, $allowed_exts)) {
+                $is_image_mime = ($file_type !== '' && strpos($file_type, 'image/') === 0);
+                if ($is_image_mime || in_array($file_ext, $allowed_exts)) {
                     $upload_dir = __DIR__ . '/../images/promotions/';
                     if (!is_dir($upload_dir)) {
                         mkdir($upload_dir, 0777, true);
