@@ -617,7 +617,7 @@ require_once 'header.php';
                 </div>
 
                 <!-- Visual Grid Layout Container -->
-                <div class="d-flex flex-wrap justify-content-start gap-2 p-3.5 border border-secondary border-opacity-30 rounded-4 mb-4 shadow-inner" style="background: linear-gradient(145deg, #1f1f26 0%, #141419 100%); backdrop-filter: blur(8px);">
+                <div class="d-flex flex-wrap justify-content-start gap-2 p-3.5 border border-secondary border-opacity-30 rounded-4 mb-4 shadow-inner" style="background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(12px);">
                     <?php foreach ($tables as $t): ?>
                         <?php 
                         $table_img_src = $t['image'] ?? '';
