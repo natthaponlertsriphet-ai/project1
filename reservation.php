@@ -770,7 +770,7 @@ require_once 'header.php';
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-cta-gold w-100 py-3.5 text-uppercase font-anton tracking-wider fs-5 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2">
+                    <button type="submit" class="btn btn-custom-green-outline w-100 py-3.5 text-uppercase font-anton tracking-wider fs-5 rounded-pill shadow-lg d-flex align-items-center justify-content-center gap-2">
                         <span class="material-symbols-outlined fs-5">send</span>
                         <span><?php echo t("Submit Reservation", "ส่งยืนยันจองโต๊ะ"); ?></span>
                     </button>
