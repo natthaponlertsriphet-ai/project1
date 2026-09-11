@@ -88,34 +88,51 @@ function is_active($page) {
         .font-anton {
             font-family: 'Rockwell', 'Pridi', 'Arvo', serif;
         }
-        /* Custom navbar styles */
+        /* Custom navbar styles - Ultra-Smooth 0.95s Cinematic Transitions */
         .navbar-custom {
-            background-color: rgba(19, 19, 19, 0.75) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background-color: rgba(19, 19, 19, 0.45) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+            transition: background-color 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                        backdrop-filter 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                        -webkit-backdrop-filter 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                        padding 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: background-color, backdrop-filter, padding, box-shadow;
         }
         .navbar-custom.at-top {
             background-color: rgba(19, 19, 19, 0.45) !important;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border-bottom-color: rgba(255, 255, 255, 0.05);
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
         }
         .navbar-custom.scrolled {
             background-color: rgba(19, 19, 19, 0.94) !important;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
             border-bottom-color: rgba(255, 215, 130, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+            padding-top: 0.65rem !important;
+            padding-bottom: 0.65rem !important;
         }
         .admin-nav-btn {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                        max-width 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                        padding 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                        margin 0.9s cubic-bezier(0.22, 1, 0.36, 1);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             white-space: nowrap;
+            will-change: opacity, max-width, transform;
         }
         .navbar-custom.scrolled .admin-nav-btn {
             opacity: 0 !important;
