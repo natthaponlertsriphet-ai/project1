@@ -311,6 +311,14 @@ require_once 'header.php';
                     </span>
                 </div>
 
+                <!-- 3D Board Column Headers: NO | BRAND | BEERS | ABV -->
+                <div class="tap-board-header-bar d-none d-md-flex align-items-center gap-3 px-4 py-2.5 mb-3 rounded-3 border border-warning border-opacity-25 text-warning font-mono small text-uppercase tracking-wider fw-bold">
+                    <div style="width: 50px; flex-shrink: 0; text-align: center;"><?php echo t("NO", "NO"); ?></div>
+                    <div style="width: 140px; flex-shrink: 0;"><?php echo t("BRAND", "BRAND"); ?></div>
+                    <div class="flex-grow-1"><?php echo t("BEERS", "BEERS"); ?></div>
+                    <div style="width: 100px; flex-shrink: 0; text-align: right;"><?php echo t("ABV", "ABV"); ?></div>
+                </div>
+
                 <div id="beer-cards-container" class="d-flex flex-column gap-3.5">
                     <?php if (empty($beers)): ?>
                         <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded-4">
@@ -318,24 +326,30 @@ require_once 'header.php';
                         </div>
                     <?php else: ?>
                         <?php foreach ($beers as $b): ?>
-                            <div id="beer-card-<?php echo $b['menu_id']; ?>" class="tap-board-card <?php echo !$b['is_active'] ? 'sold-out' : ''; ?> d-flex align-items-center justify-content-between flex-wrap gap-3">
-                                <div class="d-flex align-items-center gap-3">
+                            <div id="beer-card-<?php echo $b['menu_id']; ?>" class="tap-board-card <?php echo !$b['is_active'] ? 'sold-out' : ''; ?> d-flex align-items-center flex-wrap flex-md-nowrap gap-3">
+                                <!-- 1. NO -->
+                                <div class="d-flex align-items-center justify-content-center" style="width: 50px; flex-shrink: 0;">
                                     <div class="tap-number-badge">
                                         <?php echo sprintf("%02d", $b['tap_number']); ?>
                                     </div>
-                                    <div class="d-flex flex-column gap-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                                            <span class="beer-brand-badge"><?php echo htmlspecialchars($b['beer_type']); ?></span>
-                                            <?php if (!$b['is_active']): ?>
-                                                <span class="soldout-pill-badge"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>
-                                            <?php endif; ?>
-                                        </div>
-                                        <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0"><?php echo htmlspecialchars($b['menu_name']); ?></h4>
-                                    </div>
                                 </div>
-                                <div class="abv-pill-badge ms-auto ms-sm-0">
-                                    <span class="text-secondary small font-sans me-1">ABV</span>
-                                    <span class="text-warning"><?php echo htmlspecialchars($b['abv']); ?></span>
+                                <!-- 2. BRAND -->
+                                <div class="d-flex align-items-center gap-1 flex-wrap" style="width: 140px; flex-shrink: 0;">
+                                    <span class="beer-brand-badge"><?php echo htmlspecialchars($b['beer_type']); ?></span>
+                                    <?php if (!$b['is_active']): ?>
+                                        <span class="soldout-pill-badge mt-1"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <!-- 3. BEERS -->
+                                <div class="flex-grow-1 min-w-0">
+                                    <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0"><?php echo htmlspecialchars($b['menu_name']); ?></h4>
+                                </div>
+                                <!-- 4. ABV -->
+                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 100px; flex-shrink: 0;">
+                                    <div class="abv-pill-badge">
+                                        <span class="text-secondary small font-sans me-1">ABV</span>
+                                        <span class="text-warning"><?php echo htmlspecialchars($b['abv']); ?></span>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -383,25 +397,27 @@ require_once 'header.php';
 
                         const formattedTap = String(b.tap_number).padStart(2, '0');
                         const cardClass = isActive ? '' : 'sold-out';
-                        const soldoutBadge = isActive ? '' : `<span class="soldout-pill-badge"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>`;
+                        const soldoutBadge = isActive ? '' : `<span class="soldout-pill-badge mt-1"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>`;
 
                         html += `
-                            <div id="beer-card-${b.menu_id}" class="tap-board-card ${cardClass} d-flex align-items-center justify-content-between flex-wrap gap-3">
-                                <div class="d-flex align-items-center gap-3">
+                            <div id="beer-card-${b.menu_id}" class="tap-board-card ${cardClass} d-flex align-items-center flex-wrap flex-md-nowrap gap-3">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 50px; flex-shrink: 0;">
                                     <div class="tap-number-badge">
                                         ${formattedTap}
                                     </div>
-                                    <div class="d-flex flex-column gap-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                                            <span class="beer-brand-badge">${escapeHtml(b.beer_type)}</span>
-                                            ${soldoutBadge}
-                                        </div>
-                                        <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0">${escapeHtml(b.menu_name)}</h4>
-                                    </div>
                                 </div>
-                                <div class="abv-pill-badge ms-auto ms-sm-0">
-                                    <span class="text-secondary small font-sans me-1">ABV</span>
-                                    <span class="text-warning">${escapeHtml(b.abv)}</span>
+                                <div class="d-flex align-items-center gap-1 flex-wrap" style="width: 140px; flex-shrink: 0;">
+                                    <span class="beer-brand-badge">${escapeHtml(b.beer_type)}</span>
+                                    ${soldoutBadge}
+                                </div>
+                                <div class="flex-grow-1 min-w-0">
+                                    <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0">${escapeHtml(b.menu_name)}</h4>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 100px; flex-shrink: 0;">
+                                    <div class="abv-pill-badge">
+                                        <span class="text-secondary small font-sans me-1">ABV</span>
+                                        <span class="text-warning">${escapeHtml(b.abv)}</span>
+                                    </div>
                                 </div>
                             </div>`;
                     });
