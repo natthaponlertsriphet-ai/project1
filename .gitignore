@@ -12,6 +12,15 @@ line_webhook_log.txt
 cookies.txt
 *.log
 project.db
+*.sqlite
+*.sqlite3
+*.db
+chithole_db.sqlite
+
+# Dynamic Uploaded User Media
+images/live-music/uploaded_*
+images/promotions/uploaded_*
+images/tables/uploaded_*
 
 # dependencies
 /node_modules
