@@ -315,7 +315,7 @@ if (is_dir($atmosphere_dir)) {
     <div class="container px-4 px-lg-5 py-4">
         <div class="text-center mb-5">
             <span class="text-warning font-mono text-uppercase tracking-widest small fw-bold">[ GALLERY & VIBES ]</span>
-            <h2 class="font-anton text-uppercase text-light display-5 m-0 mt-1"><?php echo t("Live Music & Customer Moments", "ภาพบรรยากาศการแสดงดนตรีสด ณ ชิตโฮลเชียงใหม่"); ?></h2>
+            <h2 class="font-anton text-uppercase text-light display-5 m-0 mt-1"><?php echo t("Chill Night Vibes at CHIT HOLE Chiang Mai", "บรรยากาศสุดชิลยามค่ำคืน ณ ชิตโฮล เชียงใหม่"); ?></h2>
             <p class="text-secondary small max-w-xl mx-auto mt-2">
                 <?php echo t("Explore the energetic night vibe, acoustic music moments, and welcoming spaces at CHIT HOLE CNX.", "รวมภาพถ่ายบรรยากาศ วงดนตรีสด และความสนุกสนานของลูกค้าที่มาเยือนโรงเบียร์ชิตโฮลเชียงใหม่"); ?>
             </p>
