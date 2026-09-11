@@ -4,10 +4,10 @@
             <div class="row g-4 justify-content-between">
                 <div class="col-md-4">
                     <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded overflow-hidden border border-secondary shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <div class="brand-logo-badge rounded overflow-hidden border border-secondary shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                             <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
-                        <span class="font-anton text-warning text-uppercase tracking-wider fs-5">CHIT HOLE CNX</span>
+                        <span class="brand-title-text font-anton text-warning text-uppercase tracking-wider fs-5">CHIT HOLE CNX</span>
                     </div>
                     <p class="text-secondary small font-sans" style="max-width: 420px; line-height: 1.6;">
                         <?php echo t(

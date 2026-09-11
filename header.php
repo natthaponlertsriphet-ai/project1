@@ -185,13 +185,13 @@ function is_active($page) {
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Staggered 70ms Entrance Reveal for Navbar Elements
-        var navItems = document.querySelectorAll('.navbar-brand, .navbar-nav .nav-item, .navbar-custom .d-flex.align-items-center > a, .navbar-custom .d-flex.align-items-center > button');
+        // Staggered 70ms Entrance Reveal for Navbar Elements (Logo, Title, Subtitle, Nav Items)
+        var navItems = document.querySelectorAll('.brand-logo-badge, .brand-title-text, .brand-sub-text, .navbar-nav .nav-item, .navbar-custom .d-flex.align-items-center > a, .navbar-custom .d-flex.align-items-center > button');
         navItems.forEach(function(el, index) {
             el.classList.add('nav-reveal-item');
             setTimeout(function() {
                 el.classList.add('nav-revealed');
-            }, 100 + (index * 70));
+            }, 80 + (index * 70));
         });
 
         // Header scroll handler to hide/show extra elements (e.g. Admin button) when at top vs scrolled down
@@ -311,12 +311,12 @@ function is_active($page) {
         <div class="container px-4 px-lg-5">
             <!-- Brand Logo -->
             <a href="./" class="navbar-brand d-flex align-items-center gap-3">
-                <div class="rounded overflow-hidden border border-warning-subtle shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <div class="brand-logo-badge rounded overflow-hidden border border-warning-subtle shadow-sm bg-dark d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
                     <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div class="d-flex flex-column">
-                    <span class="font-anton text-warning text-uppercase tracking-wider fs-4 lh-1">CHIT HOLE CNX</span>
-                    <span class="text-uppercase text-light text-opacity-90 tracking-wider mt-1" style="font-size: 11.5px; font-weight: 600;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์ชิตโฮลเชียงใหม่"); ?></span>
+                    <span class="brand-title-text font-anton text-warning text-uppercase tracking-wider fs-4 lh-1">CHIT HOLE CNX</span>
+                    <span class="brand-sub-text text-uppercase text-light text-opacity-90 tracking-wider mt-1" style="font-size: 11.5px; font-weight: 600;"><?php echo t("Chiang Mai Brewing", "โรงเบียร์ชิตโฮลเชียงใหม่"); ?></span>
                 </div>
             </a>
             
