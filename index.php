@@ -51,6 +51,11 @@ if (is_dir($atmosphere_dir)) {
     overflow: hidden;
 }
 
+/* Smooth Ultra-Fading & Cinematic Transition for Hero Carousel */
+#heroCarousel .carousel-item {
+    transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
 .hero-carousel-item {
     height: 92vh;
     min-height: 720px;
@@ -61,6 +66,12 @@ if (is_dir($atmosphere_dir)) {
     height: 100%;
     width: 100%;
     filter: brightness(0.45) contrast(1.1);
+    transform: scale(1.06);
+    transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s ease;
+}
+
+#heroCarousel .carousel-item.active img {
+    transform: scale(1.0);
 }
 
 .hero-overlay-content {
