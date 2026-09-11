@@ -1,5 +1,23 @@
 <?php
 require_once '../db.php';
+require_once 'admin_header.php';
+
+function getTableImgUrl($path, $number = '') {
+    if ($path) {
+        $clean = ltrim(preg_replace('#^(\.\./)+#', '', $path), '/');
+        if (file_exists(__DIR__ . '/../' . $clean)) {
+            return '../' . $clean;
+        }
+    }
+    if ($number) {
+        $formattedNum = strtolower($number);
+        $defaultPath = "images/tables/table_{$formattedNum}.jpg";
+        if (file_exists(__DIR__ . '/../' . $defaultPath)) {
+            return '../' . $defaultPath;
+        }
+    }
+    return '';
+}
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -150,8 +168,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     }
                     
                     $new_name = 'uploaded_' . time() . '_' . $clean_name;
+                    $dest_path = $upload_dir . $new_name;
                     
-                    if (move_uploaded_file($file_tmp, $upload_dir . $new_name)) {
+                    if (move_uploaded_file($file_tmp, $dest_path)) {
                         $image_path = 'images/tables/' . $new_name;
                         
                         // Auto-convert HEIC/HEIF to JPEG on macOS using native sips tool
@@ -170,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         }
                     } else {
                         $error = t(
-                            "Failed to move uploaded file. Check folder write permissions.",
+                            "Failed to move uploaded file. Check folder write permissions (chmod 777).",
                             "ไม่สามารถบันทึกไฟล์ภาพได้ กรุณาตรวจสอบสิทธิ์การเขียนโฟลเดอร์"
                         );
                     }
@@ -179,6 +198,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         "Invalid file type. Please upload an image (PNG, JPG, JPEG, HEIC).",
                         "ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น (รองรับ PNG, JPG, JPEG, HEIC)"
                     );
+                }
+            } else {
+                switch ($upload_err) {
+                    case UPLOAD_ERR_INI_SIZE:
+                        $error = t("The uploaded file exceeds the upload_max_filesize limit in php.ini.", "ไฟล์มีขนาดใหญ่เกินกว่าที่กำหนดใน php.ini (upload_max_filesize)");
+                        break;
+                    case UPLOAD_ERR_FORM_SIZE:
+                        $error = t("The uploaded file exceeds the MAX_FILE_SIZE limit in the form.", "ไฟล์มีขนาดใหญ่เกินขนาดที่กำหนดในฟอร์ม");
+                        break;
+                    case UPLOAD_ERR_PARTIAL:
+                        $error = t("The file was only partially uploaded.", "ไฟล์ถูกอัปโหลดขึ้นมาไม่สมบูรณ์");
+                        break;
+                    case UPLOAD_ERR_NO_TMP_DIR:
+                        $error = t("Missing a temporary folder on server.", "ไม่พบโฟลเดอร์ชั่วคราวสำหรับอัปโหลด");
+                        break;
+                    case UPLOAD_ERR_CANT_WRITE:
+                        $error = t("Failed to write file to disk.", "ไม่สามารถบันทึกไฟล์ลงบนดิสก์ได้");
+                        break;
+                    default:
+                        $error = t("File upload failed with error code: ", "การอัปโหลดไฟล์ล้มเหลว รหัสข้อผิดพลาด: ") . $upload_err;
+                        break;
                 }
             }
         }
@@ -342,9 +382,10 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                         <span class="material-symbols-outlined text-amber-400 text-sm">image</span>
                         <span><?php echo t("Table Image", "รูปภาพโต๊ะ"); ?></span>
                     </label>
-                    <?php if ($image): ?>
+                    <?php $preview_url = getTableImgUrl($image, $number); ?>
+                    <?php if ($preview_url): ?>
                         <div class="mb-2 relative w-32 aspect-video rounded overflow-hidden border border-zinc-700 bg-zinc-950">
-                            <img src="../<?php echo htmlspecialchars($image); ?>" alt="Preview" class="w-full h-full object-cover">
+                            <img src="<?php echo htmlspecialchars($preview_url); ?>" alt="Preview" class="w-full h-full object-cover">
                         </div>
                         <div class="flex items-center gap-2 mb-2">
                             <input type="checkbox" name="remove_image" id="remove-image" value="1" class="w-4 h-4 accent-amber-400 cursor-pointer">
@@ -460,18 +501,11 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                                 <tr>
                                     <td class="py-2.5">
                                         <div class="w-14 h-10 rounded overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center">
-                                            <?php if ($t['image']): ?>
-                                                <img src="../<?php echo htmlspecialchars($t['image']); ?>" alt="Table" class="w-full h-full object-cover">
+                                            <?php $row_img = getTableImgUrl($t['image'], $t['number']); ?>
+                                            <?php if ($row_img): ?>
+                                                <img src="<?php echo htmlspecialchars($row_img); ?>" alt="Table" class="w-full h-full object-cover">
                                             <?php else: ?>
-                                                <?php 
-                                                $formattedNum = strtolower($t['number']);
-                                                $defaultPath = "images/tables/table_{$formattedNum}.jpg";
-                                                if (file_exists(__DIR__ . '/../' . $defaultPath)): 
-                                                ?>
-                                                    <img src="../<?php echo $defaultPath; ?>" alt="Table" class="w-full h-full object-cover">
-                                                <?php else: ?>
-                                                    <span class="material-symbols-outlined text-zinc-600 text-lg">image</span>
-                                                <?php endif; ?>
+                                                <span class="material-symbols-outlined text-zinc-600 text-lg">image</span>
                                             <?php endif; ?>
                                         </div>
                                     </td>
