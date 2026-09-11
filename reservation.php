@@ -371,6 +371,71 @@ require_once 'header.php';
         opacity: 0.65;
     }
 
+    /* Live Table Status Indicator LED Lights */
+    .status-light-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+        flex-shrink: 0;
+    }
+    .status-light-green {
+        background-color: #10b981;
+        box-shadow: 0 0 10px #10b981, 0 0 4px #10b981;
+        animation: pulseStatusGreen 2s infinite ease-in-out;
+    }
+    .status-light-red {
+        background-color: #ef4444;
+        box-shadow: 0 0 10px #ef4444, 0 0 4px #ef4444;
+        animation: pulseStatusRed 2s infinite ease-in-out;
+    }
+    .status-light-yellow {
+        background-color: #ffd782;
+        box-shadow: 0 0 10px #ffd782, 0 0 4px #ffd782;
+        animation: pulseStatusYellow 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulseStatusGreen {
+        0%, 100% { box-shadow: 0 0 6px #10b981, 0 0 2px #10b981; opacity: 0.9; }
+        50% { box-shadow: 0 0 14px #10b981, 0 0 8px #10b981; opacity: 1; transform: scale(1.15); }
+    }
+    @keyframes pulseStatusRed {
+        0%, 100% { box-shadow: 0 0 6px #ef4444, 0 0 2px #ef4444; opacity: 0.85; }
+        50% { box-shadow: 0 0 14px #ef4444, 0 0 8px #ef4444; opacity: 1; transform: scale(1.15); }
+    }
+    @keyframes pulseStatusYellow {
+        0%, 100% { box-shadow: 0 0 6px #ffd782, 0 0 2px #ffd782; opacity: 0.9; }
+        50% { box-shadow: 0 0 16px #ffd782, 0 0 10px #ffd782; opacity: 1; transform: scale(1.2); }
+    }
+
+    /* Table Button LED Status Indicator Badge */
+    .table-btn .table-status-indicator {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+    .table-available .table-status-indicator {
+        background-color: #10b981;
+        box-shadow: 0 0 8px #10b981, 0 0 3px #10b981;
+        animation: pulseStatusGreen 2.5s infinite ease-in-out;
+    }
+    .table-reserved .table-status-indicator {
+        background-color: #ef4444;
+        box-shadow: 0 0 8px #ef4444, 0 0 3px #ef4444;
+        animation: pulseStatusRed 2.5s infinite ease-in-out;
+    }
+    .table-selected .table-status-indicator {
+        background-color: #ffffff;
+        box-shadow: 0 0 12px #ffffff, 0 0 6px #ffd782;
+        animation: pulseStatusYellow 1.5s infinite ease-in-out;
+    }
+
     .zone-btn-custom {
         background: rgba(30, 30, 35, 0.6);
         border: 1px solid rgba(255, 215, 130, 0.25);
@@ -539,10 +604,19 @@ require_once 'header.php';
                         <span class="material-symbols-outlined text-warning fs-3">table_restaurant</span>
                         <span><?php echo t("Select Your Table", "เลือกโต๊ะนั่ง"); ?></span>
                     </h2>
-                    <div class="d-flex gap-3 small font-sans">
-                        <span class="d-flex align-items-center gap-1.5"><span class="badge rounded-circle bg-success" style="width: 10px; height: 10px; padding: 0;"></span> <span class="text-light text-opacity-90"><?php echo t("Available", "ว่าง"); ?></span></span>
-                        <span class="d-flex align-items-center gap-1.5"><span class="badge rounded-circle bg-danger" style="width: 10px; height: 10px; padding: 0;"></span> <span class="text-light text-opacity-90"><?php echo t("Reserved", "ไม่ว่าง"); ?></span></span>
-                        <span class="d-flex align-items-center gap-1.5"><span class="badge rounded-circle bg-warning" style="width: 10px; height: 10px; padding: 0;"></span> <span class="text-warning fw-bold"><?php echo t("Selected", "ที่เลือก"); ?></span></span>
+                    <div class="d-flex gap-2.5 small font-sans align-items-center">
+                        <span class="d-flex align-items-center gap-1.5 bg-black bg-opacity-50 px-2.5 py-1 rounded-pill border border-success border-opacity-40">
+                            <span class="status-light-dot status-light-green"></span>
+                            <span class="text-success fw-bold" style="font-size: 12px;"><?php echo t("Available", "ว่าง"); ?></span>
+                        </span>
+                        <span class="d-flex align-items-center gap-1.5 bg-black bg-opacity-50 px-2.5 py-1 rounded-pill border border-danger border-opacity-40">
+                            <span class="status-light-dot status-light-red"></span>
+                            <span class="text-danger fw-bold" style="font-size: 12px;"><?php echo t("Reserved", "ไม่ว่าง"); ?></span>
+                        </span>
+                        <span class="d-flex align-items-center gap-1.5 bg-black bg-opacity-50 px-2.5 py-1 rounded-pill border border-warning border-opacity-40">
+                            <span class="status-light-dot status-light-yellow"></span>
+                            <span class="text-warning fw-bold" style="font-size: 12px;"><?php echo t("Selected", "ที่เลือก"); ?></span>
+                        </span>
                     </div>
                 </div>
 
@@ -580,6 +654,7 @@ require_once 'header.php';
                             data-image="<?php echo htmlspecialchars($table_img_src); ?>"
                             onclick="selectTable(this)"
                         >
+                            <span class="table-status-indicator"></span>
                             <span><?php echo $t['number']; ?></span>
                             <span class="table-capacity"><?php echo $t['capacity']; ?> P</span>
                         </div>
