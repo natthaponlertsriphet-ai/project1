@@ -303,7 +303,7 @@ if (is_dir($atmosphere_dir)) {
 
 <!-- 5. ATMOSPHERE & GALLERY SHOWCASE (ภาพบรรยากาศร้านสุดชิล - รวมรูปถ่ายทั้งหมดที่มี!) -->
 <?php if (!empty($gallery_images)): ?>
-<section class="py-5 position-relative" style="background-color: #141313;">
+<section class="py-5 position-relative bg-black" style="background-color: #000000;">
     <div class="container px-4 px-lg-5 py-4">
         <div class="text-center mb-5">
             <span class="text-warning font-mono text-uppercase tracking-widest small fw-bold">[ GALLERY & VIBES ]</span>
