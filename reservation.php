@@ -436,6 +436,33 @@ require_once 'header.php';
         animation: pulseStatusYellow 1.5s infinite ease-in-out;
     }
 
+    /* Premium Status Legend Badges */
+    .status-legend-pill {
+        background: rgba(14, 14, 18, 0.85) !important;
+        backdrop-filter: blur(8px);
+        padding: 6px 16px !important;
+        border-radius: 30px !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .status-legend-pill:hover {
+        transform: translateY(-2px);
+    }
+    .status-legend-pill.pill-green {
+        border: 1px solid rgba(16, 185, 129, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15) !important;
+    }
+    .status-legend-pill.pill-red {
+        border: 1px solid rgba(239, 68, 68, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15) !important;
+    }
+    .status-legend-pill.pill-yellow {
+        border: 1px solid rgba(255, 215, 130, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(255, 215, 130, 0.15) !important;
+    }
+
     .zone-btn-custom {
         background: rgba(30, 30, 35, 0.6);
         border: 1px solid rgba(255, 215, 130, 0.25);
@@ -604,19 +631,19 @@ require_once 'header.php';
                         <span class="material-symbols-outlined text-warning fs-3">table_restaurant</span>
                         <span><?php echo t("Select Your Table", "เลือกโต๊ะนั่ง"); ?></span>
                     </h2>
-                    <div class="d-flex gap-2.5 small font-sans align-items-center">
-                        <span class="d-flex align-items-center gap-1.5 bg-black bg-opacity-50 px-2.5 py-1 rounded-pill border border-success border-opacity-40">
+                    <div class="d-flex flex-wrap gap-3 gap-md-4 small font-sans align-items-center mt-2 mt-sm-0">
+                        <div class="status-legend-pill pill-green">
                             <span class="status-light-dot status-light-green"></span>
-                            <span class="text-success fw-bold" style="font-size: 12px;"><?php echo t("Available", "ว่าง"); ?></span>
-                        </span>
-                        <span class="d-flex align-items-center gap-1.5 bg-black bg-opacity-50 px-2.5 py-1 rounded-pill border border-danger border-opacity-40">
+                            <span class="text-success fw-bold tracking-wider" style="font-size: 13px;"><?php echo t("Available", "ว่าง"); ?></span>
+                        </div>
+                        <div class="status-legend-pill pill-red">
                             <span class="status-light-dot status-light-red"></span>
-                            <span class="text-danger fw-bold" style="font-size: 12px;"><?php echo t("Reserved", "ไม่ว่าง"); ?></span>
-                        </span>
-                        <span class="d-flex align-items-center gap-1.5 bg-black bg-opacity-50 px-2.5 py-1 rounded-pill border border-warning border-opacity-40">
+                            <span class="text-danger fw-bold tracking-wider" style="font-size: 13px;"><?php echo t("Reserved", "ไม่ว่าง"); ?></span>
+                        </div>
+                        <div class="status-legend-pill pill-yellow">
                             <span class="status-light-dot status-light-yellow"></span>
-                            <span class="text-warning fw-bold" style="font-size: 12px;"><?php echo t("Selected", "ที่เลือก"); ?></span>
-                        </span>
+                            <span class="text-warning fw-bold tracking-wider" style="font-size: 13px;"><?php echo t("Selected", "ที่เลือก"); ?></span>
+                        </div>
                     </div>
                 </div>
 
