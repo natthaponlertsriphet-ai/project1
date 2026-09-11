@@ -133,15 +133,30 @@ require_once 'header.php';
     }
 
     /* 3D Multi-Dimensional Tap Board Styling */
+    .tap-board-header-bar {
+        background: rgba(18, 18, 26, 0.65);
+        border: 1px solid rgba(255, 215, 130, 0.2);
+        border-radius: 12px;
+        padding: 10px 20px;
+        color: rgba(255, 215, 130, 0.85);
+        font-family: 'Rockwell', 'Pridi', serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
     .tap-board-card {
         background: linear-gradient(135deg, rgba(28, 28, 36, 0.95) 0%, rgba(16, 16, 22, 0.98) 100%);
-        border: 1.5px solid rgba(255, 215, 130, 0.25);
-        border-radius: 18px;
-        padding: 18px 24px;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1.5px solid rgba(255, 215, 130, 0.22);
+        border-radius: 14px;
+        padding: 14px 20px;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 20px rgba(255, 215, 130, 0.05);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 15px rgba(255, 215, 130, 0.04);
     }
     .tap-board-card::before {
         content: '';
@@ -156,15 +171,15 @@ require_once 'header.php';
         transition: all 0.3s ease;
     }
     .tap-board-card:hover {
-        transform: translateY(-5px) scale(1.015);
+        transform: translateY(-4px) scale(1.01);
         border-color: #ffd782 !important;
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 215, 130, 0.3) !important;
-        background: linear-gradient(135deg, rgba(36, 36, 46, 0.98) 0%, rgba(22, 22, 30, 1) 100%);
+        box-shadow: 0 14px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(255, 215, 130, 0.25) !important;
+        background: linear-gradient(135deg, rgba(34, 34, 44, 0.98) 0%, rgba(20, 20, 28, 1) 100%);
     }
     .tap-board-card:hover::before {
         opacity: 1;
-        width: 6px;
-        box-shadow: 0 0 14px #ffd782;
+        width: 5px;
+        box-shadow: 0 0 12px #ffd782;
     }
     .tap-board-card.sold-out {
         opacity: 0.55;
@@ -177,24 +192,24 @@ require_once 'header.php';
 
     /* 3D Metallic Tap Number Badge */
     .tap-number-badge {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
         background: linear-gradient(145deg, #2a2a34 0%, #14141a 100%);
         border: 1.5px solid rgba(255, 215, 130, 0.4);
         color: #ffd782;
         font-family: 'Anton', 'Rockwell', sans-serif;
-        font-size: 20px;
+        font-size: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 215, 130, 0.3);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 215, 130, 0.3);
         flex-shrink: 0;
     }
     .sold-out .tap-number-badge {
         border-color: rgba(239, 68, 68, 0.4);
         color: #f87171;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
     }
 
     /* 3D Glass Pill Badges & ABV Tag */
@@ -206,23 +221,23 @@ require_once 'header.php';
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.05em;
-        border-radius: 30px;
-        padding: 3px 12px;
+        border-radius: 20px;
+        padding: 3px 10px;
         display: inline-block;
     }
     .abv-pill-badge {
         background: linear-gradient(135deg, rgba(20, 20, 26, 0.9) 0%, rgba(10, 10, 14, 0.95) 100%);
         border: 1.5px solid rgba(255, 215, 130, 0.35);
-        border-radius: 30px;
-        padding: 6px 16px;
+        border-radius: 20px;
+        padding: 4px 12px;
         color: #ffffff;
         font-family: 'Anton', sans-serif;
-        font-size: 18px;
-        letter-spacing: 0.05em;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        font-size: 15px;
+        letter-spacing: 0.04em;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         flex-shrink: 0;
     }
     .soldout-pill-badge {
@@ -230,11 +245,11 @@ require_once 'header.php';
         border: 1.5px solid #ef4444;
         color: #ffffff;
         font-family: 'Anton', sans-serif;
-        font-size: 11px;
+        font-size: 10px;
         letter-spacing: 0.08em;
-        padding: 3px 10px;
-        border-radius: 30px;
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        padding: 2px 8px;
+        border-radius: 20px;
+        box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
     }
 </style>
 
@@ -269,7 +284,6 @@ require_once 'header.php';
         <div class="col-lg-4">
             <div class="d-flex flex-column gap-4">
                 
-
 
                 <!-- Live Stat Box with Background Image -->
                 <div class="glass-card overflow-hidden position-relative border border-warning border-opacity-30 rounded-4 shadow-lg" style="height: 250px;">
@@ -312,14 +326,14 @@ require_once 'header.php';
                 </div>
 
                 <!-- 3D Board Column Headers: NO | BRAND | BEERS | ABV -->
-                <div class="tap-board-header-bar d-none d-md-flex align-items-center gap-3 px-4 py-2.5 mb-3 rounded-3 border border-warning border-opacity-25 text-warning font-mono small text-uppercase tracking-wider fw-bold">
-                    <div style="width: 50px; flex-shrink: 0; text-align: center;"><?php echo t("NO", "NO"); ?></div>
-                    <div style="width: 140px; flex-shrink: 0;"><?php echo t("BRAND", "BRAND"); ?></div>
+                <div class="tap-board-header-bar d-none d-md-flex align-items-center gap-3 mb-3">
+                    <div style="width: 54px; flex-shrink: 0; text-align: center;"><?php echo t("NO", "NO"); ?></div>
+                    <div style="width: 130px; flex-shrink: 0;"><?php echo t("BRAND", "BRAND"); ?></div>
                     <div class="flex-grow-1"><?php echo t("BEERS", "BEERS"); ?></div>
-                    <div style="width: 100px; flex-shrink: 0; text-align: right;"><?php echo t("ABV", "ABV"); ?></div>
+                    <div style="width: 110px; flex-shrink: 0; text-align: right;"><?php echo t("ABV", "ABV"); ?></div>
                 </div>
 
-                <div id="beer-cards-container" class="d-flex flex-column gap-3.5">
+                <div id="beer-cards-container" class="d-flex flex-column gap-3">
                     <?php if (empty($beers)): ?>
                         <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded-4">
                             <?php echo t("No active beers on tap right now.", "ขณะนี้ไม่มีเบียร์เปิดบริการบนแท็ปบอร์ด"); ?>
@@ -328,13 +342,13 @@ require_once 'header.php';
                         <?php foreach ($beers as $b): ?>
                             <div id="beer-card-<?php echo $b['menu_id']; ?>" class="tap-board-card <?php echo !$b['is_active'] ? 'sold-out' : ''; ?> d-flex align-items-center flex-wrap flex-md-nowrap gap-3">
                                 <!-- 1. NO -->
-                                <div class="d-flex align-items-center justify-content-center" style="width: 50px; flex-shrink: 0;">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 54px; flex-shrink: 0;">
                                     <div class="tap-number-badge">
                                         <?php echo sprintf("%02d", $b['tap_number']); ?>
                                     </div>
                                 </div>
                                 <!-- 2. BRAND -->
-                                <div class="d-flex align-items-center gap-1 flex-wrap" style="width: 140px; flex-shrink: 0;">
+                                <div class="d-flex align-items-center gap-1 flex-wrap" style="width: 130px; flex-shrink: 0;">
                                     <span class="beer-brand-badge"><?php echo htmlspecialchars($b['beer_type']); ?></span>
                                     <?php if (!$b['is_active']): ?>
                                         <span class="soldout-pill-badge mt-1"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>
@@ -342,10 +356,10 @@ require_once 'header.php';
                                 </div>
                                 <!-- 3. BEERS -->
                                 <div class="flex-grow-1 min-w-0">
-                                    <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0"><?php echo htmlspecialchars($b['menu_name']); ?></h4>
+                                    <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0 text-truncate"><?php echo htmlspecialchars($b['menu_name']); ?></h4>
                                 </div>
                                 <!-- 4. ABV -->
-                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 100px; flex-shrink: 0;">
+                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
                                     <div class="abv-pill-badge">
                                         <span class="text-secondary small font-sans me-1">ABV</span>
                                         <span class="text-warning"><?php echo htmlspecialchars($b['abv']); ?></span>
@@ -401,18 +415,27 @@ require_once 'header.php';
 
                         html += `
                             <div id="beer-card-${b.menu_id}" class="tap-board-card ${cardClass} d-flex align-items-center flex-wrap flex-md-nowrap gap-3">
-                                <div class="d-flex align-items-center justify-content-center" style="width: 50px; flex-shrink: 0;">
+                                <div class="d-flex align-items-center justify-content-center" style="width: 54px; flex-shrink: 0;">
                                     <div class="tap-number-badge">
                                         ${formattedTap}
                                     </div>
                                 </div>
-                                <div class="d-flex align-items-center gap-1 flex-wrap" style="width: 140px; flex-shrink: 0;">
+                                <div class="d-flex align-items-center gap-1 flex-wrap" style="width: 130px; flex-shrink: 0;">
                                     <span class="beer-brand-badge">${escapeHtml(b.beer_type)}</span>
                                     ${soldoutBadge}
                                 </div>
                                 <div class="flex-grow-1 min-w-0">
-                                    <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0">${escapeHtml(b.menu_name)}</h4>
+                                    <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0 text-truncate">${escapeHtml(b.menu_name)}</h4>
                                 </div>
+                                <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 110px; flex-shrink: 0;">
+                                    <div class="abv-pill-badge">
+                                        <span class="text-secondary small font-sans me-1">ABV</span>
+                                        <span class="text-warning">${escapeHtml(b.abv)}</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                }              </div>
                                 <div class="d-flex align-items-center justify-content-end ms-auto ms-md-0" style="width: 100px; flex-shrink: 0;">
                                     <div class="abv-pill-badge">
                                         <span class="text-secondary small font-sans me-1">ABV</span>
