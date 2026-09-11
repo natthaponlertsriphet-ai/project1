@@ -57,6 +57,18 @@ if (is_dir($tables_dir)) {
         }
     }
 }
+
+// Add hero images to gallery
+$hero_dir = __DIR__ . '/images/hero';
+if (is_dir($hero_dir)) {
+    $files = scandir($hero_dir);
+    foreach ($files as $file) {
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            $gallery_images[] = 'images/hero/' . $file;
+        }
+    }
+}
 ?>
 
 <style>
@@ -196,24 +208,34 @@ if (is_dir($tables_dir)) {
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="5"></button>
         </div>
         
         <div class="carousel-inner h-100">
             <!-- Slide 1 -->
             <div class="carousel-item hero-carousel-item active">
-                <img src="images/home-booking/749356007_122278339724129427_2108767678100899836_n.jpg" alt="CHIT HOLE CNX Atmosphere">
+                <img src="images/hero/777851750_122281871930129427_4833326693886290042_n.jpg" alt="CHIT HOLE CNX Hero 1">
             </div>
             <!-- Slide 2 -->
             <div class="carousel-item hero-carousel-item">
-                <img src="images/home-booking/752741095_122278340024129427_3159467724997469637_n.jpg" alt="CHIT HOLE CNX Taproom">
+                <img src="images/hero/752741095_122278340024129427_3159467724997469637_n.jpg" alt="CHIT HOLE CNX Hero 2">
             </div>
             <!-- Slide 3 -->
             <div class="carousel-item hero-carousel-item">
-                <img src="images/home-booking/735563412_122276495840129427_6246480903433139955_n.jpg" alt="CHIT HOLE CNX Night Vibe">
+                <img src="images/hero/749356007_122278339724129427_2108767678100899836_n.jpg" alt="CHIT HOLE CNX Hero 3">
             </div>
             <!-- Slide 4 -->
             <div class="carousel-item hero-carousel-item">
-                <img src="images/promotions/751026922_122278510508129427_3687616286560289044_n.jpg" alt="CHIT HOLE CNX Promotions">
+                <img src="images/hero/743496966_122278339736129427_6962547489215919661_n.jpg" alt="CHIT HOLE CNX Hero 4">
+            </div>
+            <!-- Slide 5 -->
+            <div class="carousel-item hero-carousel-item">
+                <img src="images/hero/481219434_122206980932129427_2589329957957079331_n.jpg" alt="CHIT HOLE CNX Hero 5">
+            </div>
+            <!-- Slide 6 -->
+            <div class="carousel-item hero-carousel-item">
+                <img src="images/hero/473542511_122198553512129427_8339791701034145855_n.jpg" alt="CHIT HOLE CNX Hero 6">
             </div>
         </div>
 
