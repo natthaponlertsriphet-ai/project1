@@ -16,12 +16,40 @@ $options = [
 
 $pdo = null;
 
-// 1. Try MySQL Connection
+// 1. Try Primary MySQL Connection (chithole_db on phpMyAdmin)
 try {
-    $dsn = "mysql:host=$host;port=$port;charset=$charset";
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    $hosts = [$host, '127.0.0.1', 'localhost'];
+    $hosts = array_unique(array_filter($hosts));
+    $connected = false;
+
+    foreach ($hosts as $h) {
+        try {
+            $dsn = "mysql:host=$h;port=$port;charset=$charset";
+            $pdo = new PDO($dsn, $user, $pass, $options);
+            $connected = true;
+            break;
+        } catch (\PDOException $ex) {
+            continue;
+        }
+    }
+
+    // Try XAMPP unix socket fallback if host connections fail
+    if (!$connected) {
+        $xampp_socket = '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock';
+        if (file_exists($xampp_socket)) {
+            try {
+                $dsn = "mysql:unix_socket=$xampp_socket;charset=$charset";
+                $pdo = new PDO($dsn, $user, $pass, $options);
+                $connected = true;
+            } catch (\PDOException $ex) {}
+        }
+    }
+
+    if (!$connected || !$pdo) {
+        throw new \PDOException("Unable to establish MySQL connection to chithole_db.");
+    }
     
-    // Create database if it does not exist
+    // Create database if it does not exist and use it
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $pdo->exec("USE `$db`");
     
