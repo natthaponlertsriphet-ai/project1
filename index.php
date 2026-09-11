@@ -21,15 +21,21 @@ try {
     $music_schedule = [];
 }
 
-// Collect atmosphere gallery images
-$atmosphere_dir = __DIR__ . '/images/atmosphere';
+// Collect atmosphere gallery images from both atmosphere and live-music directories
 $gallery_images = [];
-if (is_dir($atmosphere_dir)) {
-    $files = scandir($atmosphere_dir);
-    foreach ($files as $file) {
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-            $gallery_images[] = 'images/atmosphere/' . $file;
+$dirs = [__DIR__ . '/images/atmosphere', __DIR__ . '/images/live-music'];
+$seen = [];
+
+foreach ($dirs as $dir) {
+    if (is_dir($dir)) {
+        $files = scandir($dir);
+        foreach ($files as $file) {
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && !isset($seen[$file])) {
+                $seen[$file] = true;
+                $rel_prefix = (strpos($dir, 'atmosphere') !== false) ? 'images/atmosphere/' : 'images/live-music/';
+                $gallery_images[] = $rel_prefix . $file;
+            }
         }
     }
 }

@@ -26,18 +26,23 @@ foreach ($music_events as $event) {
     $events_by_day[$event['show_day']][] = $event;
 }
 
-// Fetch dynamic gallery photos directly from /images/live-music/
-$gallery_dir = __DIR__ . '/images/live-music';
+// Fetch dynamic gallery photos directly from /images/live-music/ and /images/atmosphere/
 $gallery_images = [];
+$dirs = [__DIR__ . '/images/live-music', __DIR__ . '/images/atmosphere'];
+$seen = [];
 
-if (is_dir($gallery_dir)) {
-    $files = scandir($gallery_dir);
-    foreach ($files as $file) {
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-            $gallery_images[] = [
-                'src' => 'images/live-music/' . $file
-            ];
+foreach ($dirs as $dir) {
+    if (is_dir($dir)) {
+        $files = scandir($dir);
+        foreach ($files as $file) {
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && !isset($seen[$file])) {
+                $seen[$file] = true;
+                $rel_prefix = (strpos($dir, 'live-music') !== false) ? 'images/live-music/' : 'images/atmosphere/';
+                $gallery_images[] = [
+                    'src' => $rel_prefix . $file
+                ];
+            }
         }
     }
 }
