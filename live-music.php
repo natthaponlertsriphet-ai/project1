@@ -343,7 +343,7 @@ require_once 'header.php';
 
                 <div class="mt-4 pt-3 border-top border-secondary border-opacity-10 d-flex justify-content-between align-items-center">
                     <span class="text-secondary small"><?php echo t("Want to request a table for tonight?", "ต้องการจองพื้นที่ที่นั่งในค่ำคืนนี้?"); ?></span>
-                    <a href="reservation" class="btn btn-custom-gold py-2 px-3 font-anton text-uppercase" style="font-size: 12px;"><?php echo t("Book Table Now", "จองโต๊ะเลย"); ?></a>
+                    <a href="reservation" class="btn btn-custom-gold-outline py-2 px-3 font-anton text-uppercase" style="font-size: 12px;"><?php echo t("Book Table Now", "จองโต๊ะเลย"); ?></a>
                 </div>
             </div>
         </div>

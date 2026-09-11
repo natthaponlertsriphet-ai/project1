@@ -518,7 +518,7 @@ require_once 'header.php';
                         <input type="text" id="search-query-input" name="q" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify Booking ID or phone number.', '⚠️ กรุณาระบุรหัสการจอง หรือ เบอร์โทรศัพท์ที่ใช้จอง'); ?>')" oninput="this.setCustomValidity('')" class="form-control bg-dark border-secondary border-opacity-50 text-white rounded-0 py-2.5 font-sans" placeholder="<?php echo t('Enter Booking Ref ID or Phone Number', 'กรอกรหัสการจอง หรือ เบอร์โทรศัพท์'); ?>" value="<?php echo htmlspecialchars($search_query ?? ''); ?>">
                     </div>
                     <div class="col-sm-3">
-                        <button type="submit" id="search-submit-btn" class="btn btn-custom-gold w-100 py-2.5 text-uppercase font-anton">
+                        <button type="submit" id="search-submit-btn" class="btn btn-custom-green-outline w-100 py-2.5 text-uppercase font-anton">
                             <?php echo t("Search", "ค้นหาข้อมูล"); ?>
                         </button>
                     </div>
@@ -689,7 +689,7 @@ require_once 'header.php';
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-custom-gold w-100 py-3 text-uppercase font-anton tracking-wider fs-5">
+                    <button type="submit" class="btn btn-custom-green-outline w-100 py-3 text-uppercase font-anton tracking-wider fs-5">
                         <?php echo t("Submit Reservation", "ส่งยืนยันจองโต๊ะ"); ?>
                     </button>
                 </form>

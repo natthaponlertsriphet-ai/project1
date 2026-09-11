@@ -170,6 +170,47 @@ function is_active($page) {
             opacity: 1;
             transform: translateY(0) scale(1.0);
         }
+
+        /* Custom Button Utility Classes */
+        .btn-custom-green-outline {
+            background-color: rgba(16, 185, 129, 0.12) !important;
+            border: 2px solid #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none !important;
+        }
+        .btn-custom-green-outline:hover,
+        .btn-custom-green-outline:focus {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
+            transform: translateY(-2px);
+        }
+        .btn-custom-green-outline:active {
+            transform: translateY(0);
+        }
+
+        .btn-custom-gold-outline {
+            background-color: rgba(245, 158, 11, 0.12) !important;
+            border: 2px solid #f59e0b !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-decoration: none !important;
+        }
+        .btn-custom-gold-outline:hover,
+        .btn-custom-gold-outline:focus {
+            background-color: #f59e0b !important;
+            border-color: #f59e0b !important;
+            color: #000000 !important;
+            box-shadow: 0 6px 22px rgba(245, 158, 11, 0.45);
+            transform: translateY(-2px);
+        }
+        .btn-custom-gold-outline:active {
+            transform: translateY(0);
+        }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
