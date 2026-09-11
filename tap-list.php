@@ -131,6 +131,111 @@ require_once 'header.php';
         color: #ffd782;
         text-transform: uppercase;
     }
+
+    /* 3D Multi-Dimensional Tap Board Styling */
+    .tap-board-card {
+        background: linear-gradient(135deg, rgba(28, 28, 36, 0.95) 0%, rgba(16, 16, 22, 0.98) 100%);
+        border: 1.5px solid rgba(255, 215, 130, 0.25);
+        border-radius: 18px;
+        padding: 18px 24px;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 20px rgba(255, 215, 130, 0.05);
+    }
+    .tap-board-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(180deg, #ffd782, #f59e0b);
+        border-radius: 4px 0 0 4px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+    .tap-board-card:hover {
+        transform: translateY(-5px) scale(1.015);
+        border-color: #ffd782 !important;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 215, 130, 0.3) !important;
+        background: linear-gradient(135deg, rgba(36, 36, 46, 0.98) 0%, rgba(22, 22, 30, 1) 100%);
+    }
+    .tap-board-card:hover::before {
+        opacity: 1;
+        width: 6px;
+        box-shadow: 0 0 14px #ffd782;
+    }
+    .tap-board-card.sold-out {
+        opacity: 0.55;
+        border-color: rgba(239, 68, 68, 0.3);
+        background: linear-gradient(135deg, rgba(24, 16, 16, 0.9) 0%, rgba(14, 10, 10, 0.95) 100%);
+    }
+    .tap-board-card.sold-out::before {
+        background: linear-gradient(180deg, #ef4444, #dc2626);
+    }
+
+    /* 3D Metallic Tap Number Badge */
+    .tap-number-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: linear-gradient(145deg, #2a2a34 0%, #14141a 100%);
+        border: 1.5px solid rgba(255, 215, 130, 0.4);
+        color: #ffd782;
+        font-family: 'Anton', 'Rockwell', sans-serif;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 215, 130, 0.3);
+        flex-shrink: 0;
+    }
+    .sold-out .tap-number-badge {
+        border-color: rgba(239, 68, 68, 0.4);
+        color: #f87171;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+    }
+
+    /* 3D Glass Pill Badges & ABV Tag */
+    .beer-brand-badge {
+        background: rgba(255, 215, 130, 0.12);
+        border: 1px solid rgba(255, 215, 130, 0.35);
+        color: #ffd782;
+        font-family: 'Rockwell', 'Pridi', serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        border-radius: 30px;
+        padding: 3px 12px;
+        display: inline-block;
+    }
+    .abv-pill-badge {
+        background: linear-gradient(135deg, rgba(20, 20, 26, 0.9) 0%, rgba(10, 10, 14, 0.95) 100%);
+        border: 1.5px solid rgba(255, 215, 130, 0.35);
+        border-radius: 30px;
+        padding: 6px 16px;
+        color: #ffffff;
+        font-family: 'Anton', sans-serif;
+        font-size: 18px;
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+    .soldout-pill-badge {
+        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        border: 1.5px solid #ef4444;
+        color: #ffffff;
+        font-family: 'Anton', sans-serif;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        padding: 3px 10px;
+        border-radius: 30px;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
 </style>
 
 <!-- Cover Banner Section -->
@@ -167,15 +272,16 @@ require_once 'header.php';
 
 
                 <!-- Live Stat Box with Background Image -->
-                <div class="glass-card overflow-hidden position-relative" style="height: 250px;">
-                    <div class="absolute inset-0 bg-dark opacity-75" style="position: absolute; inset:0; background-image: url('images/beer-menu/481664700_122207974712129427_4846131329867806613_n.jpg'); background-size:cover; background-position: center; mix-blend-mode: luminosity; opacity:0.2; z-index:0;"></div>
+                <div class="glass-card overflow-hidden position-relative border border-warning border-opacity-30 rounded-4 shadow-lg" style="height: 250px;">
+                    <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #f59e0b, #ffd782, #f59e0b); z-index: 3;"></div>
+                    <div class="absolute inset-0 bg-dark opacity-75" style="position: absolute; inset:0; background-image: url('images/beer-menu/481664700_122207974712129427_4846131329867806613_n.jpg'); background-size:cover; background-position: center; mix-blend-mode: luminosity; opacity:0.25; z-index:0;"></div>
                     <div class="h-100 d-flex flex-column justify-content-end p-4 relative" style="position: relative; z-index: 2;">
                         <div class="d-flex gap-4">
                             <div class="d-flex flex-column">
-                                <span id="active-taps-count" class="font-anton text-warning display-4 lh-1">
+                                <span id="active-taps-count" class="font-anton text-warning display-3 lh-1" style="text-shadow: 0 0 20px rgba(255, 215, 130, 0.4);">
                                     <?php echo sprintf("%02d", $active_taps_count); ?>
                                 </span>
-                                <span class="text-uppercase font-mono" style="font-size: 18px; font-weight: bold; color: #ffffff;">
+                                <span class="text-uppercase font-mono tracking-wider mt-1" style="font-size: 18px; font-weight: bold; color: #ffffff;">
                                     <?php echo t("Active Taps", "แท็ปที่พร้อมบริการ"); ?>
                                 </span>
                             </div>
@@ -184,64 +290,56 @@ require_once 'header.php';
                 </div>
 
                 <!-- ABV Info Image Card -->
-                <div class="glass-card overflow-hidden p-0">
+                <div class="glass-card overflow-hidden p-0 border border-warning border-opacity-30 rounded-4 shadow-lg">
                     <img src="images/beer-menu/763647029_122254452440266045_1313488753492914884_n.jpg" alt="ABV Guide" class="img-fluid w-100" style="display: block;">
                 </div>
 
             </div>
         </div>
 
-        <!-- Right Side: Beers List Table -->
+        <!-- Right Side: Beers List Cards -->
         <div class="col-lg-8">
-            <div class="glass-card p-4 p-md-5">
-                <div class="table-responsive">
-                    <table class="table table-dark table-striped align-middle border-0 m-0 font-mono text-xs">
-                        <thead>
-                            <tr class="text-secondary border-bottom border-secondary border-opacity-25 uppercase small">
-                                <th class="py-3 px-3" style="width: 10%;"><?php echo t("No", "ลำดับ"); ?></th>
-                                <th class="py-3 px-3" style="width: 25%;"><?php echo t("Brand", "แบรนด์"); ?></th>
-                                <th class="py-3 px-3" style="width: 50%;"><?php echo t("Beers", "เบียร์"); ?></th>
-                                <th class="py-3 px-3" style="width: 15%;"><?php echo t("ABV", "แอลกอฮอล์"); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody id="beer-table-body">
-                            <?php if (empty($beers)): ?>
-                                <tr>
-                                    <td colspan="4" class="text-center py-5 text-secondary">
-                                        <?php echo t("No active beers on tap right now.", "ขณะนี้ไม่มีเบียร์เปิดบริการบนแท็ปบอร์ด"); ?>
-                                    </td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($beers as $b): ?>
-                                    <tr id="beer-row-<?php echo $b['menu_id']; ?>" class="tap-row border-bottom border-secondary border-opacity-10 <?php echo !$b['is_active'] ? 'opacity-40 select-none' : ''; ?>">
-                                        <!-- No (Tap Number) -->
-                                        <td class="py-4 px-3 font-anton text-warning fs-5">
-                                            <?php echo sprintf("%02d", $b['tap_number']); ?>
-                                        </td>
-                                        <!-- Brand -->
-                                        <td class="py-4 px-3 text-secondary font-sans font-bold fs-6 text-uppercase">
-                                            <?php echo htmlspecialchars($b['beer_type']); ?>
-                                        </td>
-                                        <!-- Beers (Name and description) -->
-                                        <td class="py-4 px-3">
-                                            <div class="d-flex flex-column">
-                                                <div class="d-flex align-items-center gap-2 beer-name-container">
-                                                    <span class="text-light font-anton text-uppercase fs-6 tracking-wide"><?php echo htmlspecialchars($b['menu_name']); ?></span>
-                                                    <?php if (!$b['is_active']): ?>
-                                                        <span class="badge bg-danger text-light font-anton text-uppercase px-2 py-0.5 tracking-wider soldout-badge" style="font-size: 8.5px;"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <!-- ABV -->
-                                        <td class="py-4 px-3 font-anton text-light fs-5">
-                                            <?php echo htmlspecialchars($b['abv']); ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+            <div class="glass-card p-4 p-md-5 border border-warning border-opacity-30 position-relative overflow-hidden shadow-lg">
+                <div class="position-absolute top-0 start-0 end-0" style="height: 3px; background: linear-gradient(90deg, #f59e0b, #ffd782, #f59e0b);"></div>
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <h3 class="font-anton text-warning text-uppercase tracking-wider m-0 d-flex align-items-center gap-2 fs-3">
+                        <span class="material-symbols-outlined text-warning fs-3">sports_bar</span>
+                        <span><?php echo t("Live Tap Board", "กระดานเบียร์สดส่งตรงในร้าน"); ?></span>
+                    </h3>
+                    <span class="badge bg-black bg-opacity-60 border border-warning border-opacity-30 text-warning font-sans px-3 py-1.5 rounded-pill small fw-bold">
+                        <?php echo count($beers); ?> <?php echo t("Taps Total", "แท็ปทั้งหมด"); ?>
+                    </span>
+                </div>
+
+                <div id="beer-cards-container" class="d-flex flex-column gap-3.5">
+                    <?php if (empty($beers)): ?>
+                        <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded-4">
+                            <?php echo t("No active beers on tap right now.", "ขณะนี้ไม่มีเบียร์เปิดบริการบนแท็ปบอร์ด"); ?>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($beers as $b): ?>
+                            <div id="beer-card-<?php echo $b['menu_id']; ?>" class="tap-board-card <?php echo !$b['is_active'] ? 'sold-out' : ''; ?> d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="tap-number-badge">
+                                        <?php echo sprintf("%02d", $b['tap_number']); ?>
+                                    </div>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="beer-brand-badge"><?php echo htmlspecialchars($b['beer_type']); ?></span>
+                                            <?php if (!$b['is_active']): ?>
+                                                <span class="soldout-pill-badge"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0"><?php echo htmlspecialchars($b['menu_name']); ?></h4>
+                                    </div>
+                                </div>
+                                <div class="abv-pill-badge ms-auto ms-sm-0">
+                                    <span class="text-secondary small font-sans me-1">ABV</span>
+                                    <span class="text-warning"><?php echo htmlspecialchars($b['abv']); ?></span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -266,53 +364,50 @@ require_once 'header.php';
                 if (currentHash === previousBeersHash) return;
                 previousBeersHash = currentHash;
 
-                const tbody = document.getElementById('beer-table-body');
+                const cardsContainer = document.getElementById('beer-cards-container');
                 const countBadge = document.getElementById('active-taps-count');
-                if (!tbody) return;
+                if (!cardsContainer) return;
 
                 let activeTapsCount = 0;
                 let html = '';
 
                 if (beers.length === 0) {
                     html = `
-                        <tr>
-                            <td colspan="4" class="text-center py-5 text-secondary">
-                                <?php echo t("No active beers on tap right now.", "ขณะนี้ไม่มีเบียร์เปิดบริการบนแท็ปบอร์ด"); ?>
-                            </td>
-                        </tr>`;
+                        <div class="text-center font-mono py-5 text-secondary border border-dashed border-secondary border-opacity-25 rounded-4">
+                            <?php echo t("No active beers on tap right now.", "ขณะนี้ไม่มีเบียร์เปิดบริการบนแท็ปบอร์ด"); ?>
+                        </div>`;
                 } else {
                     beers.forEach(b => {
                         const isActive = parseInt(b.is_active) === 1;
                         if (isActive) activeTapsCount++;
 
                         const formattedTap = String(b.tap_number).padStart(2, '0');
-                        const rowClass = isActive ? '' : 'opacity-40 select-none';
-                        const soldoutBadge = isActive ? '' : `<span class="badge bg-danger text-light font-anton text-uppercase px-2 py-0.5 tracking-wider soldout-badge" style="font-size: 8.5px;"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>`;
+                        const cardClass = isActive ? '' : 'sold-out';
+                        const soldoutBadge = isActive ? '' : `<span class="soldout-pill-badge"><?php echo t("SOLD OUT", "หมดแล้ว"); ?></span>`;
 
                         html += `
-                            <tr id="beer-row-${b.menu_id}" class="tap-row border-bottom border-secondary border-opacity-10 ${rowClass}">
-                                <td class="py-4 px-3 font-anton text-warning fs-5">
-                                    ${formattedTap}
-                                </td>
-                                <td class="py-4 px-3 text-secondary font-sans font-bold fs-6 text-uppercase">
-                                    ${escapeHtml(b.beer_type)}
-                                </td>
-                                <td class="py-4 px-3">
-                                    <div class="d-flex flex-column">
-                                        <div class="d-flex align-items-center gap-2 beer-name-container">
-                                            <span class="text-light font-anton text-uppercase fs-6 tracking-wide">${escapeHtml(b.menu_name)}</span>
+                            <div id="beer-card-${b.menu_id}" class="tap-board-card ${cardClass} d-flex align-items-center justify-content-between flex-wrap gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="tap-number-badge">
+                                        ${formattedTap}
+                                    </div>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="beer-brand-badge">${escapeHtml(b.beer_type)}</span>
                                             ${soldoutBadge}
                                         </div>
+                                        <h4 class="font-anton text-light text-uppercase tracking-wide fs-5 m-0">${escapeHtml(b.menu_name)}</h4>
                                     </div>
-                                </td>
-                                <td class="py-4 px-3 font-anton text-light fs-5">
-                                    ${escapeHtml(b.abv)}
-                                </td>
-                            </tr>`;
+                                </div>
+                                <div class="abv-pill-badge ms-auto ms-sm-0">
+                                    <span class="text-secondary small font-sans me-1">ABV</span>
+                                    <span class="text-warning">${escapeHtml(b.abv)}</span>
+                                </div>
+                            </div>`;
                     });
                 }
 
-                tbody.innerHTML = html;
+                cardsContainer.innerHTML = html;
 
                 if (countBadge) {
                     countBadge.innerText = String(activeTapsCount).padStart(2, '0');
