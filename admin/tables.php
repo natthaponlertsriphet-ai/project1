@@ -173,18 +173,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (move_uploaded_file($file_tmp, $dest_path)) {
                         $image_path = 'images/tables/' . $new_name;
                         
-                        // Auto-convert HEIC/HEIF to JPEG on macOS using native sips tool
+                        // Auto-convert HEIC/HEIF to JPEG
                         if (in_array($ext, ['heic', 'heif'])) {
                             $jpg_name = pathinfo($new_name, PATHINFO_FILENAME) . '.jpg';
                             $full_heic_path = $upload_dir . $new_name;
                             $full_jpg_path = $upload_dir . $jpg_name;
                             
-                            $cmd = "sips -s format jpeg " . escapeshellarg($full_heic_path) . " --out " . escapeshellarg($full_jpg_path) . " 2>&1";
-                            exec($cmd, $output, $return_var);
-                            
+                            // Multi-platform conversion attempt: sips (macOS), heif-convert (Linux), convert/magick (ImageMagick)
+                            exec("sips -s format jpeg " . escapeshellarg($full_heic_path) . " --out " . escapeshellarg($full_jpg_path) . " 2>&1");
+                            if (!file_exists($full_jpg_path)) {
+                                exec("heif-convert " . escapeshellarg($full_heic_path) . " " . escapeshellarg($full_jpg_path) . " 2>&1");
+                            }
+                            if (!file_exists($full_jpg_path)) {
+                                exec("convert " . escapeshellarg($full_heic_path) . " " . escapeshellarg($full_jpg_path) . " 2>&1");
+                            }
+                            if (!file_exists($full_jpg_path)) {
+                                exec("magick " . escapeshellarg($full_heic_path) . " " . escapeshellarg($full_jpg_path) . " 2>&1");
+                            }
+
                             if (file_exists($full_jpg_path)) {
                                 @unlink($full_heic_path);
                                 $image_path = 'images/tables/' . $jpg_name;
+                            } else {
+                                @unlink($full_heic_path);
+                                $error = t(
+                                    "HEIC image format is not supported by browsers and could not be converted on the server. Please upload JPG or PNG.",
+                                    "ไฟล์ภาพ .HEIC ไม่รองรับการแสดงผลบนเว็บเบราว์เซอร์ และเซิร์ฟเวอร์ไม่สามารถแปลงไฟล์ได้ กรุณาอัปโหลดเป็นไฟล์ JPG หรือ PNG"
+                                );
                             }
                         }
                     } else {

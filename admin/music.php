@@ -172,9 +172,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $temp_heic = $upload_dir_live . 'temp_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
                 
                 if (move_uploaded_file($file_tmp, $temp_heic)) {
-                    exec('sips -s format jpeg ' . escapeshellarg($temp_heic) . ' --out ' . escapeshellarg($dest_path_live));
+                    exec('sips -s format jpeg ' . escapeshellarg($temp_heic) . ' --out ' . escapeshellarg($dest_path_live) . ' 2>&1');
+                    if (!file_exists($dest_path_live)) {
+                        exec('heif-convert ' . escapeshellarg($temp_heic) . ' ' . escapeshellarg($dest_path_live) . ' 2>&1');
+                    }
+                    if (!file_exists($dest_path_live)) {
+                        exec('convert ' . escapeshellarg($temp_heic) . ' ' . escapeshellarg($dest_path_live) . ' 2>&1');
+                    }
+                    if (!file_exists($dest_path_live)) {
+                        exec('magick ' . escapeshellarg($temp_heic) . ' ' . escapeshellarg($dest_path_live) . ' 2>&1');
+                    }
+
                     @unlink($temp_heic);
-                    $success = t("Photo uploaded and converted to JPG successfully!", "อัปโหลดและแปลงไฟล์รูปภาพบรรยากาศสำเร็จ!");
+
+                    if (file_exists($dest_path_live)) {
+                        $success = t("Photo uploaded and converted to JPG successfully!", "อัปโหลดและแปลงไฟล์รูปภาพบรรยากาศสำเร็จ!");
+                    } else {
+                        $error = t(
+                            "HEIC image format is not supported by browsers and could not be converted on the server. Please upload JPG or PNG.",
+                            "ไฟล์ภาพ .HEIC ไม่รองรับการแสดงผลบนเว็บเบราว์เซอร์ และเซิร์ฟเวอร์ไม่สามารถแปลงไฟล์ได้ กรุณาอัปโหลดเป็นไฟล์ JPG หรือ PNG"
+                        );
+                    }
                 } else {
                     $error = "Failed to save uploaded photo.";
                 }
