@@ -213,13 +213,7 @@ if (is_dir($atmosphere_dir)) {
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10 col-xl-9">
-                        <!-- Brand Badge -->
-                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-black bg-opacity-60 border border-warning border-opacity-40 mb-3 backdrop-blur-md">
-                            <span class="rounded-circle bg-warning d-inline-block" style="width: 8px; height: 8px;"></span>
-                            <span class="text-warning font-mono uppercase tracking-widest" style="font-size: 11px; font-weight: 700;">
-                                <?php echo t("SAN SAI, CHIANG MAI • THAI CRAFT BEER TAPROOM", "โรงเบียร์ชิตโฮล สันทราย เชียงใหม่ • สำนักคราฟต์เบียร์ไทย"); ?>
-                            </span>
-                        </div>
+
 
                         <!-- Main Title -->
                         <h1 class="display-3 font-anton glow-title text-uppercase mb-3 leading-tight">
