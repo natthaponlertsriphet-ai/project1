@@ -247,29 +247,39 @@ function seed_database_records($pdo, $is_sqlite = false) {
         $stmt->execute(['staff-1', 'staff@chithole.com', $staff_pw, 'Staff Member', 'STAFF']);
     }
 
-    // Seed tables
+    // Seed tables (20 Tables with image paths)
     $tbl_table = $is_sqlite ? '"table"' : '`table`';
     $table_count = $pdo->query("SELECT COUNT(*) FROM $tbl_table")->fetchColumn();
     if ($table_count == 0) {
         $tables = [
-            ['d-1', 'D1', 'OUTDOOR', 2], ['d-2', 'D2', 'OUTDOOR', 2],
-            ['w-1', '01', 'INDOOR_WINDOW', 8], ['w-2', '02', 'INDOOR_WINDOW', 8],
-            ['c-3', '03', 'INDOOR_CENTER', 4], ['c-4', '04', 'INDOOR_CENTER', 4],
-            ['c-5', '05', 'INDOOR_CENTER', 4], ['c-6', '06', 'INDOOR_CENTER', 4],
-            ['c-7', '07', 'INDOOR_CENTER', 4], ['c-10', '10', 'INDOOR_CENTER', 4],
-            ['c-11', '11', 'INDOOR_CENTER', 4], ['c-13', '13', 'INDOOR_CENTER', 4],
-            ['s-8', '08', 'STAGE', 4], ['s-9', '09', 'STAGE', 4],
-            ['s-12', '12', 'STAGE', 4], ['s-14', '14', 'STAGE', 4],
-            ['b-16', '16', 'BAR', 4],
-            ['k-17', '17', 'WALKWAY', 3], ['k-18', '18', 'WALKWAY', 3],
+            ['w-1', '01', 'INDOOR_WINDOW', 4, 'AVAILABLE', 'images/tables/uploaded_1788352492_IMG_0131.jpg'],
+            ['w-2', '02', 'INDOOR_WINDOW', 2, 'AVAILABLE', 'images/tables/uploaded_1788352727_IMG_0132.jpg'],
+            ['c-3', '03', 'INDOOR_WINDOW', 4, 'AVAILABLE', 'images/tables/uploaded_1788352906_IMG_0133.jpg'],
+            ['c-4', '04', 'INDOOR_CENTER', 4, 'AVAILABLE', 'images/tables/uploaded_1788353487_IMG_0134.jpg'],
+            ['c-5', '05', 'INDOOR_CENTER', 4, 'AVAILABLE', 'images/tables/uploaded_1788358948_IMG_0135.jpg'],
+            ['c-6', '06', 'INDOOR_CENTER', 4, 'AVAILABLE', 'images/tables/uploaded_1788358965_IMG_0136.jpg'],
+            ['c-7', '07', 'INDOOR_CENTER', 2, 'AVAILABLE', 'images/tables/uploaded_1788359057_IMG_0137.jpg'],
+            ['s-8', '08', 'INDOOR_CENTER', 4, 'AVAILABLE', 'images/tables/uploaded_1788359035_IMG_0138.jpg'],
+            ['s-9', '09', 'STAGE', 4, 'AVAILABLE', 'images/tables/uploaded_1788359088_IMG_0139.jpg'],
+            ['c-10', '10', 'STAGE', 4, 'AVAILABLE', 'images/tables/uploaded_1788359111_IMG_0140.jpg'],
+            ['c-11', '11', 'INDOOR_CENTER', 6, 'AVAILABLE', 'images/tables/uploaded_1788359700_IMG_0149.jpg'],
+            ['s-12', '12', 'INDOOR_CENTER', 4, 'AVAILABLE', 'images/tables/uploaded_1788359727_IMG_0141.jpg'],
+            ['c-13', '13', 'STAGE', 4, 'AVAILABLE', 'images/tables/uploaded_1788359743_IMG_0142.jpg'],
+            ['s-14', '14', 'STAGE', 6, 'AVAILABLE', 'images/tables/uploaded_1788359763_IMG_0143.jpg'],
+            ['tbl_6a9834810a37f', '15', 'BAR', 2, 'AVAILABLE', 'images/tables/uploaded_1788359808_IMG_0146.jpg'],
+            ['b-16', '16', 'BAR', 2, 'AVAILABLE', 'images/tables/uploaded_1788359791_IMG_0145.jpg'],
+            ['k-17', '17', 'WALKWAY', 6, 'AVAILABLE', 'images/tables/uploaded_1788359833_IMG_0144.jpg'],
+            ['k-18', '18', 'WALKWAY', 6, 'AVAILABLE', 'images/tables/uploaded_1788359847_IMG_0150.jpg'],
+            ['d-1', 'D1', 'OUTDOOR', 2, 'AVAILABLE', 'images/tables/uploaded_1788260700_IMG_9774.jpg'],
+            ['d-2', 'D2', 'OUTDOOR', 2, 'AVAILABLE', 'images/tables/uploaded_1788260742_IMG_9774.jpg']
         ];
-        $stmt = $pdo->prepare("INSERT INTO $tbl_table (table_id, table_number, zone, capacity) VALUES (?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO $tbl_table (table_id, table_number, zone, capacity, table_status, image) VALUES (?, ?, ?, ?, ?, ?)");
         foreach ($tables as $t) {
             $stmt->execute($t);
         }
     }
 
-    // Seed promotions
+    // Seed promotions (3 Active Promotions)
     $promo_count = $pdo->query("SELECT COUNT(*) FROM promotion")->fetchColumn();
     if ($promo_count == 0) {
         $promotions = [
@@ -307,25 +317,27 @@ function seed_database_records($pdo, $is_sqlite = false) {
         }
     }
 
-    // Seed music
+    // Seed music (17 Live Music Sessions)
     $music_count = $pdo->query("SELECT COUNT(*) FROM music")->fetchColumn();
     if ($music_count == 0) {
         $music = [
-            ['m-1', 'Mon', '19:30 - 20:30', 'วง NULL', 'Acoustic indie rock session.'],
-            ['m-2', 'Mon', '21:00 - 22:00', 'วง Black Devil', 'Heavy rock and alternative hits.'],
-            ['m-3', 'Tue', '19:30 - 20:30', 'วง Poppular', 'Popular pop/rock acoustic sets.'],
-            ['m-4', 'Tue', '21:30 - 22:30', 'วง ตูมตาม', 'Upbeat local rock covers.'],
-            ['m-5', 'Wed', '19:45 - 22:00', 'วง Rhapsody', 'Classic progressive rock session.'],
-            ['m-6', 'Thu', '19:00 - 21:15', 'วง Tewly', 'Smooth acoustic pop & rock.'],
-            ['m-7', 'Thu', '21:30 - 22:30', 'วง Chilling Groove', 'Funky grooves and soul.'],
             ['m-8', 'Fri', '18:45 - 20:45', 'วง Tewly', 'Popular hit songs and request sets.'],
             ['m-9', 'Fri', '21:00 - 22:00', 'วง Karuna', 'Grunge and alternative rock.'],
             ['m-10', 'Fri', '22:30 - 24:00', 'วง Judy', 'Late night energetic party pop.'],
+            ['m-1', 'Mon', '19:30 - 20:30', 'วง NULL', 'Acoustic indie rock session.'],
+            ['m-2', 'Mon', '21:00 - 22:00', 'วง Black Devil', 'Heavy rock and alternative hits.'],
             ['m-11', 'Sat', '19:00 - 20:00', 'วง NULL', 'Alternative rock & pop.'],
-            ['m-12', 'Sat', '21:00 - 22:00', 'วง ....', 'Special guest band session.'],
-            ['m-13', 'Sat', '22:30 - 23:30', 'วง Karuna', 'High-octane hard rock show.'],
+            ['m-12', 'Sat', '21:00 - 22:00', 'วง Sunday Evening', 'Special guest band session.'],
+            ['m-13', 'Sat', '22:30 - 23:30', 'วง ดอกเหมย', 'High-octane hard rock show.'],
             ['m-14', 'Sun', '19:30 - 20:30', 'วง Black Devil', 'Heavy rock classic sets.'],
             ['m-15', 'Sun', '21:30 - 22:30', 'วง ตูมตาม', 'Closing party rock set.'],
+            ['m-6', 'Thu', '19:00 - 21:15', 'วง Tewly', 'Smooth acoustic pop & rock.'],
+            ['m-7', 'Thu', '21:30 - 22:30', 'วง Chilling Groove', 'Funky grooves and soul.'],
+            ['music_6aa12dc4e6c35', 'Thu', '22:45 - 23:45', 'วง Black Devil', 'pop. 80 rock 70'],
+            ['m-3', 'Tue', '19:30 - 20:30', 'วง Poppular', 'Popular pop/rock acoustic sets.'],
+            ['m-4', 'Tue', '21:30 - 22:30', 'วง ตูมตาม', 'Upbeat local rock covers.'],
+            ['m-5', 'Wed', '19:45 - 22:00', 'วง Rhapsody', 'Classic progressive rock session.'],
+            ['music_6a9aa53928dd2', 'Wed', '22:15 - 23:15', 'วง Tewly', '80s-90s']
         ];
         $stmt = $pdo->prepare("INSERT INTO music (music_id, show_day, show_time, artist, description) VALUES (?, ?, ?, ?, ?)");
         foreach ($music as $m) {
@@ -333,30 +345,31 @@ function seed_database_records($pdo, $is_sqlite = false) {
         }
     }
 
-    // Seed beers
+    // Seed beers (16 Taps)
     $menu_count = $pdo->query("SELECT COUNT(*) FROM menu")->fetchColumn();
     if ($menu_count == 0) {
         $beers = [
-            ['b-1', '01', 'DDH OLD SCHOOL IPA', 'RERNGPOY X MUANJAI', '6.6%'],
-            ['b-2', '02', 'PASSION MANGO & STRAWBERRY', 'PHING DOI', '5.0%'],
-            ['b-3', '03', 'FOUR TEEN AGAIN SESSION IPA', 'CHIT BEER', '4.9%'],
-            ['b-4', '04', 'NEW ZEALAND PALE ALE', 'CHIT BEER', '5.6%'],
-            ['b-5', '05', 'CHITHOLE LAGER', 'CHIT HOLE', '5.0%'],
-            ['b-6', '06', 'IMPERIAL STOUT', 'WISET', '9.0%'],
-            ['b-7', '07', 'FOREVER WEIZEN', 'CHIT HOLE', '5.0%'],
-            ['b-8', '08', 'WITTY WITBIER', 'MICKLEHEIM', '6.3%'],
-            ['b-9', '09', 'TRIPLE IPA', 'WISET', '11.0%'],
-            ['b-10', '10', 'HILLBERRY STRAWBERRY CIDER', 'CHIANGMAI', '5.0%'],
-            ['b-11', '11', 'RED TRUCK ALE', 'CHIANGMAI', '5.0%'],
-            ['b-12', '12', 'GUAVA ALE', 'KHOY BREWING', '5.0%'],
-            ['b-13', '13', 'TIDLOM SESSION IPA', 'SUNTREE', '4.4%'],
-            ['b-14', '14', 'SIMBUS PALE ALE', 'MICKLEHEIM', '5.7%'],
-            ['b-15', '15', 'ROSE', 'TAWANDANG', '4.0%'],
-            ['b-16', '16', 'GERMAN LAGER', 'TAWANDANG', '4.9%'],
+            ['b-1', '01', 'BLOSSOM WEIZEN', 'CHIANGMAI', '5.0%', 1],
+            ['b-2', '02', 'MEE CHAI IPA', 'MUAY THAI', '5.0%', 1],
+            ['b-3', '03', 'IRISH OYSTER EXTRA STOUT', 'UNDERDOG', '5.8%', 1],
+            ['b-4', '04', 'HIPSTER IPA', 'CHIT BEER', '7.0%', 1],
+            ['b-5', '05', 'FOREVER WEIZEN 🥈', 'CHIT BEER', '5.0%', 1],
+            ['b-6', '06', 'YOGURT CIDER', 'CHIT HOLE', '5.0%', 1],
+            ['b-7', '07', 'FOREVER WEIZEN', 'CHIT HOLE', '5.0%', 1],
+            ['b-8', '08', 'WITTY WITBIER', 'MICKLEHEIM', '6.3%', 1],
+            ['b-9', '09', 'TRIPLE IPA', 'WISET', '11.0%', 1],
+            ['b-10', '10', 'HILLBERRY STRAWBERRY CIDER', 'CHIANGMAI', '5.0%', 1],
+            ['b-11', '11', 'RED TRUCK ALE', 'CHIANGMAI', '5.0%', 1],
+            ['b-12', '12', 'GUAVA ALE', 'KHOY BREWING', '5.0%', 1],
+            ['b-13', '13', 'TIDLOM SESSION IPA', 'SUNTREE', '4.4%', 1],
+            ['b-14', '14', 'SIMBUS PALE ALE', 'MICKLEHEIM', '5.7%', 1],
+            ['b-15', '15', 'ROSE', 'TAWANDANG', '4.0%', 1],
+            ['b-16', '16', 'GERMAN LAGER', 'TAWANDANG', '4.9%', 1]
         ];
-        $stmt = $pdo->prepare("INSERT INTO menu (menu_id, tap_number, menu_name, beer_type, abv) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO menu (menu_id, tap_number, menu_name, beer_type, abv, is_active) VALUES (?, ?, ?, ?, ?, ?)");
         foreach ($beers as $b) {
             $stmt->execute($b);
         }
     }
 }
+
