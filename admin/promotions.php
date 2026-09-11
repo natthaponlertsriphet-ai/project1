@@ -124,11 +124,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
                 $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'avif', 'svg'];
                 
-                $is_image_mime = ($file_type !== '' && strpos($file_type, 'image/') === 0);
+                $is_image_mime = (!empty($file_type) && is_string($file_type) && strpos($file_type, 'image/') === 0);
                 if ($is_image_mime || in_array($file_ext, $allowed_exts)) {
                     $upload_dir = __DIR__ . '/../images/promotions/';
                     if (!is_dir($upload_dir)) {
-                        mkdir($upload_dir, 0777, true);
+                        @mkdir($upload_dir, 0777, true);
                     }
                     
                     $clean_name = preg_replace("/[^a-zA-Z0-9.-]/", "_", $file_name);

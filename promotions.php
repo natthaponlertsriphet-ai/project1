@@ -147,7 +147,8 @@ require_once 'header.php';
             <?php foreach ($promotions as $index => $promo): ?>
                 <?php 
                 $is_large = ($index % 2 === 0);
-                $promo_img = !empty($promo['image']) ? $promo['image'] : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
+                $raw_img = !empty($promo['image']) ? preg_replace('#^(\.\./|/)+#', '', $promo['image']) : '';
+                $promo_img = !empty($raw_img) ? $raw_img : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
                 ?>
                 <?php if ($is_large): ?>
                     <!-- 7-Column Horizontal Card -->
@@ -155,10 +156,10 @@ require_once 'header.php';
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
                                 <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo_img); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
-                                    <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to right, transparent, #201f1f); opacity: 1;"></div>
+                                    <img src="<?php echo htmlspecialchars($promo_img); ?>" alt="<?php echo htmlspecialchars($promo['title']); ?>" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                                    <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to right, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
                                 </div>
-                                <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10">
+                                <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10 relative z-2">
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
                                     <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                     <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
@@ -174,9 +175,9 @@ require_once 'header.php';
                     <!-- 5-Column Vertical Card -->
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
-                            <div class="position-relative overflow-hidden" style="height: 200px;">
-                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo_img); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
-                                <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to bottom, transparent, #201f1f); opacity: 1;"></div>
+                            <div class="position-relative overflow-hidden" style="height: 220px;">
+                                <img src="<?php echo htmlspecialchars($promo_img); ?>" alt="<?php echo htmlspecialchars($promo['title']); ?>" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                                <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to bottom, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
                                 <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
@@ -229,7 +230,8 @@ require_once 'header.php';
             const title = escapeHtml(promo.title);
             const period = escapeHtml(promo.period);
             const desc = escapeHtml(promo.description).replace(/\n/g, '<br>');
-            const image = escapeHtml(promo.image);
+            let rawImg = promo.image ? String(promo.image).replace(/^(\.\.\/|\/)+/, '') : '';
+            const image = rawImg ? escapeHtml(rawImg) : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
             const bookText = "<?php echo t('Book a Table', 'จองโต๊ะ'); ?>";
 
             if (isLarge) {
@@ -238,10 +240,10 @@ require_once 'header.php';
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
                                 <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <div class="h-100 w-100" style="background-image: url('${image}'); background-size: cover; background-position: center; position:absolute;"></div>
-                                    <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to right, transparent, #201f1f); opacity: 1;"></div>
+                                    <img src="${image}" alt="${title}" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                                    <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to right, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
                                 </div>
-                                <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10">
+                                <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10 relative z-2">
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;">${period}</span>
                                     <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1">${title}</h2>
                                     <p class="text-secondary small mb-4">${desc}</p>
@@ -258,9 +260,9 @@ require_once 'header.php';
                 html += `
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
-                            <div class="position-relative overflow-hidden" style="height: 200px;">
-                                <div class="h-100 w-100" style="background-image: url('${image}'); background-size: cover; background-position: center; position:absolute;"></div>
-                                <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to bottom, transparent, #201f1f); opacity: 1;"></div>
+                            <div class="position-relative overflow-hidden" style="height: 220px;">
+                                <img src="${image}" alt="${title}" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                                <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to bottom, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
                                 <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;">${period}</span>
