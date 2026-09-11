@@ -120,9 +120,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($upload_err === UPLOAD_ERR_OK) {
                 $file_tmp = $_FILES['image_file']['tmp_name'];
                 $file_name = $_FILES['image_file']['name'];
-                $file_type = $_FILES['image_file']['type'];
+                $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'avif', 'svg'];
                 
-                if (strpos($file_type, 'image/') === 0) {
+                if (strpos($file_type, 'image/') === 0 || in_array($file_ext, $allowed_exts)) {
                     $upload_dir = __DIR__ . '/../images/promotions/';
                     if (!is_dir($upload_dir)) {
                         mkdir($upload_dir, 0777, true);
@@ -141,8 +142,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     }
                 } else {
                     $error = t(
-                        "Invalid file type. Please upload an image (PNG, JPG, JPEG).",
-                        "ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น"
+                        "Invalid file type. Please upload an image (PNG, JPG, JPEG, WEBP).",
+                        "ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น (PNG, JPG, JPEG, WEBP)"
                     );
                 }
             } else {
@@ -271,15 +272,13 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">image</span>
                         <span><?php echo t("Image Banner File", "ไฟล์ภาพแบนเนอร์"); ?></span>
                     </label>
-                    <input type="file" name="image_file" accept="image/*" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-200 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30">
+                    <input type="file" name="image_file" id="image_file_input" accept="image/*" onchange="previewSelectedImage(this)" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-200 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30">
                     <input type="hidden" name="image_url" value="<?php echo htmlspecialchars($image); ?>">
                 </div>
 
-                <?php if ($image): ?>
-                    <div class="rounded-lg overflow-hidden border border-zinc-700 aspect-video bg-zinc-950">
-                        <img src="../<?php echo ltrim($image, '/'); ?>" alt="Preview" class="w-full h-full object-cover">
-                    </div>
-                <?php endif; ?>
+                <div id="image-preview-container" class="rounded-lg overflow-hidden border border-zinc-700 aspect-video bg-zinc-950 <?php echo $image ? '' : 'hidden'; ?>">
+                    <img id="image-preview-element" src="<?php echo $image ? '../' . ltrim($image, '/') : ''; ?>" alt="Preview" class="w-full h-full object-cover">
+                </div>
 
                 <div class="flex flex-col gap-1.5">
                     <label class="text-xs uppercase text-zinc-200 font-semibold tracking-wider flex items-center gap-1.5">
@@ -319,6 +318,7 @@ require_once 'admin_header.php';
                 <table class="shadcn-table">
                     <thead>
                         <tr class="border-b border-zinc-800">
+                            <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold" style="width: 75px;"><?php echo t("Banner", "รูปภาพ"); ?></th>
                             <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Title", "ชื่อโปรโมชั่น"); ?></th>
                             <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Period", "ช่วงเวลา"); ?></th>
                             <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Status", "สถานะ"); ?></th>
@@ -328,16 +328,25 @@ require_once 'admin_header.php';
                     <tbody class="font-sans text-sm text-zinc-300">
                         <?php if (empty($all_promos)): ?>
                             <tr>
-                                <td colspan="4" class="text-center py-8 text-zinc-500">
+                                <td colspan="5" class="text-center py-8 text-zinc-500">
                                     <?php echo t("No promotions registered.", "ยังไม่มีการเพิ่มกิจกรรมโปรโมชั่น"); ?>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($all_promos as $promo): ?>
                                 <tr>
-                                    <td class="font-semibold text-zinc-100"><?php echo htmlspecialchars($promo['title']); ?></td>
-                                    <td class="text-zinc-400"><?php echo htmlspecialchars($promo['period']); ?></td>
-                                     <td class="text-center">
+                                    <td class="align-middle">
+                                        <?php if ($promo['image']): ?>
+                                            <img src="../<?php echo htmlspecialchars(ltrim($promo['image'], '/')); ?>" alt="Promo" class="w-14 h-10 object-cover rounded border border-amber-500/20 shadow-sm" onerror="this.onerror=null; this.classList.add('hidden');">
+                                        <?php else: ?>
+                                            <div class="w-14 h-10 bg-zinc-800 rounded flex items-center justify-center text-zinc-600 border border-zinc-700">
+                                                <span class="material-symbols-outlined text-sm">local_offer</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="font-semibold text-zinc-100 align-middle"><?php echo htmlspecialchars($promo['title']); ?></td>
+                                    <td class="text-zinc-400 align-middle"><?php echo htmlspecialchars($promo['period']); ?></td>
+                                     <td class="text-center align-middle">
                                          <a href="javascript:void(0)" onclick="togglePromoStatusRealtime(event, '<?php echo $promo['id']; ?>', this)" class="inline-block text-decoration-none" data-promo-id="<?php echo $promo['id']; ?>" data-promo-active="<?php echo $promo['active'] ? '1' : '0'; ?>" title="<?php echo t('Click to toggle status', 'คลิกเพื่อสลับสถานะโปรโมชั่น'); ?>">
                                              <span class="promo-status-badge badge py-1 px-2.5 rounded text-xs transition-all hover:scale-105 cursor-pointer" style="
                                                  <?php echo $promo['active'] ? 'background-color: rgba(25, 135, 84, 0.1); border: 1px solid rgba(25, 135, 84, 0.25); color: #75b798;' : 'background-color: rgba(63, 63, 70, 0.2); border: 1px solid rgba(63, 63, 70, 0.3); color: #a1a1aa;'; ?>
@@ -346,7 +355,7 @@ require_once 'admin_header.php';
                                              </span>
                                          </a>
                                      </td>
-                                    <td class="text-center">
+                                    <td class="text-center align-middle">
                                         <div class="flex justify-center gap-1">
                                             <a href="promotions.php?action=edit&id=<?php echo $promo['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
                                             <a href="javascript:void(0)" onclick="confirmDeletePromo('<?php echo $promo['id']; ?>', '<?php echo htmlspecialchars($promo['title']); ?>', '<?php echo htmlspecialchars($promo['period']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Promotion', 'ลบโปรโมชั่น'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
@@ -409,6 +418,19 @@ function togglePromoStatusRealtime(event, promoId, el) {
 
     function closeDeletePromoModal() {
         document.getElementById('deletePromoModal').classList.add('hidden');
+    }
+
+    function previewSelectedImage(input) {
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImg = document.getElementById('image-preview-element');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (previewImg) previewImg.src = e.target.result;
+                if (previewContainer) previewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 </script>
 

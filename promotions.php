@@ -145,14 +145,17 @@ require_once 'header.php';
         <!-- Dynamic promotions rendering -->
         <div class="row g-4">
             <?php foreach ($promotions as $index => $promo): ?>
-                <?php $is_large = ($index % 2 === 0); ?>
+                <?php 
+                $is_large = ($index % 2 === 0);
+                $promo_img = !empty($promo['image']) ? $promo['image'] : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
+                ?>
                 <?php if ($is_large): ?>
                     <!-- 7-Column Horizontal Card -->
                     <div class="col-xl-7">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
                                 <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
+                                    <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo_img); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
                                     <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to right, transparent, #201f1f); opacity: 1;"></div>
                                 </div>
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10">
@@ -172,7 +175,7 @@ require_once 'header.php';
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
                             <div class="position-relative overflow-hidden" style="height: 200px;">
-                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo['image']); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
+                                <div class="h-100 w-100" style="background-image: url('<?php echo htmlspecialchars($promo_img); ?>'); background-size: cover; background-position: center; position:absolute;"></div>
                                 <div class="h-100 w-100" style="position:absolute; background: linear-gradient(to bottom, transparent, #201f1f); opacity: 1;"></div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
