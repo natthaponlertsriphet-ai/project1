@@ -251,7 +251,7 @@ if (is_dir($atmosphere_dir)) {
     </div>
 </section>
 
-<!-- 2. FEATURES & HIGHLIGHTS SECTION (จุดเด่น 4 ประการ) -->
+<!-- 2. FEATURES & HIGHLIGHTS SECTION (จุดเด่น 3 ประการ) -->
 <section class="py-5 bg-black position-relative border-bottom border-secondary border-opacity-10">
     <div class="container px-4 px-lg-5 py-4">
         <div class="row g-4 justify-content-center">
@@ -339,24 +339,25 @@ if (is_dir($atmosphere_dir)) {
 
 
 <!-- 7. CALL TO ACTION & LOCATION BANNER SECTION (แผนที่และข้อมูลติดต่อสาขาสันทราย) -->
-<section class="py-5 position-relative" style="background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12) 0%, rgba(10, 10, 10, 1) 90%);">
+<section class="py-5 position-relative" style="background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.15) 0%, rgba(10, 10, 10, 1) 90%);">
     <div class="container px-4 px-lg-5 py-5 text-center">
-        <div class="max-w-3xl mx-auto">
-            <div class="rounded-circle overflow-hidden border border-warning shadow-lg bg-dark mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; box-shadow: 0 0 30px rgba(255, 215, 130, 0.3);">
+        <div class="max-w-4xl mx-auto p-4 p-md-5 rounded-4 border border-warning border-opacity-30 shadow-2xl position-relative overflow-hidden" style="background: rgba(20, 19, 19, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 45px rgba(245, 158, 11, 0.18);">
+            <div class="rounded-circle overflow-hidden border border-warning shadow-lg bg-dark mx-auto mb-4 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px; box-shadow: 0 0 35px rgba(255, 215, 130, 0.4);">
                 <img src="images/logo/755221157_122278964708129427_8713818424547983601_n.jpg" alt="CHIT logo" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             
-            <h2 class="display-5 font-anton text-warning text-uppercase mb-3"><?php echo t("Ready to Reserve Your Spot?", "พร้อมมาสัมผัสบรรยากาศชิตโฮลแล้วหรือยัง?"); ?></h2>
-            <p class="fs-6 text-secondary font-sans mb-4 max-w-xl mx-auto">
+            <h2 class="display-4 font-anton glow-title text-uppercase mb-3"><?php echo t("Ready to Reserve Your Spot?", "พร้อมมาสัมผัสบรรยากาศชิตโฮลแล้วหรือยัง?"); ?></h2>
+            <p class="fs-5 text-light text-opacity-90 font-sans mb-4 max-w-2xl mx-auto" style="line-height: 1.7;">
                 <?php echo t("Join us tonight for craft beers, live acoustic tunes, and great conversations with friends.", "สำรองที่นั่งล่วงหน้าได้ง่ายๆ ผ่านระบบจองโต๊ะออนไลน์ เลือกระบุโซนที่ต้องการได้ทันที"); ?>
             </p>
             
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="reservation" class="btn btn-cta-gold font-anton text-uppercase px-5 py-3 fs-6">
-                    <?php echo t("Reserve A Table Online", "จองโต๊ะออนไลน์ทันที"); ?>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                <a href="reservation" class="btn btn-cta-gold font-anton text-uppercase px-5 py-3 fs-5 shadow-lg d-inline-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined fs-5">calendar_month</span>
+                    <span><?php echo t("Reserve A Table Online", "จองโต๊ะออนไลน์ทันที"); ?></span>
                 </a>
-                <a href="https://maps.app.goo.gl/UKdfCxycHEVRGcST6" target="_blank" class="btn btn-cta-outline font-anton text-uppercase px-4 py-3 fs-6">
-                    <span class="material-symbols-outlined fs-5 align-middle me-1">location_on</span>
+                <a href="https://maps.app.goo.gl/UKdfCxycHEVRGcST6" target="_blank" class="btn btn-cta-outline font-anton text-uppercase px-5 py-3 fs-5 d-inline-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined fs-5">location_on</span>
                     <span><?php echo t("Get Directions (Google Maps)", "ดูแผนที่สาขาสันทราย"); ?></span>
                 </a>
             </div>
