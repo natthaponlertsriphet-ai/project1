@@ -344,34 +344,35 @@ require_once 'header.php';
         font-weight: 600;
     }
     .table-available {
-        background: linear-gradient(145deg, #1f1f24 0%, #131316 100%);
-        color: #ffd782;
-        border-color: rgba(255, 215, 130, 0.25);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(145deg, #059669 0%, #047857 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(52, 211, 153, 0.6) !important;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3) !important;
     }
     .table-available:hover {
-        background: linear-gradient(145deg, #ffd782 0%, #f59e0b 100%) !important;
-        color: #111113 !important;
-        border-color: #ffd782 !important;
+        background: linear-gradient(145deg, #10b981 0%, #059669 100%) !important;
+        color: #ffffff !important;
+        border-color: #34d399 !important;
         transform: translateY(-4px) scale(1.08) !important;
-        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5) !important;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6) !important;
     }
     .table-selected {
         background: linear-gradient(145deg, #ffd782 0%, #f59e0b 100%) !important;
         color: #000000 !important;
-        border-color: #ffffff !important;
+        border: 2px solid #ffffff !important;
         transform: translateY(-4px) scale(1.1) !important;
-        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.75), 0 0 20px rgba(255, 255, 255, 0.4) !important;
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.8), 0 0 20px rgba(255, 255, 255, 0.4) !important;
     }
     .table-reserved {
-        background: linear-gradient(145deg, #2c1214 0%, #1a0a0b 100%) !important;
-        color: #f87171 !important;
-        border-color: rgba(239, 68, 68, 0.3) !important;
+        background: linear-gradient(145deg, #991b1b 0%, #7f1d1d 100%) !important;
+        color: rgba(255, 255, 255, 0.75) !important;
+        border: 1px solid rgba(239, 68, 68, 0.5) !important;
         cursor: not-allowed !important;
-        opacity: 0.65;
+        opacity: 0.8 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
     }
 
-    /* Live Table Status Indicator LED Lights */
+    /* Solid Status Dots for Legend Badge */
     .status-light-dot {
         width: 10px;
         height: 10px;
@@ -382,58 +383,15 @@ require_once 'header.php';
     }
     .status-light-green {
         background-color: #10b981;
-        box-shadow: 0 0 10px #10b981, 0 0 4px #10b981;
-        animation: pulseStatusGreen 2s infinite ease-in-out;
+        box-shadow: 0 0 8px #10b981;
     }
     .status-light-red {
         background-color: #ef4444;
-        box-shadow: 0 0 10px #ef4444, 0 0 4px #ef4444;
-        animation: pulseStatusRed 2s infinite ease-in-out;
+        box-shadow: 0 0 8px #ef4444;
     }
     .status-light-yellow {
         background-color: #ffd782;
-        box-shadow: 0 0 10px #ffd782, 0 0 4px #ffd782;
-        animation: pulseStatusYellow 1.5s infinite ease-in-out;
-    }
-
-    @keyframes pulseStatusGreen {
-        0%, 100% { box-shadow: 0 0 6px #10b981, 0 0 2px #10b981; opacity: 0.9; }
-        50% { box-shadow: 0 0 14px #10b981, 0 0 8px #10b981; opacity: 1; transform: scale(1.15); }
-    }
-    @keyframes pulseStatusRed {
-        0%, 100% { box-shadow: 0 0 6px #ef4444, 0 0 2px #ef4444; opacity: 0.85; }
-        50% { box-shadow: 0 0 14px #ef4444, 0 0 8px #ef4444; opacity: 1; transform: scale(1.15); }
-    }
-    @keyframes pulseStatusYellow {
-        0%, 100% { box-shadow: 0 0 6px #ffd782, 0 0 2px #ffd782; opacity: 0.9; }
-        50% { box-shadow: 0 0 16px #ffd782, 0 0 10px #ffd782; opacity: 1; transform: scale(1.2); }
-    }
-
-    /* Table Button LED Status Indicator Badge */
-    .table-btn .table-status-indicator {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-        z-index: 2;
-    }
-    .table-available .table-status-indicator {
-        background-color: #10b981;
-        box-shadow: 0 0 8px #10b981, 0 0 3px #10b981;
-        animation: pulseStatusGreen 2.5s infinite ease-in-out;
-    }
-    .table-reserved .table-status-indicator {
-        background-color: #ef4444;
-        box-shadow: 0 0 8px #ef4444, 0 0 3px #ef4444;
-        animation: pulseStatusRed 2.5s infinite ease-in-out;
-    }
-    .table-selected .table-status-indicator {
-        background-color: #ffffff;
-        box-shadow: 0 0 12px #ffffff, 0 0 6px #ffd782;
-        animation: pulseStatusYellow 1.5s infinite ease-in-out;
+        box-shadow: 0 0 8px #ffd782;
     }
 
     /* Premium Status Legend Badges */
@@ -681,7 +639,6 @@ require_once 'header.php';
                             data-image="<?php echo htmlspecialchars($table_img_src); ?>"
                             onclick="selectTable(this)"
                         >
-                            <span class="table-status-indicator"></span>
                             <span><?php echo $t['number']; ?></span>
                             <span class="table-capacity"><?php echo $t['capacity']; ?> P</span>
                         </div>
