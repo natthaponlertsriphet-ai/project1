@@ -309,6 +309,9 @@ function is_active($page) {
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-auto gap-2 text-uppercase font-anton">
                     <li class="nav-item">
+                        <a class="nav-link px-3 <?php echo is_active('index'); ?>" href="./"><?php echo t("Home", "หน้าหลัก"); ?></a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link px-3 <?php echo is_active('reservation'); ?>" href="reservation"><?php echo t("Booking", "จองโต๊ะ"); ?></a>
                     </li>
                     <li class="nav-item">
