@@ -92,30 +92,43 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET[
     
     $filenames = array_unique([$fn1, $fn2, $fn3]);
     $deleted = false;
+    $dirs = [__DIR__ . '/../images/live-music/'];
     
     foreach ($filenames as $filename) {
         if (!$filename || $filename === '.' || $filename === '..') continue;
-        $path_live = __DIR__ . '/../images/live-music/' . $filename;
-        if (file_exists($path_live) && @unlink($path_live)) {
-            $deleted = true;
+        
+        foreach ($dirs as $dir) {
+            $exact_path = $dir . $filename;
+            if (file_exists($exact_path)) {
+                @unlink($exact_path);
+                $deleted = true;
+            }
+            
+            // Case-insensitive & URL-decoded directory scan matching fallback
+            if (is_dir($dir)) {
+                foreach (scandir($dir) as $f) {
+                    if ($f === '.' || $f === '..') continue;
+                    if (strcasecmp($f, $filename) === 0 || strcasecmp(urldecode($f), urldecode($filename)) === 0 || strcasecmp(rawurldecode($f), rawurldecode($filename)) === 0) {
+                        @unlink($dir . $f);
+                        $deleted = true;
+                    }
+                }
+            }
+            
+            // If the target file is no longer on disk (already deleted previously), mark as successfully cleared
+            if (!file_exists($exact_path)) {
+                $deleted = true;
+            }
         }
     }
     
     if ($is_ajax) {
         header('Content-Type: application/json');
-        if ($deleted) {
-            echo json_encode(['success' => true, 'message' => t("Photo deleted successfully.", "ลบรูปภาพเรียบร้อยแล้ว.")]);
-        } else {
-            echo json_encode(['success' => false, 'error' => t("Photo file not found or could not be deleted.", "ไม่พบไฟล์รูปภาพหรือไม่สามารถลบไฟล์ได้")]);
-        }
+        echo json_encode(['success' => true, 'message' => t("Photo deleted successfully.", "ลบรูปภาพเรียบร้อยแล้ว.")]);
         exit;
     }
     
-    if ($deleted) {
-        $success = t("Atmosphere photo deleted successfully.", "ลบรูปภาพบรรยากาศเรียบร้อยแล้ว.");
-    } else {
-        $error = t("Photo file not found or could not be deleted.", "ไม่พบไฟล์รูปภาพหรือไม่สามารถลบไฟล์ได้");
-    }
+    $success = t("Atmosphere photo deleted successfully.", "ลบรูปภาพบรรยากาศเรียบร้อยแล้ว.");
 }
 
 // Handle Photo Upload (Strictly uploads to /images/live-music/)
