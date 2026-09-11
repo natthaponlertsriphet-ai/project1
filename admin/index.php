@@ -273,10 +273,10 @@ try {
             $sql .= " AND b.reservation_date = ?";
             $params[] = $filter_val;
         } elseif ($filter_type === 'month') {
-            $sql .= " AND SUBSTRING(b.reservation_date, 1, 7) = ?";
+            $sql .= " AND SUBSTR(b.reservation_date, 1, 7) = ?";
             $params[] = $filter_val;
         } elseif ($filter_type === 'year') {
-            $sql .= " AND SUBSTRING(b.reservation_date, 1, 4) = ?";
+            $sql .= " AND SUBSTR(b.reservation_date, 1, 4) = ?";
             $params[] = $filter_val;
         }
     }
@@ -296,10 +296,10 @@ try {
             $sql .= " AND b.reservation_date = ?";
             $params[] = $filter_val;
         } elseif ($filter_type === 'month') {
-            $sql .= " AND SUBSTRING(b.reservation_date, 1, 7) = ?";
+            $sql .= " AND SUBSTR(b.reservation_date, 1, 7) = ?";
             $params[] = $filter_val;
         } elseif ($filter_type === 'year') {
-            $sql .= " AND SUBSTRING(b.reservation_date, 1, 4) = ?";
+            $sql .= " AND SUBSTR(b.reservation_date, 1, 4) = ?";
             $params[] = $filter_val;
         }
     }
@@ -412,11 +412,11 @@ if ($analytics_mode === 'today') {
     $analytics_params[] = $analytics_end;
     $analytics_label_summary = t("Custom Range:", "ช่วงวันที่:") . " " . formatDateStr($analytics_start) . " - " . formatDateStr($analytics_end);
 } elseif ($analytics_mode === 'month' && !empty($analytics_month)) {
-    $analytics_where_clauses[] = "SUBSTRING(reservation_date, 1, 7) = ?";
+    $analytics_where_clauses[] = "SUBSTR(reservation_date, 1, 7) = ?";
     $analytics_params[] = $analytics_month;
     $analytics_label_summary = t("Month:", "ประจำเดือน:") . " " . formatMonth($analytics_month);
 } elseif ($analytics_mode === 'year' && !empty($analytics_year)) {
-    $analytics_where_clauses[] = "SUBSTRING(reservation_date, 1, 4) = ?";
+    $analytics_where_clauses[] = "SUBSTR(reservation_date, 1, 4) = ?";
     $analytics_params[] = $analytics_year;
     $analytics_label_summary = t("Year:", "ประจำปี:") . " " . $analytics_year;
 }
@@ -472,7 +472,7 @@ try {
 
 try {
     $sql = "
-        SELECT SUBSTRING(reservation_date, 1, 7) as month, COUNT(*) as total, 
+        SELECT SUBSTR(reservation_date, 1, 7) as month, COUNT(*) as total, 
                SUM(CASE WHEN reservation_status = 'CONFIRMED' THEN 1 ELSE 0 END) as confirmed,
                SUM(CASE WHEN reservation_status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
                SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
@@ -491,7 +491,7 @@ try {
 
 try {
     $sql = "
-        SELECT SUBSTRING(reservation_date, 1, 4) as year, COUNT(*) as total, 
+        SELECT SUBSTR(reservation_date, 1, 4) as year, COUNT(*) as total, 
                SUM(CASE WHEN reservation_status = 'CONFIRMED' THEN 1 ELSE 0 END) as confirmed,
                SUM(CASE WHEN reservation_status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
                SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
@@ -1007,7 +1007,7 @@ foreach ($chart_monthly as $m) {
             }
             
             // Monthly dots
-            $stmt = $pdo->prepare("SELECT SUBSTRING(reservation_date, 1, 7) as month, COUNT(*) as count FROM reservation WHERE reservation_status = ? AND reservation_date LIKE ? GROUP BY month");
+            $stmt = $pdo->prepare("SELECT SUBSTR(reservation_date, 1, 7) as month, COUNT(*) as count FROM reservation WHERE reservation_status = ? AND reservation_date LIKE ? GROUP BY month");
             $stmt->execute([$status_db, "$view_year-%"]);
             foreach ($stmt->fetchAll() as $r) {
                 $event_months[$r['month']] = (int)$r['count'];
