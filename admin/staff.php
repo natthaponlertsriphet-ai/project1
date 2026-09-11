@@ -1,6 +1,24 @@
 <?php
 require_once '../db.php';
-require_once 'admin_header.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Security Check: Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// Temporary Translation Helper (defined locally before admin_header.php load)
+if (!function_exists('t')) {
+    function t($en, $th) {
+        $lang = $_SESSION['lang'] ?? 'th';
+        return $lang === 'th' ? $th : $en;
+    }
+}
+
 
 $error = null;
 $success = null;
@@ -158,6 +176,8 @@ $stmt = $pdo->query("
     ORDER BY role, name
 ");
 $all_staff = $stmt->fetchAll();
+
+require_once 'admin_header.php';
 ?>
 
 <div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">

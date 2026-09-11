@@ -1,6 +1,6 @@
 <?php
 require_once '../db.php';
-require_once 'admin_header.php';
+
 
 function getTableImgUrl($path, $number = '') {
     if ($path) {

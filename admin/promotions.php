@@ -1,6 +1,24 @@
 <?php
 require_once '../db.php';
-require_once 'admin_header.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Security Check: Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// Temporary Translation Helper (defined locally before admin_header.php load)
+if (!function_exists('t')) {
+    function t($en, $th) {
+        $lang = $_SESSION['lang'] ?? 'th';
+        return $lang === 'th' ? $th : $en;
+    }
+}
+
 
 $error = null;
 $success = null;
@@ -188,6 +206,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 // Fetch all promotions
 $stmt = $pdo->query("SELECT promo_id AS id, promo_title AS title, description, offer, promo_period AS period, image_path AS image, is_active AS active FROM promotion ORDER BY is_active DESC, promo_id");
 $all_promos = $stmt->fetchAll();
+
+require_once 'admin_header.php';
 ?>
 
 <div class="flex justify-between items-center border-b border-zinc-800 pb-4 mb-6">
