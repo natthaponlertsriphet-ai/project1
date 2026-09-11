@@ -245,6 +245,7 @@ function seed_database_records($pdo, $is_sqlite = false) {
 
         $stmt = $pdo->prepare("INSERT INTO staff (staff_id, staff_email, staff_password_hash, staff_name, role) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute(['staff-1', 'staff@chithole.com', $staff_pw, 'Staff Member', 'STAFF']);
+        $stmt->execute(['admin_6a97a8352d2ac', 'nook@chithole.com', '$2y$10$M0Mun8JZS7t6s6YdGcLaTuNQzTkJM4ShdpZbqxZ.Jy3ZHrdmqI3gm', 'natthapon', 'STAFF']);
     }
 
     // Seed tables (20 Tables with image paths)
