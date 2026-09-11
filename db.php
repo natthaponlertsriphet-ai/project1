@@ -186,7 +186,7 @@ function init_sqlite_db($pdo) {
         role TEXT DEFAULT 'STAFF'
     );");
 
-    $pdo->exec("CREATE TABLE IF NOT EXISTS \"table\" (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `table` (
         table_id TEXT PRIMARY KEY,
         table_number TEXT UNIQUE NOT NULL,
         zone TEXT NOT NULL,
