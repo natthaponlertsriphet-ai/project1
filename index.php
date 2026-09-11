@@ -243,6 +243,14 @@ if (is_dir($atmosphere_dir)) {
                                 <span class="material-symbols-outlined fs-5">sports_bar</span>
                                 <span><?php echo t("Explore Tap List", "ดูรายการเครื่องดื่ม"); ?></span>
                             </a>
+                            <a href="promotions" class="btn btn-cta-outline font-anton text-uppercase d-inline-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined fs-5">local_offer</span>
+                                <span><?php echo t("View Promotions", "ดูรายการโปรโมชัน"); ?></span>
+                            </a>
+                            <a href="live-music" class="btn btn-cta-outline font-anton text-uppercase d-inline-flex align-items-center gap-2">
+                                <span class="material-symbols-outlined fs-5">queue_music</span>
+                                <span><?php echo t("Live Music Schedule", "ดูตารางเวลาการแสดงดนตรีสด"); ?></span>
+                            </a>
                         </div>
                     </div>
                 </div>
