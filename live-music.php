@@ -26,27 +26,18 @@ foreach ($music_events as $event) {
     $events_by_day[$event['show_day']][] = $event;
 }
 
-// Fetch dynamic gallery photos (scan both /images/live-music/ and /images/atmosphere/)
-$dir_live = __DIR__ . '/images/live-music';
-$dir_atmo = __DIR__ . '/images/atmosphere';
+// Fetch dynamic gallery photos (strictly read from /images/live-music/)
+$gallery_dir = __DIR__ . '/images/live-music';
 $gallery_images = [];
-$seen_files = [];
 
-if (is_dir($dir_live)) {
-    foreach (scandir($dir_live) as $file) {
+if (is_dir($gallery_dir)) {
+    $files = scandir($gallery_dir);
+    foreach ($files as $file) {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && !isset($seen_files[$file])) {
-            $seen_files[$file] = true;
-            $gallery_images[] = ['src' => 'images/live-music/' . $file];
-        }
-    }
-}
-if (is_dir($dir_atmo)) {
-    foreach (scandir($dir_atmo) as $file) {
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && !isset($seen_files[$file])) {
-            $seen_files[$file] = true;
-            $gallery_images[] = ['src' => 'images/atmosphere/' . $file];
+        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+            $gallery_images[] = [
+                'src' => 'images/live-music/' . $file
+            ];
         }
     }
 }
