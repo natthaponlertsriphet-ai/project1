@@ -123,7 +123,7 @@ require_once 'header.php';
         background: rgba(14, 14, 18, 0.85);
         border: 1px solid rgba(255, 215, 130, 0.25);
         border-radius: 16px;
-        padding: 12px 16px;
+        padding: 16px 20px;
         box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(10px);
     }
@@ -363,11 +363,11 @@ require_once 'header.php';
                 <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4"><?php echo t("Weekly Gigs Timetable", "ตารางแสดงรอบดนตรีสด"); ?></h3>
                 
                 <!-- Day Select buttons -->
-                <div class="day-tabs-wrapper d-flex flex-wrap gap-2.5 mb-4 align-items-center">
+                <div class="day-tabs-wrapper d-flex flex-wrap gap-3 gap-md-4 mb-4 align-items-center">
                     <?php foreach ($days_list as $d): ?>
                         <button 
                             id="btn-day-<?php echo $d; ?>"
-                            class="btn day-tab-btn px-3.5 py-2 <?php echo $d === $current_day ? 'active' : ''; ?>"
+                            class="btn day-tab-btn px-4 py-2.5 <?php echo $d === $current_day ? 'active' : ''; ?>"
                             onclick="selectActiveDay('<?php echo $d; ?>')"
                         >
                             <?php 
