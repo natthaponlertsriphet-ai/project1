@@ -21,51 +21,15 @@ try {
     $music_schedule = [];
 }
 
-// Collect all available gallery images for atmosphere section
-$gallery_dir = __DIR__ . '/images/live-music';
+// Collect atmosphere gallery images
+$atmosphere_dir = __DIR__ . '/images/atmosphere';
 $gallery_images = [];
-if (is_dir($gallery_dir)) {
-    $files = scandir($gallery_dir);
-    foreach ($files as $file) {
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && strpos($file, 'uploaded_') === false) {
-            $gallery_images[] = 'images/live-music/' . $file;
-        }
-    }
-}
-
-// Add home-booking images to gallery
-$home_booking_dir = __DIR__ . '/images/home-booking';
-if (is_dir($home_booking_dir)) {
-    $files = scandir($home_booking_dir);
+if (is_dir($atmosphere_dir)) {
+    $files = scandir($atmosphere_dir);
     foreach ($files as $file) {
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-            $gallery_images[] = 'images/home-booking/' . $file;
-        }
-    }
-}
-
-// Add table images to gallery
-$tables_dir = __DIR__ . '/images/tables';
-if (is_dir($tables_dir)) {
-    $files = scandir($tables_dir);
-    foreach ($files as $file) {
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) && strpos($file, 'uploaded_') !== false) {
-            $gallery_images[] = 'images/tables/' . $file;
-        }
-    }
-}
-
-// Add hero images to gallery
-$hero_dir = __DIR__ . '/images/hero';
-if (is_dir($hero_dir)) {
-    $files = scandir($hero_dir);
-    foreach ($files as $file) {
-        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-            $gallery_images[] = 'images/hero/' . $file;
+            $gallery_images[] = 'images/atmosphere/' . $file;
         }
     }
 }
