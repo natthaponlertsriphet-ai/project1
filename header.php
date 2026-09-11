@@ -172,12 +172,19 @@ function is_active($page) {
         @keyframes fadeInSlide {
             from { opacity: 0; transform: translateY(-4px) scale(0.98); }
         /* Header Navbar Staggered Scroll Entrance Reveal Animation */
+        .brand-logo-badge,
+        .brand-title-text,
+        .brand-sub-text,
         .nav-reveal-item {
+            display: inline-block;
             opacity: 0;
-            transform: translateY(-16px) scale(0.94);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-22px) scale(0.85);
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform;
         }
+        .brand-logo-badge.nav-revealed,
+        .brand-title-text.nav-revealed,
+        .brand-sub-text.nav-revealed,
         .nav-reveal-item.nav-revealed {
             opacity: 1;
             transform: translateY(0) scale(1);
@@ -185,13 +192,15 @@ function is_active($page) {
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Staggered 70ms Entrance Reveal for Navbar Elements (Logo, Title, Subtitle, Nav Items)
-        var navItems = document.querySelectorAll('.brand-logo-badge, .brand-title-text, .brand-sub-text, .navbar-nav .nav-item, .navbar-custom .d-flex.align-items-center > a, .navbar-custom .d-flex.align-items-center > button');
-        navItems.forEach(function(el, index) {
-            el.classList.add('nav-reveal-item');
-            setTimeout(function() {
-                el.classList.add('nav-revealed');
-            }, 80 + (index * 70));
+        // Staggered Entrance Reveal for Navbar Brand Elements (Logo, Title, Subtitle, Nav Links)
+        requestAnimationFrame(function() {
+            var navItems = document.querySelectorAll('.brand-logo-badge, .brand-title-text, .brand-sub-text, .navbar-nav .nav-item, .navbar-custom .d-flex.align-items-center > a, .navbar-custom .d-flex.align-items-center > button');
+            navItems.forEach(function(el, index) {
+                el.classList.add('nav-reveal-item');
+                setTimeout(function() {
+                    el.classList.add('nav-revealed');
+                }, 100 + (index * 90));
+            });
         });
 
         // Header scroll handler to hide/show extra elements (e.g. Admin button) when at top vs scrolled down
