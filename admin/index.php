@@ -560,6 +560,360 @@ try {
     </div>
 <?php endif; ?>
 
+<!-- Reservation Management Tabs -->
+<div class="flex gap-2 mb-6 border-b border-zinc-800 pb-px flex-wrap">
+    <?php 
+    $p_count = count($pending_bookings);
+    $c_count = count($confirmed_bookings);
+    $comp_count = $comp_total_count;
+    $cr_count = count($cancel_requests_bookings);
+    $cl_count = $cl_total_count;
+    $is_admin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN';
+    ?>
+
+    <!-- Pending Requests Tab -->
+    <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-amber-400 border-amber-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
+        <?php echo t("Pending Requests", "จัดการการอนุมัติยื่นยันการจอง"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
+    </a>
+
+    <!-- Confirmed Bookings Tab -->
+    <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-400 border-emerald-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
+        <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (<span id="count-confirmed"><?php echo $c_count; ?></span>)
+    </a>
+
+    <!-- Completed Bookings Tab -->
+    <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
+        <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (<span id="count-completed"><?php echo $comp_count; ?></span>)
+    </a>
+
+    <!-- Cancel Requests Tab -->
+    <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-400 border-sky-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
+        <?php echo t("Cancel Requests", "จัดการยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
+    </a>
+
+    <!-- Cancelled Bookings Tab -->
+    <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-400 border-rose-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
+        <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (<span id="count-cancelled"><?php echo $cl_count; ?></span>)
+    </a>
+</div>
+
+<!-- Reservations Table Container -->
+<div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6 mb-8">
+    <?php if (in_array($active_tab, ['completed', 'cancelled'])): ?>
+        <?php
+        // 1. Parse filter values
+        $filter_type = $_GET['filter_type'] ?? 'all';
+        $selected_date = $_GET['filter_val_day'] ?? date('Y-m-d');
+        if (strtotime($selected_date) === false) {
+            $selected_date = date('Y-m-d');
+        }
+        
+        $selected_month = $_GET['filter_val_month'] ?? date('Y-m');
+        if (strtotime($selected_month . '-01') === false) {
+            $selected_month = date('Y-m');
+        }
+        
+        $selected_year = $_GET['filter_val_year'] ?? date('Y');
+        
+        // Determine filter value based on active filter type
+        $filter_val = '';
+        if ($filter_type === 'day') {
+            $filter_val = $selected_date;
+        } elseif ($filter_type === 'month') {
+            $filter_val = $selected_month;
+        } elseif ($filter_type === 'year') {
+            $filter_val = $selected_year;
+        }
+        
+        // 2. Prepare variables for Calendar Grid (Daily view)
+        $view_month = $_GET['view_month'] ?? substr($selected_date, 0, 7);
+        if (strtotime($view_month . '-01') === false) {
+            $view_month = substr($selected_date, 0, 7);
+        }
+        $c_year = (int)substr($view_month, 0, 4);
+        $c_month = (int)substr($view_month, 5, 2);
+        
+        $first_day_time = strtotime("$c_year-$c_month-01");
+        $days_in_month = (int)date('t', $first_day_time);
+        $first_day_of_week = (int)date('w', $first_day_time); // 0 (Sun) to 6 (Sat)
+        
+        $prev_month = date('Y-m', strtotime('-1 month', $first_day_time));
+        $next_month = date('Y-m', strtotime('+1 month', $first_day_time));
+        
+        // 3. Prepare variables for Month Grid (Monthly view)
+        $view_year = (int)($_GET['view_year'] ?? substr($selected_month, 0, 4));
+        $prev_year = $view_year - 1;
+        $next_year = $view_year + 1;
+        
+        // 4. Fetch days with events (bookings with active status) for calendar dots
+        $status_db = ($active_tab === 'completed') ? 'COMPLETED' : 'CANCELLED';
+        $event_days = [];
+        $event_months = [];
+        try {
+            // Daily dots
+            $stmt = $pdo->prepare("SELECT reservation_date AS date, COUNT(*) as count FROM reservation WHERE reservation_status = ? AND reservation_date LIKE ? GROUP BY reservation_date");
+            $stmt->execute([$status_db, "$view_month-%"]);
+            foreach ($stmt->fetchAll() as $r) {
+                $event_days[$r['date']] = (int)$r['count'];
+            }
+            
+            // Monthly dots
+            $stmt = $pdo->prepare("SELECT SUBSTR(reservation_date, 1, 7) as month, COUNT(*) as count FROM reservation WHERE reservation_status = ? AND reservation_date LIKE ? GROUP BY month");
+            $stmt->execute([$status_db, "$view_year-%"]);
+            foreach ($stmt->fetchAll() as $r) {
+                $event_months[$r['month']] = (int)$r['count'];
+            }
+        } catch (Exception $e) {}
+        ?>
+        
+        <div class="mb-6 pb-6 border-b border-zinc-800 flex flex-col md:flex-row gap-6 items-start w-full">
+            <div class="w-full md:w-auto">
+                <!-- iOS Segmented Control -->
+                <div class="grid grid-cols-4 bg-zinc-950 p-1 rounded-xl w-full md:w-max border border-zinc-800">
+                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=all" 
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'all' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
+                        <?php echo t("Show All", "ทั้งหมด"); ?>
+                    </a>
+                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $view_month; ?>" 
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'day' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
+                        <?php echo t("Daily", "รายวัน"); ?>
+                    </a>
+                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $view_year; ?>" 
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'month' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
+                        <?php echo t("Monthly", "รายเดือน"); ?>
+                    </a>
+                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=year&filter_val_year=<?php echo $selected_year; ?>" 
+                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'year' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
+                        <?php echo t("Yearly", "รายปี"); ?>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Dynamic iOS Calendar Panel -->
+            <div class="w-full max-w-[340px] bg-white p-4 rounded-2xl border border-zinc-200 shadow-lg text-zinc-950">
+                <?php if ($filter_type === 'all'): ?>
+                    <div class="text-zinc-500 text-xs font-mono text-center py-6">
+                        <?php echo t("Showing all records without date filtering.", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>
+                    </div>
+                
+                <?php elseif ($filter_type === 'day'): ?>
+                    <!-- iPhone Month Grid Calendar -->
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <span class="text-xs font-bold text-zinc-800">
+                            <?php 
+                            $thai_month_names = [
+                                1 => 'มกราคม', 2 => 'กุมภาพันธ์', 3 => 'มีนาคม', 4 => 'เมษายน', 5 => 'พฤษภาคม', 6 => 'มิถุนายน',
+                                7 => 'กรกฎาคม', 8 => 'สิงหาคม', 9 => 'กันยายน', 10 => 'ตุลาคม', 11 => 'พฤศจิกายน', 12 => 'ธันวาคม'
+                            ];
+                            echo $thai_month_names[$c_month] . " " . ($c_year + 543);
+                            ?>
+                        </span>
+                        <div class="flex gap-1">
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $prev_month; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            </a>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $next_month; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-7 gap-1 text-center font-mono text-[10px] text-zinc-400 mb-2 font-bold uppercase">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+
+                    <div class="grid grid-cols-7 gap-1 text-center font-mono text-xs">
+                        <?php for ($i = 0; $i < $first_day_of_week; $i++): ?>
+                            <div class="py-1.5 text-transparent">.</div>
+                        <?php endfor; ?>
+                        
+                        <?php for ($day = 1; $day <= $days_in_month; $day++): ?>
+                            <?php 
+                            $d_str = sprintf("%02d", $day);
+                            $date_key = "$view_month-$d_str";
+                            $is_selected = ($date_key === $selected_date);
+                            $has_event = isset($event_days[$date_key]);
+                            ?>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $date_key; ?>&view_month=<?php echo $view_month; ?>" 
+                               class="py-1.5 rounded-lg font-medium transition-all relative flex items-center justify-center text-decoration-none
+                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
+                                <span><?php echo $day; ?></span>
+                                <?php if ($has_event): ?>
+                                    <span class="absolute bottom-0.5 w-1 h-1 rounded-full <?php echo $is_selected ? 'bg-zinc-950' : 'bg-amber-500'; ?>"></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php endfor; ?>
+                    </div>
+
+                <?php elseif ($filter_type === 'month'): ?>
+                    <!-- iPhone Year Grid Calendar -->
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <span class="text-xs font-bold text-zinc-800">
+                            <?php echo t("Year ", "ปี ค.ศ. ") . $view_year . " (" . ($view_year + 543) . ")"; ?>
+                        </span>
+                        <div class="flex gap-1">
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $prev_year; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_left</span>
+                            </a>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $next_year; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
+                                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
+                        <?php 
+                        $m_short = ['01'=>'ม.ค.', '02'=>'ก.พ.', '03'=>'มี.ค.', '04'=>'เม.ย.', '05'=>'พ.ค.', '06'=>'มิ.ย.', '07'=>'ก.ค.', '08'=>'ส.ค.', '09'=>'ก.ย.', '10'=>'ต.ค.', '11'=>'พ.ย.', '12'=>'ธ.ค.'];
+                        foreach ($m_short as $m_num => $m_lbl): 
+                            $m_key = "$view_year-$m_num";
+                            $is_selected = ($m_key === $selected_month);
+                            $has_event = isset($event_months[$m_key]);
+                        ?>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $m_key; ?>&view_year=<?php echo $view_year; ?>" 
+                               class="py-3 rounded-xl font-medium transition-all relative flex flex-col items-center justify-center text-decoration-none
+                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
+                                <span><?php echo $m_lbl; ?></span>
+                                <?php if ($has_event): ?>
+                                    <span class="absolute bottom-1 w-1 h-1 rounded-full <?php echo $is_selected ? 'bg-zinc-950' : 'bg-amber-500'; ?>"></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+
+                <?php elseif ($filter_type === 'year'): ?>
+                    <!-- iPhone Yearly Grid Picker -->
+                    <div class="text-xs font-bold text-zinc-800 mb-3 px-1">
+                        <?php echo t("Select Year", "เลือกปีสถิติสรุป"); ?>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-center font-mono text-xs">
+                        <?php 
+                        $current_yr = (int)date('Y');
+                        for ($y = $current_yr; $y >= $current_yr - 5; $y--):
+                            $is_selected = ((string)$y === (string)$selected_year);
+                        ?>
+                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=year&filter_val_year=<?php echo $y; ?>" 
+                               class="py-3 rounded-xl font-medium transition-all relative flex flex-col items-center justify-center text-decoration-none
+                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
+                                <span><?php echo $y; ?> (<?php echo $y + 543; ?>)</span>
+                            </a>
+                        <?php endfor; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <div class="shadcn-table-container">
+        <table class="shadcn-table">
+            <thead>
+                <tr class="border-b border-zinc-800">
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Customer", "ชื่อลูกค้า"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Phone", "เบอร์โทรศัพท์"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Date & Time", "วัน / เวลา"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Table", "โต๊ะ"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Pax", "จำนวนคน"); ?></th>
+                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 25%;"><?php echo t("Review Operations", "การจัดการอนุมัติ"); ?></th>
+                </tr>
+            </thead>
+            <tbody class="font-sans text-sm text-zinc-300">
+                <?php if (empty($display_bookings)): ?>
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-zinc-400 font-medium">
+                            <?php 
+                            if ($active_tab === 'pending') {
+                                echo t("No pending reservations at the moment.", "ขณะนี้ไม่มีคิวจองโต๊ะที่รอตรวจสอบ");
+                            } elseif ($active_tab === 'confirmed') {
+                                echo t("No confirmed reservations found.", "ยังไม่มีคิวจองโต๊ะที่ยืนยันแล้ว");
+                            } elseif ($active_tab === 'cancel_requests') {
+                                echo t("No cancellation requests at the moment.", "ขณะนี้ไม่มีคำขอยกเลิกการจอง");
+                            } else {
+                                echo t("No cancelled reservations.", "ยังไม่มีคิวจองโต๊ะที่ถูกยกเลิก");
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($display_bookings as $b): ?>
+                        <tr>
+                            <td class="font-semibold text-zinc-100">
+                                <?php echo htmlspecialchars($b['customer_name']); ?>
+                                <?php if (($active_tab === 'cancelled' || $active_tab === 'cancel_requests') && !empty($b['cancel_reason'])): ?>
+                                    <div class="text-rose-400 text-xs mt-1 font-normal font-sans">
+                                        <strong><?php echo t("Reason", "หมายเหตุ"); ?>:</strong> <?php echo htmlspecialchars($b['cancel_reason']); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-zinc-400"><?php echo htmlspecialchars($b['customer_phone']); ?></td>
+                            <td class="text-zinc-400">
+                                <span class="text-zinc-200"><?php echo htmlspecialchars($b['date']); ?></span> @ <?php echo htmlspecialchars($b['time_slot']); ?>
+                                <?php if ($b['date'] === date('Y-m-d')): ?>
+                                    <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-1.5 py-0.5 rounded text-[9px] block mt-1 w-max font-bold font-sans">
+                                        <?php echo t("TODAY", "วันนี้"); ?>
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center text-warning font-anton text-lg">
+                                <?php echo htmlspecialchars($b['table_number'] ?? 'N/A'); ?>
+                                <span class="text-[10px] text-zinc-500 block font-sans font-medium tracking-normal">
+                                    <?php 
+                                    if ($b['table_zone'] === 'INDOOR') echo t("Indoor AC", "ห้องแอร์");
+                                    elseif ($b['table_zone'] === 'OUTDOOR') echo t("Outdoor Breeze", "ด้านนอก");
+                                    elseif ($b['table_zone'] === 'STAGE') echo t("Stage Front", "หน้าเวที");
+                                    elseif ($b['table_zone'] === 'INDOOR_WINDOW') echo t("Indoor Window", "ติดกระจก");
+                                    elseif ($b['table_zone'] === 'INDOOR_CENTER') echo t("Indoor Center", "ตรงกลาง");
+                                    elseif ($b['table_zone'] === 'BAR') echo t("Bar Front", "หน้าบาร์");
+                                    elseif ($b['table_zone'] === 'WALKWAY') echo t("Walkway Zone", "โซนทางเดิน");
+                                    else echo htmlspecialchars($b['table_zone'] ?? 'N/A');
+                                    ?>
+                                </span>
+                            </td>
+                            <td class="text-center text-zinc-400"><?php echo $b['pax']; ?> Pax</td>
+                            <td class="text-center">
+                                <div class="flex justify-center gap-2">
+                                    <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
+                                        <!-- Admin View: Only static status badges -->
+                                        <?php if ($active_tab === 'pending'): ?>
+                                            <span class="badge bg-amber-950 text-amber-400 border border-amber-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Pending Approval", "รออนุมัติ"); ?></span>
+                                        <?php elseif ($active_tab === 'confirmed'): ?>
+                                            <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Approved", "อนุมัติแล้ว"); ?></span>
+                                        <?php elseif ($active_tab === 'completed'): ?>
+                                            <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
+                                        <?php elseif ($active_tab === 'cancel_requests'): ?>
+                                            <span class="badge bg-sky-950 text-sky-400 border border-sky-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancel Requested", "ส่งคำขอยกเลิกแล้ว"); ?></span>
+                                        <?php else: ?>
+                                            <span class="badge bg-rose-950 text-rose-400 border border-rose-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <!-- Staff View: Interactive action buttons -->
+                                        <?php if ($active_tab === 'pending'): ?>
+                                            <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=pending" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Confirm", "ยืนยัน"); ?></a>
+                                            <a href="javascript:void(0)" onclick="cancelBooking('<?php echo $b['id']; ?>', 'pending')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Cancel", "ปฏิเสธ"); ?></a>
+                                        <?php elseif ($active_tab === 'confirmed'): ?>
+                                            <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Approved", "อนุมัติแล้ว"); ?></span>
+                                            <a href="javascript:void(0)" onclick="confirmClearTable('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['table_number'] ?? $b['table_id'] ?? '-'); ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-success py-1.5 px-3 text-xs uppercase font-anton tracking-wider me-2"><?php echo t("Clear Table", "เคลียร์โต๊ะ"); ?></a>
+                                            <a href="javascript:void(0)" onclick="cancelBooking('<?php echo $b['id']; ?>', 'confirmed')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Cancel", "ยกเลิก"); ?></a>
+                                        <?php elseif ($active_tab === 'completed'): ?>
+                                            <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
+                                        <?php elseif ($active_tab === 'cancel_requests'): ?>
+                                            <a href="javascript:void(0)" onclick="confirmApproveCancel('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Approve Cancel", "ยืนยันยกเลิก"); ?></a>
+                                            <a href="index.php?action=reject_cancel&booking_id=<?php echo $b['id']; ?>&tab=cancel_requests" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Reject Request", "คงสิทธิ์การจอง"); ?></a>
+                                        <?php else: ?>
+                                            <span class="badge bg-rose-950 text-rose-400 border border-rose-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></span>
+                                            <?php if (isset($b['date']) && $b['date'] >= date('Y-m-d')): ?>
+                                                <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=cancelled" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Re-confirm", "อนุมัติใหม่"); ?></a>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
 <!-- iOS / iPhone Style Analytics Calendar Control Panel -->
 <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6 mb-6 backdrop-blur-md">
@@ -902,359 +1256,7 @@ foreach ($chart_monthly as $m) {
 </div>
 <?php endif; ?>
 
-<!-- Reservation Management Tabs -->
-<div class="flex gap-2 mb-6 border-b border-zinc-800 pb-px flex-wrap">
-    <?php 
-    $p_count = count($pending_bookings);
-    $c_count = count($confirmed_bookings);
-    $comp_count = $comp_total_count;
-    $cr_count = count($cancel_requests_bookings);
-    $cl_count = $cl_total_count;
-    $is_admin = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN';
-    ?>
 
-    <!-- Pending Requests Tab -->
-    <a href="index.php?tab=pending" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'pending' ? 'text-amber-400 border-amber-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Pending Requests", "จัดการการอนุมัติยื่นยันการจอง"); ?> (<span id="count-pending"><?php echo $p_count; ?></span>)
-    </a>
-
-    <!-- Confirmed Bookings Tab -->
-    <a href="index.php?tab=confirmed" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'confirmed' ? 'text-emerald-400 border-emerald-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Confirmed Bookings", "รายการที่ยืนยันแล้ว"); ?> (<span id="count-confirmed"><?php echo $c_count; ?></span>)
-    </a>
-
-    <!-- Completed Bookings Tab -->
-    <a href="index.php?tab=completed" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'completed' ? 'text-emerald-400 border-emerald-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?> (<span id="count-completed"><?php echo $comp_count; ?></span>)
-    </a>
-
-    <!-- Cancel Requests Tab -->
-    <a href="index.php?tab=cancel_requests" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancel_requests' ? 'text-sky-400 border-sky-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Cancel Requests", "จัดการยกเลิกการจอง"); ?> (<span id="count-cancel_requests"><?php echo $cr_count; ?></span>)
-    </a>
-
-    <!-- Cancelled Bookings Tab -->
-    <a href="index.php?tab=cancelled" class="py-2.5 px-4 text-xs font-anton uppercase tracking-wider border-b-2 transition-all <?php echo $active_tab === 'cancelled' ? 'text-rose-400 border-rose-400 font-bold' : 'text-zinc-300 border-transparent hover:text-white'; ?>">
-        <?php echo t("Cancelled Bookings", "รายการที่ถูกยกเลิก"); ?> (<span id="count-cancelled"><?php echo $cl_count; ?></span>)
-    </a>
-</div>
-
-<!-- Reservations Table Container -->
-<div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
-    <?php if (in_array($active_tab, ['completed', 'cancelled'])): ?>
-        <?php
-        // 1. Parse filter values
-        $filter_type = $_GET['filter_type'] ?? 'all';
-        $selected_date = $_GET['filter_val_day'] ?? date('Y-m-d');
-        if (strtotime($selected_date) === false) {
-            $selected_date = date('Y-m-d');
-        }
-        
-        $selected_month = $_GET['filter_val_month'] ?? date('Y-m');
-        if (strtotime($selected_month . '-01') === false) {
-            $selected_month = date('Y-m');
-        }
-        
-        $selected_year = $_GET['filter_val_year'] ?? date('Y');
-        
-        // Determine filter value based on active filter type
-        $filter_val = '';
-        if ($filter_type === 'day') {
-            $filter_val = $selected_date;
-        } elseif ($filter_type === 'month') {
-            $filter_val = $selected_month;
-        } elseif ($filter_type === 'year') {
-            $filter_val = $selected_year;
-        }
-        
-        // 2. Prepare variables for Calendar Grid (Daily view)
-        $view_month = $_GET['view_month'] ?? substr($selected_date, 0, 7);
-        if (strtotime($view_month . '-01') === false) {
-            $view_month = substr($selected_date, 0, 7);
-        }
-        $c_year = (int)substr($view_month, 0, 4);
-        $c_month = (int)substr($view_month, 5, 2);
-        
-        $first_day_time = strtotime("$c_year-$c_month-01");
-        $days_in_month = (int)date('t', $first_day_time);
-        $first_day_of_week = (int)date('w', $first_day_time); // 0 (Sun) to 6 (Sat)
-        
-        $prev_month = date('Y-m', strtotime('-1 month', $first_day_time));
-        $next_month = date('Y-m', strtotime('+1 month', $first_day_time));
-        
-        // 3. Prepare variables for Month Grid (Monthly view)
-        $view_year = (int)($_GET['view_year'] ?? substr($selected_month, 0, 4));
-        $prev_year = $view_year - 1;
-        $next_year = $view_year + 1;
-        
-        // 4. Fetch days with events (bookings with active status) for calendar dots
-        $status_db = ($active_tab === 'completed') ? 'COMPLETED' : 'CANCELLED';
-        $event_days = [];
-        $event_months = [];
-        try {
-            // Daily dots
-            $stmt = $pdo->prepare("SELECT reservation_date AS date, COUNT(*) as count FROM reservation WHERE reservation_status = ? AND reservation_date LIKE ? GROUP BY reservation_date");
-            $stmt->execute([$status_db, "$view_month-%"]);
-            foreach ($stmt->fetchAll() as $r) {
-                $event_days[$r['date']] = (int)$r['count'];
-            }
-            
-            // Monthly dots
-            $stmt = $pdo->prepare("SELECT SUBSTR(reservation_date, 1, 7) as month, COUNT(*) as count FROM reservation WHERE reservation_status = ? AND reservation_date LIKE ? GROUP BY month");
-            $stmt->execute([$status_db, "$view_year-%"]);
-            foreach ($stmt->fetchAll() as $r) {
-                $event_months[$r['month']] = (int)$r['count'];
-            }
-        } catch (Exception $e) {}
-        ?>
-        
-        <div class="mb-6 pb-6 border-b border-zinc-800 flex flex-col md:flex-row gap-6 items-start w-full">
-            <div class="w-full md:w-auto">
-                <!-- iOS Segmented Control -->
-                <div class="grid grid-cols-4 bg-zinc-950 p-1 rounded-xl w-full md:w-max border border-zinc-800">
-                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=all" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'all' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
-                        <?php echo t("Show All", "ทั้งหมด"); ?>
-                    </a>
-                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $view_month; ?>" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'day' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
-                        <?php echo t("Daily", "รายวัน"); ?>
-                    </a>
-                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $view_year; ?>" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'month' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
-                        <?php echo t("Monthly", "รายเดือน"); ?>
-                    </a>
-                    <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=year&filter_val_year=<?php echo $selected_year; ?>" 
-                       class="px-2 md:px-5 py-2 rounded-lg text-xs font-bold font-sans tracking-wide transition-all text-center text-decoration-none <?php echo $filter_type === 'year' ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm' : 'text-zinc-300 hover:text-white'; ?>">
-                        <?php echo t("Yearly", "รายปี"); ?>
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Dynamic iOS Calendar Panel -->
-            <div class="w-full max-w-[340px] bg-white p-4 rounded-2xl border border-zinc-200 shadow-lg text-zinc-950">
-                <?php if ($filter_type === 'all'): ?>
-                    <div class="text-zinc-500 text-xs font-mono text-center py-6">
-                        <?php echo t("Showing all records without date filtering.", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>
-                    </div>
-                
-                <?php elseif ($filter_type === 'day'): ?>
-                    <!-- iPhone Month Grid Calendar -->
-                    <div class="flex justify-between items-center mb-4 px-1">
-                        <span class="text-xs font-bold text-zinc-800">
-                            <?php 
-                            $thai_month_names = [
-                                1 => 'มกราคม', 2 => 'กุมภาพันธ์', 3 => 'มีนาคม', 4 => 'เมษายน', 5 => 'พฤษภาคม', 6 => 'มิถุนายน',
-                                7 => 'กรกฎาคม', 8 => 'สิงหาคม', 9 => 'กันยายน', 10 => 'ตุลาคม', 11 => 'พฤศจิกายน', 12 => 'ธันวาคม'
-                            ];
-                            echo $thai_month_names[$c_month] . " " . ($c_year + 543);
-                            ?>
-                        </span>
-                        <div class="flex gap-1">
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $prev_month; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
-                                <span class="material-symbols-outlined text-sm">chevron_left</span>
-                            </a>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $selected_date; ?>&view_month=<?php echo $next_month; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
-                                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-7 gap-1 text-center font-mono text-[10px] text-zinc-400 mb-2 font-bold uppercase">
-                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                    </div>
-
-                    <div class="grid grid-cols-7 gap-1 text-center font-mono text-xs">
-                        <?php for ($i = 0; $i < $first_day_of_week; $i++): ?>
-                            <div class="py-1.5 text-transparent">.</div>
-                        <?php endfor; ?>
-                        
-                        <?php for ($day = 1; $day <= $days_in_month; $day++): ?>
-                            <?php 
-                            $d_str = sprintf("%02d", $day);
-                            $date_key = "$view_month-$d_str";
-                            $is_selected = ($date_key === $selected_date);
-                            $has_event = isset($event_days[$date_key]);
-                            ?>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=day&filter_val_day=<?php echo $date_key; ?>&view_month=<?php echo $view_month; ?>" 
-                               class="py-1.5 rounded-lg font-medium transition-all relative flex items-center justify-center text-decoration-none
-                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
-                                <span><?php echo $day; ?></span>
-                                <?php if ($has_event): ?>
-                                    <span class="absolute bottom-0.5 w-1 h-1 rounded-full <?php echo $is_selected ? 'bg-zinc-950' : 'bg-amber-500'; ?>"></span>
-                                <?php endif; ?>
-                            </a>
-                        <?php endfor; ?>
-                    </div>
-
-                <?php elseif ($filter_type === 'month'): ?>
-                    <!-- iPhone Year Grid Calendar -->
-                    <div class="flex justify-between items-center mb-4 px-1">
-                        <span class="text-xs font-bold text-zinc-800">
-                            <?php echo t("Year ", "ปี ค.ศ. ") . $view_year . " (" . ($view_year + 543) . ")"; ?>
-                        </span>
-                        <div class="flex gap-1">
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $prev_year; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
-                                <span class="material-symbols-outlined text-sm">chevron_left</span>
-                            </a>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $selected_month; ?>&view_year=<?php echo $next_year; ?>" class="w-7 h-7 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition-colors">
-                                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs">
-                        <?php 
-                        $m_short = ['01'=>'ม.ค.', '02'=>'ก.พ.', '03'=>'มี.ค.', '04'=>'เม.ย.', '05'=>'พ.ค.', '06'=>'มิ.ย.', '07'=>'ก.ค.', '08'=>'ส.ค.', '09'=>'ก.ย.', '10'=>'ต.ค.', '11'=>'พ.ย.', '12'=>'ธ.ค.'];
-                        foreach ($m_short as $m_num => $m_lbl): 
-                            $m_key = "$view_year-$m_num";
-                            $is_selected = ($m_key === $selected_month);
-                            $has_event = isset($event_months[$m_key]);
-                        ?>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=month&filter_val_month=<?php echo $m_key; ?>&view_year=<?php echo $view_year; ?>" 
-                               class="py-3 rounded-xl font-medium transition-all relative flex flex-col items-center justify-center text-decoration-none
-                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
-                                <span><?php echo $m_lbl; ?></span>
-                                <?php if ($has_event): ?>
-                                    <span class="absolute bottom-1 w-1 h-1 rounded-full <?php echo $is_selected ? 'bg-zinc-950' : 'bg-amber-500'; ?>"></span>
-                                <?php endif; ?>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-
-                <?php elseif ($filter_type === 'year'): ?>
-                    <!-- iPhone Yearly Grid Picker -->
-                    <div class="text-xs font-bold text-zinc-800 mb-3 px-1">
-                        <?php echo t("Select Year", "เลือกปีสถิติสรุป"); ?>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 text-center font-mono text-xs">
-                        <?php 
-                        $current_yr = (int)date('Y');
-                        for ($y = $current_yr; $y >= $current_yr - 5; $y--):
-                            $is_selected = ((string)$y === (string)$selected_year);
-                        ?>
-                            <a href="index.php?tab=<?php echo $active_tab; ?>&filter_type=year&filter_val_year=<?php echo $y; ?>" 
-                               class="py-3 rounded-xl font-medium transition-all relative flex flex-col items-center justify-center text-decoration-none
-                                      <?php echo $is_selected ? 'bg-amber-500 text-zinc-950 font-bold shadow-md' : 'text-zinc-700 hover:bg-zinc-100'; ?>">
-                                <span><?php echo $y; ?> (<?php echo $y + 543; ?>)</span>
-                            </a>
-                        <?php endfor; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <div class="shadcn-table-container">
-        <table class="shadcn-table">
-            <thead>
-                <tr class="border-b border-zinc-800">
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Customer", "ชื่อลูกค้า"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Phone", "เบอร์โทรศัพท์"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold"><?php echo t("Date & Time", "วัน / เวลา"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Table", "โต๊ะ"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center"><?php echo t("Pax", "จำนวนคน"); ?></th>
-                    <th class="font-sans text-xs uppercase tracking-wider text-zinc-200 font-semibold text-center" style="width: 25%;"><?php echo t("Review Operations", "การจัดการอนุมัติ"); ?></th>
-                </tr>
-            </thead>
-            <tbody class="font-sans text-sm text-zinc-300">
-                <?php if (empty($display_bookings)): ?>
-                    <tr>
-                        <td colspan="6" class="text-center py-8 text-zinc-400 font-medium">
-                            <?php 
-                            if ($active_tab === 'pending') {
-                                echo t("No pending reservations at the moment.", "ขณะนี้ไม่มีคิวจองโต๊ะที่รอตรวจสอบ");
-                            } elseif ($active_tab === 'confirmed') {
-                                echo t("No confirmed reservations found.", "ยังไม่มีคิวจองโต๊ะที่ยืนยันแล้ว");
-                            } elseif ($active_tab === 'cancel_requests') {
-                                echo t("No cancellation requests at the moment.", "ขณะนี้ไม่มีคำขอยกเลิกการจอง");
-                            } else {
-                                echo t("No cancelled reservations.", "ยังไม่มีคิวจองโต๊ะที่ถูกยกเลิก");
-                            }
-                            ?>
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($display_bookings as $b): ?>
-                        <tr>
-                            <td class="font-semibold text-zinc-100">
-                                <?php echo htmlspecialchars($b['customer_name']); ?>
-                                <?php if (($active_tab === 'cancelled' || $active_tab === 'cancel_requests') && !empty($b['cancel_reason'])): ?>
-                                    <div class="text-rose-400 text-xs mt-1 font-normal font-sans">
-                                        <strong><?php echo t("Reason", "หมายเหตุ"); ?>:</strong> <?php echo htmlspecialchars($b['cancel_reason']); ?>
-                                    </div>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-zinc-400"><?php echo htmlspecialchars($b['customer_phone']); ?></td>
-                            <td class="text-zinc-400">
-                                <span class="text-zinc-200"><?php echo htmlspecialchars($b['date']); ?></span> @ <?php echo htmlspecialchars($b['time_slot']); ?>
-                                <?php if ($b['date'] === date('Y-m-d')): ?>
-                                    <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-1.5 py-0.5 rounded text-[9px] block mt-1 w-max font-bold font-sans">
-                                        <?php echo t("TODAY", "วันนี้"); ?>
-                                    </span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-center text-warning font-anton text-lg">
-                                <?php echo htmlspecialchars($b['table_number'] ?? 'N/A'); ?>
-                                <span class="text-[10px] text-zinc-500 block font-sans font-medium tracking-normal">
-                                    <?php 
-                                    if ($b['table_zone'] === 'INDOOR') echo t("Indoor AC", "ห้องแอร์");
-                                    elseif ($b['table_zone'] === 'OUTDOOR') echo t("Outdoor Breeze", "ด้านนอก");
-                                    elseif ($b['table_zone'] === 'STAGE') echo t("Stage Front", "หน้าเวที");
-                                    elseif ($b['table_zone'] === 'INDOOR_WINDOW') echo t("Indoor Window", "ติดกระจก");
-                                    elseif ($b['table_zone'] === 'INDOOR_CENTER') echo t("Indoor Center", "ตรงกลาง");
-                                    elseif ($b['table_zone'] === 'BAR') echo t("Bar Front", "หน้าบาร์");
-                                    elseif ($b['table_zone'] === 'WALKWAY') echo t("Walkway Zone", "โซนทางเดิน");
-                                    else echo htmlspecialchars($b['table_zone'] ?? 'N/A');
-                                    ?>
-                                </span>
-                            </td>
-                            <td class="text-center text-zinc-400"><?php echo $b['pax']; ?> Pax</td>
-                            <td class="text-center">
-                                <div class="flex justify-center gap-2">
-                                    <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
-                                        <!-- Admin View: Only static status badges -->
-                                        <?php if ($active_tab === 'pending'): ?>
-                                            <span class="badge bg-amber-950 text-amber-400 border border-amber-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Pending Approval", "รออนุมัติ"); ?></span>
-                                        <?php elseif ($active_tab === 'confirmed'): ?>
-                                            <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Approved", "อนุมัติแล้ว"); ?></span>
-                                        <?php elseif ($active_tab === 'completed'): ?>
-                                            <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
-                                        <?php elseif ($active_tab === 'cancel_requests'): ?>
-                                            <span class="badge bg-sky-950 text-sky-400 border border-sky-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancel Requested", "ส่งคำขอยกเลิกแล้ว"); ?></span>
-                                        <?php else: ?>
-                                            <span class="badge bg-rose-950 text-rose-400 border border-rose-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></span>
-                                        <?php endif; ?>
-                                    <?php else: ?>
-                                        <!-- Staff View: Interactive action buttons -->
-                                        <?php if ($active_tab === 'pending'): ?>
-                                            <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=pending" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Confirm", "ยืนยัน"); ?></a>
-                                            <a href="javascript:void(0)" onclick="cancelBooking('<?php echo $b['id']; ?>', 'pending')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Cancel", "ปฏิเสธ"); ?></a>
-                                        <?php elseif ($active_tab === 'confirmed'): ?>
-                                            <span class="badge bg-emerald-950 text-emerald-400 border border-emerald-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Approved", "อนุมัติแล้ว"); ?></span>
-                                            <a href="javascript:void(0)" onclick="confirmClearTable('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['table_number'] ?? $b['table_id'] ?? '-'); ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-success py-1.5 px-3 text-xs uppercase font-anton tracking-wider me-2"><?php echo t("Clear Table", "เคลียร์โต๊ะ"); ?></a>
-                                            <a href="javascript:void(0)" onclick="cancelBooking('<?php echo $b['id']; ?>', 'confirmed')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Cancel", "ยกเลิก"); ?></a>
-                                        <?php elseif ($active_tab === 'completed'): ?>
-                                            <span class="badge inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2.5 py-1 text-xs rounded font-semibold me-2"><span class="material-symbols-outlined text-sm leading-none text-emerald-400">check_circle</span><?php echo t("Completed", "ใช้งานเสร็จแล้ว"); ?></span>
-                                        <?php elseif ($active_tab === 'cancel_requests'): ?>
-                                            <a href="javascript:void(0)" onclick="confirmApproveCancel('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['customer_name']); ?>')" class="shadcn-btn-danger py-1.5 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Approve Cancel", "ยืนยันยกเลิก"); ?></a>
-                                            <a href="index.php?action=reject_cancel&booking_id=<?php echo $b['id']; ?>&tab=cancel_requests" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Reject Request", "คงสิทธิ์การจอง"); ?></a>
-                                        <?php else: ?>
-                                            <span class="badge bg-rose-950 text-rose-400 border border-rose-900/60 px-2.5 py-1 text-xs rounded me-2"><?php echo t("Cancelled", "ยกเลิกแล้ว"); ?></span>
-                                            <?php if (isset($b['date']) && $b['date'] >= date('Y-m-d')): ?>
-                                                <a href="index.php?action=confirm&booking_id=<?php echo $b['id']; ?>&tab=cancelled" class="shadcn-btn-success py-1 px-3 text-xs uppercase font-anton tracking-wider"><?php echo t("Re-confirm", "อนุมัติใหม่"); ?></a>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
 
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF'): ?>
 <!-- STAFF View: Visual Seat Map Control Card (Merged from tables.php) -->
