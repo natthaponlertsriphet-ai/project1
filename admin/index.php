@@ -529,9 +529,8 @@ try {
         <div>
             <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2">
                 <span class="material-symbols-outlined text-amber-400 text-2xl">dashboard</span>
-                <span><?php echo t("Dashboard Overview", "ภาพรวมตารางแดชบอร์ด"); ?></span>
+                <span><?php echo t("Booking Statistics", "ข้อมูลสถิติการจองโต๊ะ ประจำวัน/เดือน/ปี"); ?></span>
             </h1>
-            <p class="text-zinc-300 text-xs mt-1 uppercase tracking-widest font-mono"><?php echo t("Admin Console / Main Analytics", "คอนโซลผู้จัดการ / ข้อมูลวิเคราะห์หลัก"); ?></p>
         </div>
     </div>
 <?php else: ?>
@@ -929,11 +928,8 @@ try {
                 </div>
                 <div>
                     <h2 class="font-anton text-amber-400 text-lg uppercase tracking-wider m-0 leading-tight">
-                        <?php echo t("Booking Analytics & Filter", "ข้อมูลสถิติการจองโต๊ะ ประจำวัน/เดือน/ปี"); ?>
+                        <?php echo t("Dashboard Overview", "ภาพรวมตารางแดชบอร์ด"); ?>
                     </h2>
-                    <span class="text-zinc-300 text-xs font-mono block mt-0.5">
-                        <?php echo t("Booking statistics overview by Day, Month, and Year", "ข้อมูลสถิติตารางจองโต๊ะ ประจำวัน/เดือน/ปี"); ?>
-                    </span>
                 </div>
             </div>
             
