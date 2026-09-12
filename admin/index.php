@@ -529,7 +529,7 @@ try {
         <div>
             <h1 class="font-anton text-amber-400 text-uppercase tracking-wider text-2xl m-0 flex items-center gap-2">
                 <span class="material-symbols-outlined text-amber-400 text-2xl">dashboard</span>
-                <span><?php echo t("Booking Statistics", "ข้อมูลสถิติการจองโต๊ะ ประจำวัน/เดือน/ปี"); ?></span>
+                <span><?php echo t("Dashboard Overview", "ภาพรวมตารางแดชบอร์ด"); ?></span>
             </h1>
         </div>
     </div>
@@ -928,7 +928,7 @@ try {
                 </div>
                 <div>
                     <h2 class="font-anton text-amber-400 text-lg uppercase tracking-wider m-0 leading-tight">
-                        <?php echo t("Dashboard Overview", "ภาพรวมตารางแดชบอร์ด"); ?>
+                        <?php echo t("Booking Analytics & Filter", "ข้อมูลสถิติการจองโต๊ะ ประจำวัน/เดือน/ปี"); ?>
                     </h2>
                 </div>
             </div>
