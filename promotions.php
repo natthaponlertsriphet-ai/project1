@@ -162,11 +162,7 @@ require_once 'header.php';
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10 relative z-2">
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
                                     <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['title']); ?></h2>
-                                    <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
-                                    <a href="reservation" class="btn btn-custom-gold-outline py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span class="material-symbols-outlined fs-6">local_bar</span>
-                                        <?php echo t("Book a Table", "จองโต๊ะ"); ?>
-                                    </a>
+                                    <p class="text-secondary small mb-0"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -182,13 +178,7 @@ require_once 'header.php';
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
                                 <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
                                 <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['title']); ?></h2>
-                                <p class="text-secondary small mb-4"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
-                                <div class="mt-auto">
-                                    <a href="reservation" class="btn btn-custom-gold-outline py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span class="material-symbols-outlined fs-6">local_bar</span>
-                                        <?php echo t("Book a Table", "จองโต๊ะ"); ?>
-                                    </a>
-                                </div>
+                                <p class="text-secondary small mb-0"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                             </div>
                         </div>
                     </div>
@@ -232,7 +222,6 @@ require_once 'header.php';
             const desc = escapeHtml(promo.description).replace(/\n/g, '<br>');
             let rawImg = promo.image ? String(promo.image).replace(/^(\.\.\/|\/)+/, '') : '';
             const image = rawImg ? escapeHtml(rawImg) : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
-            const bookText = "<?php echo t('Book a Table', 'จองโต๊ะ'); ?>";
 
             if (isLarge) {
                 html += `
@@ -246,11 +235,7 @@ require_once 'header.php';
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10 relative z-2">
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;">${period}</span>
                                     <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1">${title}</h2>
-                                    <p class="text-secondary small mb-4">${desc}</p>
-                                    <a href="reservation" class="btn btn-custom-gold-outline py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span class="material-symbols-outlined fs-6">local_bar</span>
-                                        ${bookText}
-                                    </a>
+                                     <p class="text-secondary small mb-0">${desc}</p>
                                 </div>
                             </div>
                         </div>
@@ -267,13 +252,7 @@ require_once 'header.php';
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
                                 <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;">${period}</span>
                                 <h2 class="font-anton text-uppercase text-light fs-3 mb-3">${title}</h2>
-                                <p class="text-secondary small mb-4">${desc}</p>
-                                <div class="mt-auto">
-                                    <a href="reservation" class="btn btn-custom-gold-outline py-2.5 px-4 font-anton text-uppercase" style="width: fit-content; display: inline-flex; align-items: center; gap: 8px;">
-                                        <span class="material-symbols-outlined fs-6">local_bar</span>
-                                        ${bookText}
-                                    </a>
-                                </div>
+                                 <p class="text-secondary small mb-0">${desc}</p>
                             </div>
                         </div>
                     </div>
