@@ -268,6 +268,13 @@ function is_admin_active($page) {
             from { opacity: 0; transform: translateY(-4px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
+
+        /* Hide placeholder text immediately on focus/click */
+        input:focus::placeholder,
+        textarea:focus::placeholder {
+            color: transparent !important;
+            opacity: 0 !important;
+        }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -227,6 +227,13 @@ function is_active($page) {
         .btn-custom-gold-outline:active {
             transform: translateY(0);
         }
+
+        /* Hide placeholder text immediately on focus/click */
+        input:focus::placeholder,
+        textarea:focus::placeholder {
+            color: transparent !important;
+            opacity: 0 !important;
+        }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
