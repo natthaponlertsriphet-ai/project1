@@ -209,7 +209,7 @@ $all_beers = $stmt->fetchAll();
                         <span class="material-symbols-outlined text-amber-400 text-sm">tag</span>
                         <span><?php echo t("Tap Number", "เลขแท็ป"); ?></span>
                     </label>
-                    <input type="text" name="tap_number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the beer tap number.', '⚠️ กรุณาระบุหมายเลขแท็ปเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 01" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($tap_number); ?>">
+                    <input type="text" name="tap_number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the beer tap number.', '⚠️ กรุณาระบุหมายเลขแท็ปเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="01" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($tap_number); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -217,7 +217,7 @@ $all_beers = $stmt->fetchAll();
                         <span class="material-symbols-outlined text-amber-400 text-sm">factory</span>
                         <span><?php echo t("Brand / Brewery", "แบรนด์ / โรงผลิต"); ?></span>
                     </label>
-                    <input type="text" name="type" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the brewery brand.', '⚠️ กรุณาระบุชื่อแบรนด์หรือโรงผลิตเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Moonshine" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($type); ?>">
+                    <input type="text" name="type" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the brewery brand.', '⚠️ กรุณาระบุชื่อแบรนด์หรือโรงผลิตเบียร์'); ?>')" oninput="this.setCustomValidity('')" placeholder="Moonshine" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($type); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -225,7 +225,7 @@ $all_beers = $stmt->fetchAll();
                         <span class="material-symbols-outlined text-amber-400 text-sm">sports_bar</span>
                         <span><?php echo t("Beer Name", "ชื่อเบียร์"); ?></span>
                     </label>
-                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the craft beer name.', '⚠️ กรุณาระบุชื่อเมนูเบียร์คราฟต์'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Lager Light" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($name); ?>">
+                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the craft beer name.', '⚠️ กรุณาระบุชื่อเมนูเบียร์คราฟต์'); ?>')" oninput="this.setCustomValidity('')" placeholder="Lager Light" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($name); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -233,7 +233,7 @@ $all_beers = $stmt->fetchAll();
                         <span class="material-symbols-outlined text-amber-400 text-sm">percent</span>
                         <span><?php echo t("ABV (%)", "ระดับแอลกอฮอล์ (ABV)"); ?></span>
                     </label>
-                    <input type="text" name="abv" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the ABV percentage.', '⚠️ กรุณาระบุเปอร์เซ็นต์แอลกอฮอล์ ABV'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 5.0%" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($abv); ?>">
+                    <input type="text" name="abv" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the ABV percentage.', '⚠️ กรุณาระบุเปอร์เซ็นต์แอลกอฮอล์ ABV'); ?>')" oninput="this.setCustomValidity('')" placeholder="5.0%" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($abv); ?>">
                 </div>
 
                 <div class="flex items-center gap-2 py-1">

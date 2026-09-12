@@ -1623,7 +1623,7 @@ require_once 'header.php';
                             <span class="material-symbols-outlined fs-6 align-middle me-1">call</span>
                             <?php echo t("Registered Phone Number", "เบอร์โทรศัพท์ที่ใช้จอง (เพื่อยืนยันตัวตน)"); ?> *
                         </label>
-                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="<?php echo t('e.g. 0812345678', 'เช่น 0812345678'); ?>" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter registered phone number to verify.', '⚠️ กรุณาระบุเบอร์โทรศัพท์ที่ใช้จองเพื่อยืนยันตัวตน'); ?>')" oninput="this.setCustomValidity('')" autocomplete="off">
+                        <input type="tel" id="cancel-modal-phone-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" placeholder="<?php echo t('0812345678', '0812345678'); ?>" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please enter registered phone number to verify.', '⚠️ กรุณาระบุเบอร์โทรศัพท์ที่ใช้จองเพื่อยืนยันตัวตน'); ?>')" oninput="this.setCustomValidity('')" autocomplete="off">
                     </div>
 
                     <div class="mb-2">
@@ -1631,7 +1631,7 @@ require_once 'header.php';
                             <span class="material-symbols-outlined fs-6 align-middle me-1">edit_note</span>
                             <?php echo t("Cancellation Reason", "เหตุผลในการขอยกเลิก"); ?> *
                         </label>
-                        <textarea id="cancel-modal-reason-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" rows="3" placeholder="<?php echo t("e.g. Change of plans, emergency schedule...", "เช่น ติดภารกิจด่วน, เลื่อนวันเดินทาง ฯลฯ"); ?>" style="resize: none;" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify detailed reason for cancellation.', '⚠️ กรุณาระบุเหตุผลหรือรายละเอียดเพิ่มเติมในการขอยกเลิก'); ?>')" oninput="this.setCustomValidity('')"></textarea>
+                        <textarea id="cancel-modal-reason-input" class="form-control bg-black text-light border-secondary border-opacity-30 font-sans shadow-none" rows="3" placeholder="<?php echo t("Change of plans, emergency schedule...", "ติดภารกิจด่วน, เลื่อนวันเดินทาง ฯลฯ"); ?>" style="resize: none;" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify detailed reason for cancellation.', '⚠️ กรุณาระบุเหตุผลหรือรายละเอียดเพิ่มเติมในการขอยกเลิก'); ?>')" oninput="this.setCustomValidity('')"></textarea>
                     </div>
                 </form>
             </div>

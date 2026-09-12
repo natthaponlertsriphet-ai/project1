@@ -300,7 +300,7 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">schedule</span>
                         <span><?php echo t("Time Slot", "ช่วงเวลาโชว์"); ?></span>
                     </label>
-                    <input type="text" name="time" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the performance time slot.', '⚠️ กรุณาระบุช่วงเวลาการแสดงดนตรีสด'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. 19:30 - 20:30" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($time); ?>">
+                    <input type="text" name="time" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the performance time slot.', '⚠️ กรุณาระบุช่วงเวลาการแสดงดนตรีสด'); ?>')" oninput="this.setCustomValidity('')" placeholder="19:30 - 20:30" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($time); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -308,7 +308,7 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">mic</span>
                         <span><?php echo t("Band / Artist", "ชื่อวงดนตรี / ศิลปิน"); ?></span>
                     </label>
-                    <input type="text" name="artist" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the band or artist name.', '⚠️ กรุณาระบุชื่อวงดนตรีหรือศิลปินผู้แสดง'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Band Name" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($artist); ?>">
+                    <input type="text" name="artist" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the band or artist name.', '⚠️ กรุณาระบุชื่อวงดนตรีหรือศิลปินผู้แสดง'); ?>')" oninput="this.setCustomValidity('')" placeholder="Band Name" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($artist); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">

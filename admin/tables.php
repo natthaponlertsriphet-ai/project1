@@ -366,7 +366,7 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                         <span class="material-symbols-outlined text-amber-400 text-sm">tag</span>
                         <span><?php echo t("Table Number", "หมายเลขโต๊ะ"); ?></span>
                     </label>
-                    <input type="text" name="number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the table number code.', '⚠️ กรุณาระบุรหัสหมายเลขโต๊ะบริการ'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. T1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed font-mono" value="<?php echo htmlspecialchars($number); ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
+                    <input type="text" name="number" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the table number code.', '⚠️ กรุณาระบุรหัสหมายเลขโต๊ะบริการ'); ?>')" oninput="this.setCustomValidity('')" placeholder="T1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 disabled:opacity-50 disabled:cursor-not-allowed font-mono" value="<?php echo htmlspecialchars($number); ?>" <?php echo (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') ? 'disabled' : ''; ?>>
                 </div>
 
                 <div class="flex flex-col gap-1.5">

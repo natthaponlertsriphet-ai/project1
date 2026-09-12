@@ -225,7 +225,7 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">badge</span>
                         <span><?php echo t("Full Name", "ชื่อ-นามสกุล"); ?></span>
                     </label>
-                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify staff full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Somchai" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($name); ?>">
+                    <input type="text" name="name" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify staff full name.', '⚠️ กรุณาระบุชื่อ-นามสกุลพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="Somchai" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($name); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -233,7 +233,7 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">mail</span>
                         <span><?php echo t("Email Address", "อีเมลล็อกอิน"); ?></span>
                     </label>
-                    <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify login email address.', '⚠️ กรุณาระบุอีเมลล็อกอินของพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. staff@chithole.com" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($email); ?>">
+                    <input type="email" name="email" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify login email address.', '⚠️ กรุณาระบุอีเมลล็อกอินของพนักงาน'); ?>')" oninput="this.setCustomValidity('')" placeholder="staff@chithole.com" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400 font-mono" value="<?php echo htmlspecialchars($email); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">

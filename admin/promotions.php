@@ -258,7 +258,7 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">campaign</span>
                         <span><?php echo t("Promotion Title", "หัวข้อโปรโมชั่น"); ?></span>
                     </label>
-                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Happy Hour: Buy 1 Get 1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($title); ?>">
+                    <input type="text" name="title" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the promotion campaign title.', '⚠️ กรุณาระบุหัวข้อกิจกรรมโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="Happy Hour: Buy 1 Get 1" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($title); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -266,7 +266,7 @@ require_once 'admin_header.php';
                         <span class="material-symbols-outlined text-amber-400 text-sm">schedule</span>
                         <span><?php echo t("Period / Schedule", "ช่วงเวลาจัด"); ?></span>
                     </label>
-                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="e.g. Every Thursday" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($period); ?>">
+                    <input type="text" name="period" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please specify the campaign period.', '⚠️ กรุณาระบุช่วงเวลาจัดกิจกรรมโปรโมชั่น'); ?>')" oninput="this.setCustomValidity('')" placeholder="Every Thursday" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:border-amber-400" value="<?php echo htmlspecialchars($period); ?>">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
