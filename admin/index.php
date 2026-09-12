@@ -608,8 +608,8 @@ try {
             </div>
         </div>
 
-        <!-- Direct Pure-Click Day / Month / Year Calendar Pickers Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end pt-1">
+        <!-- Direct Pure-Click Day / Month / Year Calendar Pickers Grid (3-Column Balanced Layout) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pt-1">
             <!-- 1. Click By Day (Date Dropdown + Calendar Sheet Trigger) -->
             <div class="bg-zinc-950/80 border border-zinc-700/80 rounded-xl p-3.5 hover:border-amber-400/50 transition-colors">
                 <label class="block text-zinc-200 text-xs font-semibold uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -619,7 +619,7 @@ try {
                     </span>
                 </label>
                 <div class="relative">
-                    <input type="date" value="<?php echo ($analytics_mode === 'day') ? htmlspecialchars($analytics_start) : ''; ?>" onfocus="if(this.showPicker) this.showPicker();" onclick="if(this.showPicker) this.showPicker();" onchange="submitCalendarFilter('day', this.value)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-amber-400 cursor-pointer">
+                    <input type="date" placeholder="dd/mm/yyyy" value="<?php echo ($analytics_mode === 'day') ? htmlspecialchars($analytics_start) : ''; ?>" onfocus="if(this.showPicker) this.showPicker();" onclick="if(this.showPicker) this.showPicker();" onchange="submitCalendarFilter('day', this.value)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs font-mono focus:outline-none focus:border-amber-400 cursor-pointer">
                 </div>
             </div>
 
@@ -673,14 +673,7 @@ try {
                     <?php endfor; ?>
                 </select>
             </div>
-
-            <!-- Reset & Reset All -->
-            <div class="flex items-center gap-2">
-                <a href="index.php?analytics_mode=all" class="w-full bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20" title="<?php echo t("Show all records without date filter", "แสดงรายการทั้งหมดโดยไม่มีตัวกรองวันที่"); ?>">
-                    <span class="material-symbols-outlined text-base">restart_alt</span>
-                    <span><?php echo t("Show All Records", "ดูสถิติทั้งหมด"); ?></span>
-                </a>
-            </div>
+        </div>
     </form>
 </div>
 
