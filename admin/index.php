@@ -508,6 +508,32 @@ try {
 }
 
 try {
+    $today_date = date('Y-m-d');
+    $sql = "
+        SELECT time_slot, COUNT(*) as total, 
+               SUM(CASE WHEN reservation_status IN ('CONFIRMED','COMPLETED') THEN 1 ELSE 0 END) as completed,
+               SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
+        FROM reservation 
+        WHERE reservation_date = ?
+        GROUP BY time_slot 
+        ORDER BY time_slot ASC
+    ";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$today_date]);
+    $today_summary = $stmt->fetchAll();
+    
+    if (empty($today_summary)) {
+        $stmt_latest = $pdo->query("SELECT MAX(reservation_date) FROM reservation");
+        $latest_d = $stmt_latest->fetchColumn() ?: date('Y-m-d');
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$latest_d]);
+        $today_summary = $stmt->fetchAll();
+    }
+} catch (Exception $e) {
+    $today_summary = [];
+}
+
+try {
     $stmt = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table`");
     $all_tables = $stmt->fetchAll();
     usort($all_tables, function($a, $b) {
@@ -1090,6 +1116,17 @@ try {
 $chart_daily = array_reverse($daily_summary);
 $chart_monthly = array_reverse($monthly_summary);
 
+$today_labels = [];
+$today_total = [];
+$today_confirmed = [];
+$today_cancelled = [];
+foreach ($today_summary as $t_sum) {
+    $today_labels[] = $t_sum['time_slot'] ?? 'N/A';
+    $today_total[] = (int)$t_sum['total'];
+    $today_confirmed[] = (int)($t_sum['completed'] ?? 0);
+    $today_cancelled[] = (int)($t_sum['cancelled'] ?? 0);
+}
+
 $daily_labels = [];
 $daily_total = [];
 $daily_confirmed = [];
@@ -1113,24 +1150,35 @@ foreach ($chart_monthly as $m) {
 }
 ?>
 
-<!-- Charts Section -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- Daily Booking Chart -->
-    <div class="shadcn-card">
-        <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-900 pb-2">
-            <span class="material-symbols-outlined text-base text-zinc-500">show_chart</span>
-            <span><?php echo t("Daily Booking Trend (Last 6 Days)", "แนวโน้มยอดจองรายวัน (6 วันล่าสุด)"); ?></span>
+<!-- Charts Section (3 Columns) -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+    <!-- Today Booking Chart (1 Day) -->
+    <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
+        <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
+            <span class="material-symbols-outlined text-base text-amber-400">today</span>
+            <span><?php echo t("Today Booking Trend (Last 1 Day)", "แนวโน้มยอดจองรายวัน (1 วันล่าสุด)"); ?></span>
+        </h3>
+        <div style="position: relative; height:220px;">
+            <canvas id="todayChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 1 Month Booking Chart -->
+    <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
+        <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
+            <span class="material-symbols-outlined text-base text-amber-400">show_chart</span>
+            <span><?php echo t("1 Month Booking Trend", "แนวโน้มยอดจองรายเดือน (1 เดือนล่าสุด)"); ?></span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="dailyChart"></canvas>
         </div>
     </div>
 
-    <!-- Monthly Booking Chart -->
-    <div class="shadcn-card">
-        <h3 class="font-anton text-warning text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-900 pb-2">
-            <span class="material-symbols-outlined text-base text-zinc-500">bar_chart</span>
-            <span><?php echo t("Monthly Booking Trend (Last 6 Months)", "แนวโน้มยอดจองรายเดือน (6 เดือนล่าสุด)"); ?></span>
+    <!-- 1 Year Booking Chart -->
+    <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
+        <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
+            <span class="material-symbols-outlined text-base text-amber-400">bar_chart</span>
+            <span><?php echo t("1 Year Booking Trend", "แนวโน้มยอดจองรายปี (1 ปีล่าสุด)"); ?></span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="monthlyChart"></canvas>
@@ -1413,31 +1461,32 @@ function submitCalendarFilter(type, val) {
 
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
 document.addEventListener("DOMContentLoaded", function() {
-    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
-    new Chart(dailyCtx, {
+    // 1. Today Chart (1 Day)
+    const todayCtx = document.getElementById('todayChart').getContext('2d');
+    new Chart(todayCtx, {
         type: 'bar',
         data: {
-            labels: <?php echo json_encode($daily_labels); ?>,
+            labels: <?php echo json_encode($today_labels); ?>,
             datasets: [
                 {
-                    label: '<?php echo t("Total Bookings", "ยอดจองทั้งหมด"); ?>',
-                    data: <?php echo json_encode($daily_total); ?>,
+                    label: '<?php echo t("Total", "ยอดจอง"); ?>',
+                    data: <?php echo json_encode($today_total); ?>,
                     backgroundColor: 'rgba(234, 179, 8, 0.8)',
                     borderColor: '#eab308',
                     borderWidth: 1
                 },
                 {
                     label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
-                    data: <?php echo json_encode($daily_confirmed); ?>,
+                    data: <?php echo json_encode($today_confirmed); ?>,
                     backgroundColor: 'rgba(16, 185, 129, 0.8)',
                     borderColor: '#10b981',
                     borderWidth: 1
                 },
                 {
                     label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
-                    data: <?php echo json_encode($daily_cancelled); ?>,
-                    borderColor: '#ef4444', // red
+                    data: <?php echo json_encode($today_cancelled); ?>,
                     backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                    borderColor: '#ef4444',
                     borderWidth: 1
                 }
             ]
@@ -1463,6 +1512,64 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // 2. 1 Month Trend Chart (Daily points over 30 days)
+    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+    new Chart(dailyCtx, {
+        type: 'line',
+        data: {
+            labels: <?php echo json_encode($daily_labels); ?>,
+            datasets: [
+                {
+                    label: '<?php echo t("Total", "ยอดจอง"); ?>',
+                    data: <?php echo json_encode($daily_total); ?>,
+                    backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                    borderColor: '#eab308',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
+                    data: <?php echo json_encode($daily_confirmed); ?>,
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    borderColor: '#10b981',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
+                    data: <?php echo json_encode($daily_cancelled); ?>,
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    borderColor: '#ef4444',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+                },
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                }
+            }
+        }
+    });
+
+    // 3. 1 Year Trend Chart (Monthly points over 12 months)
     const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     new Chart(monthlyCtx, {
         type: 'bar',
@@ -1470,21 +1577,21 @@ document.addEventListener("DOMContentLoaded", function() {
             labels: <?php echo json_encode($monthly_labels); ?>,
             datasets: [
                 {
-                    label: '<?php echo t("Total Bookings", "ยอดจองทั้งหมด"); ?>',
+                    label: '<?php echo t("Total", "ยอดจอง"); ?>',
                     data: <?php echo json_encode($monthly_total); ?>,
                     backgroundColor: 'rgba(234, 179, 8, 0.8)',
                     borderColor: '#eab308',
                     borderWidth: 1
                 },
                 {
-                    label: '<?php echo t("Approved Bookings", "ยืนยันแล้ว"); ?>',
+                    label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
                     data: <?php echo json_encode($monthly_confirmed); ?>,
                     backgroundColor: 'rgba(16, 185, 129, 0.8)',
                     borderColor: '#10b981',
                     borderWidth: 1
                 },
                 {
-                    label: '<?php echo t("Cancelled Bookings", "ยกเลิกแล้ว"); ?>',
+                    label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
                     data: <?php echo json_encode($monthly_cancelled); ?>,
                     backgroundColor: 'rgba(239, 68, 68, 0.8)',
                     borderColor: '#ef4444',
