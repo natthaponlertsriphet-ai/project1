@@ -400,7 +400,7 @@ function is_active($page) {
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <a href="admin/index.php" class="admin-nav-btn btn btn-outline-warning btn-sm font-anton text-uppercase px-3"><?php echo t("Console", "แดชบอร์ด"); ?></a>
                     <?php else: ?>
-                        <a href="login" class="admin-nav-btn btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Admin", "แอดมิน"); ?></a>
+                        <a href="login" class="admin-nav-btn btn btn-outline-secondary btn-sm text-light font-anton text-uppercase px-3"><?php echo t("Login", "เข้าสู่ระบบ"); ?></a>
                     <?php endif; ?>
                 </div>
             </div>
