@@ -14,6 +14,22 @@ function upload_to_azure_blob($file_path, $blob_name) {
 
     $connection_string = getenv('AZURE_STORAGE_CONNECTION_STRING');
     if (!$connection_string) {
+        $env_file = __DIR__ . '/.env';
+        if (file_exists($env_file)) {
+            $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos(trim($line), '#') === 0) continue;
+                if (strpos($line, '=') !== false) {
+                    list($name, $val) = explode('=', $line, 2);
+                    if (trim($name) === 'AZURE_STORAGE_CONNECTION_STRING') {
+                        $connection_string = trim($val, " \t\n\r\0\x0B\"'");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (!$connection_string) {
         return false;
     }
 

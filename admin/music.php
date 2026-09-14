@@ -1,5 +1,6 @@
 <?php
 require_once '../db.php';
+require_once '../azure_blob_helper.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -186,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     @unlink($temp_heic);
 
                     if (file_exists($dest_path_live)) {
+                        upload_to_azure_blob($dest_path_live, 'images/live-music/' . $new_name);
                         $success = t("Photo uploaded and converted to JPG successfully!", "อัปโหลดและแปลงไฟล์รูปภาพบรรยากาศสำเร็จ!");
                     } else {
                         $error = t(
@@ -201,6 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $dest_path_live = $upload_dir_live . $new_name;
                 
                 if (move_uploaded_file($file_tmp, $dest_path_live)) {
+                    upload_to_azure_blob($dest_path_live, 'images/live-music/' . $new_name);
                     $success = t("Photo uploaded successfully!", "อัปโหลดรูปภาพบรรยากาศสำเร็จ!");
                 } else {
                     $error = "Failed to save uploaded photo.";

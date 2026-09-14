@@ -288,8 +288,14 @@ require_once 'admin_header.php';
                     <input type="hidden" name="image_url" value="<?php echo htmlspecialchars($image); ?>">
                 </div>
 
+                <?php
+                    $preview_src = '';
+                    if ($image) {
+                        $preview_src = (strpos($image, 'http://') === 0 || strpos($image, 'https://') === 0) ? $image : '../' . ltrim($image, '/');
+                    }
+                ?>
                 <div id="image-preview-container" class="rounded-lg overflow-hidden border border-zinc-700 aspect-video bg-zinc-950 <?php echo $image ? '' : 'hidden'; ?>">
-                    <img id="image-preview-element" src="<?php echo $image ? '../' . ltrim($image, '/') : ''; ?>" alt="Preview" class="w-full h-full object-cover">
+                    <img id="image-preview-element" src="<?php echo htmlspecialchars($preview_src); ?>" alt="Preview" class="w-full h-full object-cover">
                 </div>
 
                 <div class="flex flex-col gap-1.5">
@@ -348,8 +354,14 @@ require_once 'admin_header.php';
                             <?php foreach ($all_promos as $promo): ?>
                                 <tr>
                                     <td class="align-middle">
-                                        <?php if ($promo['image']): ?>
-                                            <img src="../<?php echo htmlspecialchars(ltrim($promo['image'], '/')); ?>" alt="Promo" class="w-14 h-10 object-cover rounded border border-amber-500/20 shadow-sm" onerror="this.onerror=null; this.classList.add('hidden');">
+                                        <?php 
+                                            $table_img_src = '';
+                                            if ($promo['image']) {
+                                                $table_img_src = (strpos($promo['image'], 'http://') === 0 || strpos($promo['image'], 'https://') === 0) ? $promo['image'] : '../' . ltrim($promo['image'], '/');
+                                            }
+                                        ?>
+                                        <?php if ($table_img_src): ?>
+                                            <img src="<?php echo htmlspecialchars($table_img_src); ?>" alt="Promo" class="w-14 h-10 object-cover rounded border border-amber-500/20 shadow-sm" onerror="this.onerror=null; this.classList.add('hidden');">
                                         <?php else: ?>
                                             <div class="w-14 h-10 bg-zinc-800 rounded flex items-center justify-center text-zinc-600 border border-zinc-700">
                                                 <span class="material-symbols-outlined text-sm">local_offer</span>
