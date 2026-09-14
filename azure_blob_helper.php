@@ -54,7 +54,7 @@ function upload_to_azure_blob($file_path, $blob_name) {
     $canonicalized_resource = "/$account_name/$container/$blob_name";
 
     $string_to_sign = "PUT\n\n\n$content_length\n\n$content_type\n\n\n\n\n\n$canonicalized_headers$canonicalized_resource";
-    $signature = base64_encode(hash_hmac('sha256', utf8_encode($string_to_sign), base64_decode($account_key), true));
+    $signature = base64_encode(hash_hmac('sha256', $string_to_sign, base64_decode($account_key), true));
 
     $url = "https://$account_name.blob.core.windows.net/$container/$blob_name";
     $headers = [
