@@ -343,8 +343,8 @@ require_once 'header.php';
             .catch(err => console.log('Live sync error:', err));
     }
 
-    // Auto sync every 3.5 seconds
-    setInterval(checkLivePromotions, 3500);
+    // Auto sync every 7 seconds
+    setInterval(checkLivePromotions, 7000);
 </script>
 
 <?php require_once 'footer.php'; ?>

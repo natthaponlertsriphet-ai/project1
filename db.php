@@ -12,13 +12,15 @@ $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
+    PDO::ATTR_TIMEOUT            => 3,
 ];
 
 $pdo = null;
 
-// 1. Try Primary MySQL Connection (chithole_db on phpMyAdmin)
+// 1. Try Primary MySQL Connection
 try {
-    $hosts = [$host, '127.0.0.1', 'localhost'];
+    $env_host = getenv('DB_HOST');
+    $hosts = $env_host ? [$env_host] : [$host, '127.0.0.1', 'localhost'];
     $hosts = array_unique(array_filter($hosts));
     $connected = false;
 

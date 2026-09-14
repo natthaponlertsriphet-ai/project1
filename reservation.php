@@ -1517,7 +1517,7 @@ require_once 'header.php';
         activeSearchQuery = query;
 
         if (!window.statusPollerInterval) {
-            window.statusPollerInterval = setInterval(pollBookingStatuses, 3000);
+            window.statusPollerInterval = setInterval(pollBookingStatuses, 6000);
         }
         pollBookingStatuses();
     }

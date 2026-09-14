@@ -454,10 +454,10 @@ require_once 'header.php';
             .replace(/'/g, "&#039;");
     }
 
-    // Start 1.5s real-time sync loop
+    // Start 6s real-time sync loop
     window.addEventListener('load', () => {
         syncLiveBeerList();
-        setInterval(syncLiveBeerList, 1500);
+        setInterval(syncLiveBeerList, 6000);
     });
 </script>
 

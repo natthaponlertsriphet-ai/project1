@@ -1929,8 +1929,8 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(err => console.log('Live poller:', err));
     }
 
-    // Auto update tab counts every 4 seconds dynamically
-    setInterval(pollLiveDashboardCounts, 4000);
+    // Auto update tab counts every 7 seconds dynamically
+    setInterval(pollLiveDashboardCounts, 7000);
 </script>
 
 <?php require_once 'admin_footer.php'; ?>
