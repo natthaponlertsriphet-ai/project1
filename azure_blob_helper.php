@@ -46,6 +46,9 @@ function upload_to_azure_blob($file_path, $blob_name) {
 
     $container = 'images';
     $blob_name = ltrim(str_replace('\\', '/', $blob_name), '/');
+    if (strpos($blob_name, 'images/') === 0) {
+        $blob_name = substr($blob_name, 7);
+    }
     
     // Determine mime content type
     $ext = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
