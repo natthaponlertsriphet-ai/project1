@@ -510,13 +510,13 @@ try {
 try {
     $today_date = date('Y-m-d');
     $sql = "
-        SELECT time_slot, COUNT(*) as total, 
+        SELECT reservation_time AS time_slot, COUNT(*) as total, 
                SUM(CASE WHEN reservation_status IN ('CONFIRMED','COMPLETED') THEN 1 ELSE 0 END) as completed,
                SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
         FROM reservation 
         WHERE reservation_date = ?
-        GROUP BY time_slot 
-        ORDER BY time_slot ASC
+        GROUP BY reservation_time 
+        ORDER BY reservation_time ASC
     ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$today_date]);
