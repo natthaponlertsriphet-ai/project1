@@ -155,18 +155,24 @@ require_once 'header.php';
                     $promo_img = !empty($clean_img) ? $clean_img : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
                 }
                 ?>
-                <?php if ($is_large): ?>
+                 <?php if ($is_large): ?>
                     <!-- 7-Column Horizontal Card -->
                     <div class="col-xl-7">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
-                                <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <img src="<?php echo htmlspecialchars($promo_img); ?>" alt="<?php echo htmlspecialchars($promo['title']); ?>" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                                <div class="col-md-5 position-relative overflow-hidden cursor-pointer" style="min-height: 250px; cursor: pointer;" onclick="openPromoModal('<?php echo htmlspecialchars(addslashes($promo_img)); ?>', '<?php echo htmlspecialchars(addslashes($promo['title'])); ?>')">
+                                    <img src="<?php echo htmlspecialchars($promo_img); ?>" alt="<?php echo htmlspecialchars($promo['title']); ?>" class="w-100 h-100 position-absolute top-0 start-0 promo-img-hover" style="object-fit: cover; width: 100%; height: 100%; z-index: 0; transition: transform 0.4s ease;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
                                     <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to right, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
+                                    <div class="position-absolute bottom-0 start-0 m-3 z-3">
+                                        <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-50 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
+                                            <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10 relative z-2">
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
-                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1"><?php echo htmlspecialchars($promo['title']); ?></h2>
+                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1 cursor-pointer" style="cursor: pointer;" onclick="openPromoModal('<?php echo htmlspecialchars(addslashes($promo_img)); ?>', '<?php echo htmlspecialchars(addslashes($promo['title'])); ?>')"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                     <p class="text-secondary small mb-0"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                                 </div>
                             </div>
@@ -176,13 +182,19 @@ require_once 'header.php';
                     <!-- 5-Column Vertical Card -->
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
-                            <div class="position-relative overflow-hidden" style="height: 220px;">
-                                <img src="<?php echo htmlspecialchars($promo_img); ?>" alt="<?php echo htmlspecialchars($promo['title']); ?>" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                            <div class="position-relative overflow-hidden cursor-pointer" style="height: 220px; cursor: pointer;" onclick="openPromoModal('<?php echo htmlspecialchars(addslashes($promo_img)); ?>', '<?php echo htmlspecialchars(addslashes($promo['title'])); ?>')">
+                                <img src="<?php echo htmlspecialchars($promo_img); ?>" alt="<?php echo htmlspecialchars($promo['title']); ?>" class="w-100 h-100 position-absolute top-0 start-0 promo-img-hover" style="object-fit: cover; width: 100%; height: 100%; z-index: 0; transition: transform 0.4s ease;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
                                 <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to bottom, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
+                                <div class="position-absolute bottom-0 start-0 m-3 z-3">
+                                    <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-50 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
+                                        <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                    </span>
+                                </div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
                                 <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;"><?php echo htmlspecialchars($promo['period']); ?></span>
-                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3"><?php echo htmlspecialchars($promo['title']); ?></h2>
+                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3 cursor-pointer" style="cursor: pointer;" onclick="openPromoModal('<?php echo htmlspecialchars(addslashes($promo_img)); ?>', '<?php echo htmlspecialchars(addslashes($promo['title'])); ?>')"><?php echo htmlspecialchars($promo['title']); ?></h2>
                                 <p class="text-secondary small mb-0"><?php echo nl2br(htmlspecialchars($promo['description'])); ?></p>
                             </div>
                         </div>
@@ -193,8 +205,38 @@ require_once 'header.php';
     <?php endif; ?>
 </div>
 
+<!-- Promotion Lightbox Modal -->
+<div class="modal fade" id="promoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark border-warning border-opacity-25 text-light shadow-2xl overflow-hidden rounded-4">
+            <div class="modal-header border-bottom border-secondary border-opacity-25 py-3 px-4 bg-black bg-opacity-40">
+                <h5 class="modal-title font-anton text-warning text-uppercase tracking-wider mb-0" id="promoModalTitle">PROMOTION PREVIEW</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2 text-center position-relative bg-black d-flex justify-content-center align-items-center">
+                <img id="promoModalImageDisplay" src="" alt="Promotion Banner" class="w-100 h-auto rounded shadow" style="max-height: 80vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cursor-pointer:hover .promo-img-hover {
+        transform: scale(1.06);
+    }
+</style>
+
 <script>
     let currentPromoHash = JSON.stringify(<?php echo json_encode($promotions); ?>);
+
+    function openPromoModal(imgUrl, title) {
+        const displayImg = document.getElementById('promoModalImageDisplay');
+        const displayTitle = document.getElementById('promoModalTitle');
+        if (displayImg) displayImg.src = imgUrl;
+        if (displayTitle && title) displayTitle.innerText = title;
+        const promoModal = new bootstrap.Modal(document.getElementById('promoModal'));
+        promoModal.show();
+    }
 
     function escapeHtml(str) {
         if (!str) return '';
@@ -239,13 +281,19 @@ require_once 'header.php';
                     <div class="col-xl-7">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg">
                             <div class="row g-0 h-100">
-                                <div class="col-md-5 position-relative overflow-hidden" style="min-height: 250px;">
-                                    <img src="${image}" alt="${title}" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                                <div class="col-md-5 position-relative overflow-hidden cursor-pointer" style="min-height: 250px; cursor: pointer;" onclick="openPromoModal('${image}', '${title}')">
+                                    <img src="${image}" alt="${title}" class="w-100 h-100 position-absolute top-0 start-0 promo-img-hover" style="object-fit: cover; width: 100%; height: 100%; z-index: 0; transition: transform 0.4s ease;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
                                     <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to right, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
+                                    <div class="position-absolute bottom-0 start-0 m-3 z-3">
+                                        <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-50 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
+                                            <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
+                                            <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="col-md-7 p-4 p-md-5 d-flex flex-column justify-content-center bg-dark bg-opacity-10 relative z-2">
                                     <span class="badge bg-warning bg-opacity-10 border border-warning border-opacity-25 text-warning font-mono py-1.5 px-3 self-start mb-3" style="width: fit-content; font-size: 10px; font-weight: bold;">${period}</span>
-                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1">${title}</h2>
+                                    <h2 class="font-anton text-uppercase text-light display-6 mb-3 lh-1 cursor-pointer" style="cursor: pointer;" onclick="openPromoModal('${image}', '${title}')">${title}</h2>
                                      <p class="text-secondary small mb-0">${desc}</p>
                                 </div>
                             </div>
@@ -256,13 +304,19 @@ require_once 'header.php';
                 html += `
                     <div class="col-xl-5">
                         <div class="glass-card overflow-hidden h-100 position-relative border-0 shadow-lg d-flex flex-column">
-                            <div class="position-relative overflow-hidden" style="height: 220px;">
-                                <img src="${image}" alt="${title}" class="w-100 h-100 position-absolute top-0 start-0" style="object-fit: cover; width: 100%; height: 100%; z-index: 0;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
+                            <div class="position-relative overflow-hidden cursor-pointer" style="height: 220px; cursor: pointer;" onclick="openPromoModal('${image}', '${title}')">
+                                <img src="${image}" alt="${title}" class="w-100 h-100 position-absolute top-0 start-0 promo-img-hover" style="object-fit: cover; width: 100%; height: 100%; z-index: 0; transition: transform 0.4s ease;" onerror="this.onerror=null; this.src='images/promotions/uploaded_1788947667_IMG_0181.JPG';">
                                 <div class="h-100 w-100 position-absolute top-0 start-0" style="background: linear-gradient(to bottom, rgba(20,20,20,0.1), #201f1f); z-index: 1; pointer-events: none;"></div>
+                                <div class="position-absolute bottom-0 start-0 m-3 z-3">
+                                    <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-25 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
+                                        <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                    </span>
+                                </div>
                             </div>
                             <div class="p-4 p-md-5 flex-grow-1 d-flex flex-column bg-dark bg-opacity-10" style="margin-top: -35px; position:relative; z-index: 2;">
                                 <span class="text-warning font-mono text-uppercase tracking-wider d-block mb-1" style="font-size: 10px; font-weight: bold;">${period}</span>
-                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3">${title}</h2>
+                                <h2 class="font-anton text-uppercase text-light fs-3 mb-3 cursor-pointer" style="cursor: pointer;" onclick="openPromoModal('${image}', '${title}')">${title}</h2>
                                  <p class="text-secondary small mb-0">${desc}</p>
                             </div>
                         </div>
