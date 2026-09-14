@@ -53,7 +53,7 @@ function upload_to_azure_blob($file_path, $blob_name) {
     $canonicalized_headers = "x-ms-blob-type:BlockBlob\nx-ms-date:$date\nx-ms-version:2020-10-02\n";
     $canonicalized_resource = "/$account_name/$container/$blob_name";
 
-    $string_to_sign = "PUT\n\n\n$content_length\n\n$content_type\n\n\n\n\n\n$canonicalized_headers$canonicalized_resource";
+    $string_to_sign = "PUT\n\n\n$content_length\n\n$content_type\n\n\n\n\n\n\n$canonicalized_headers$canonicalized_resource";
     $signature = base64_encode(hash_hmac('sha256', $string_to_sign, base64_decode($account_key), true));
 
     $url = "https://$account_name.blob.core.windows.net/$container/$blob_name";
@@ -76,10 +76,14 @@ function upload_to_azure_blob($file_path, $blob_name) {
 
     $response = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_err = curl_error($ch);
     curl_close($ch);
 
     if ($http_code === 201) {
+        error_log("Azure Blob upload SUCCESS: $url");
         return $url;
+    } else {
+        error_log("Azure Blob upload FAILED (HTTP $http_code): $response | Curl error: $curl_err");
     }
 
     return false;
