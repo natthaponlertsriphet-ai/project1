@@ -1,9 +1,12 @@
 <?php
 require_once '../db.php';
-
+require_once '../azure_blob_helper.php';
 
 function getTableImgUrl($path, $number = '') {
     if ($path) {
+        if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) {
+            return $path;
+        }
         $clean = ltrim(preg_replace('#^(\.\./)+#', '', $path), '/');
         if (file_exists(__DIR__ . '/../' . $clean)) {
             return '../' . $clean;
@@ -201,6 +204,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     "HEIC image format is not supported by browsers and could not be converted on the server. Please upload JPG or PNG.",
                                     "ไฟล์ภาพ .HEIC ไม่รองรับการแสดงผลบนเว็บเบราว์เซอร์ และเซิร์ฟเวอร์ไม่สามารถแปลงไฟล์ได้ กรุณาอัปโหลดเป็นไฟล์ JPG หรือ PNG"
                                 );
+                            }
+                        }
+
+                        // Upload to Azure Blob Storage if configured
+                        $final_local_file = __DIR__ . '/../' . $image_path;
+                        if (file_exists($final_local_file)) {
+                            $azure_url = upload_to_azure_blob($final_local_file, $image_path);
+                            if ($azure_url) {
+                                $image_path = $azure_url;
                             }
                         }
                     } else {

@@ -1,5 +1,6 @@
 <?php
 require_once '../db.php';
+require_once '../azure_blob_helper.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -136,6 +137,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     
                     if (move_uploaded_file($file_tmp, $upload_dir . $new_name)) {
                         $image_path = 'images/promotions/' . $new_name;
+                        
+                        // Upload to Azure Blob Storage if configured
+                        $final_local_file = $upload_dir . $new_name;
+                        if (file_exists($final_local_file)) {
+                            $azure_url = upload_to_azure_blob($final_local_file, $image_path);
+                            if ($azure_url) {
+                                $image_path = $azure_url;
+                            }
+                        }
                     } else {
                         $error = t(
                             "Failed to move uploaded file. Check folder write permissions (chmod 777).",

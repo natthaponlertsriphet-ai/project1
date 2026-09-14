@@ -147,8 +147,13 @@ require_once 'header.php';
             <?php foreach ($promotions as $index => $promo): ?>
                 <?php 
                 $is_large = ($index % 2 === 0);
-                $raw_img = !empty($promo['image']) ? preg_replace('#^(\.\./|/)+#', '', $promo['image']) : '';
-                $promo_img = !empty($raw_img) ? $raw_img : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
+                $raw_img = $promo['image'] ?? '';
+                if ($raw_img && (strpos($raw_img, 'http://') === 0 || strpos($raw_img, 'https://') === 0)) {
+                    $promo_img = $raw_img;
+                } else {
+                    $clean_img = !empty($raw_img) ? preg_replace('#^(\.\./|/)+#', '', $raw_img) : '';
+                    $promo_img = !empty($clean_img) ? $clean_img : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
+                }
                 ?>
                 <?php if ($is_large): ?>
                     <!-- 7-Column Horizontal Card -->
@@ -220,8 +225,14 @@ require_once 'header.php';
             const title = escapeHtml(promo.title);
             const period = escapeHtml(promo.period);
             const desc = escapeHtml(promo.description).replace(/\n/g, '<br>');
-            let rawImg = promo.image ? String(promo.image).replace(/^(\.\.\/|\/)+/, '') : '';
-            const image = rawImg ? escapeHtml(rawImg) : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
+            let rawImg = promo.image ? String(promo.image) : '';
+            let image = '';
+            if (rawImg && (rawImg.indexOf('http://') === 0 || rawImg.indexOf('https://') === 0)) {
+                image = escapeHtml(rawImg);
+            } else {
+                let cleanImg = rawImg ? rawImg.replace(/^(\.\.\/|\/)+/, '') : '';
+                image = cleanImg ? escapeHtml(cleanImg) : 'images/promotions/uploaded_1788947667_IMG_0181.JPG';
+            }
 
             if (isLarge) {
                 html += `
