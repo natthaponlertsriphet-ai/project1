@@ -557,7 +557,7 @@ require_once 'header.php';
         <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5 shadow-lg">
             <h4 class="font-anton text-warning text-uppercase tracking-wider mb-3 d-flex align-items-center gap-2">
                 <span class="material-symbols-outlined text-warning fs-4">confirmation_number</span>
-                <span><?php echo t("BOOKING DETAILS & STATUS", "รายละเอียดและสถานการณ์จอง"); ?></span>
+                <span><?php echo t("BOOKING DETAILS & STATUS", "รายละเอียดข้อมูลการจอง"); ?></span>
             </h4>
             <div class="font-mono small">
                 <div><strong><?php echo t("Booking Ref ID", "รหัสการจอง"); ?>:</strong> <?php echo $booking_success['id']; ?></div>
