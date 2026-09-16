@@ -43,7 +43,10 @@ function sendLinePushMessage($to, $messages) {
  * Sends a notification to the restaurant admin when a new booking is submitted.
  */
 function notifyAdminNewBooking($booking) {
-    if (!defined('LINE_ADMIN_USER_ID') || LINE_ADMIN_USER_ID === '' || empty(LINE_ADMIN_USER_ID)) {
+    $hasAdmin = defined('LINE_ADMIN_USER_ID') && !empty(LINE_ADMIN_USER_ID);
+    $hasGroup = defined('LINE_GROUP_ID') && !empty(LINE_GROUP_ID);
+
+    if (!$hasAdmin && !$hasGroup) {
         return false;
     }
 
@@ -193,12 +196,15 @@ function notifyAdminNewBooking($booking) {
         ]
     ];
 
-    $sent = sendLinePushMessage(LINE_ADMIN_USER_ID, $messages);
-
-    // Also send notification to the LINE Group if configured
-    if (defined('LINE_GROUP_ID') && LINE_GROUP_ID !== '' && !empty(LINE_GROUP_ID)) {
-        sendLinePushMessage(LINE_GROUP_ID, $messages);
+    $sentAdmin = false;
+    if ($hasAdmin) {
+        $sentAdmin = sendLinePushMessage(LINE_ADMIN_USER_ID, $messages);
     }
 
-    return $sent;
+    $sentGroup = false;
+    if ($hasGroup) {
+        $sentGroup = sendLinePushMessage(LINE_GROUP_ID, $messages);
+    }
+
+    return $sentAdmin || $sentGroup;
 }
