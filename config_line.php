@@ -36,5 +36,5 @@ define('LINE_CHANNEL_ACCESS_TOKEN', getenv('LINE_CHANNEL_ACCESS_TOKEN') ?: 'ZrnD
 
 // Admin & Group notification recipients
 define('LINE_ADMIN_USER_ID', getenv('LINE_ADMIN_USER_ID') ?: 'Ub31b624096f005348877004618e72421');
-define('LINE_GROUP_ID', getenv('LINE_GROUP_ID') ?: 'C7b73a97a58b091f6d2d9f789d688da84');
+define('LINE_GROUP_ID', getenv('LINE_GROUP_ID') ?: 'C47d40d414eee4c9c6cf4f5a851f598f9');
 
