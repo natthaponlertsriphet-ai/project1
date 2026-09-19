@@ -975,10 +975,6 @@ try {
                     <span class="material-symbols-outlined text-base">today</span>
                     <span><?php echo t("Today", "วันนี้"); ?></span>
                 </a>
-                <a href="index.php?analytics_mode=7days" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo $analytics_mode === '7days' ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>">
-                    <span class="material-symbols-outlined text-base">date_range</span>
-                    <span><?php echo t("7 Days", "7 วันล่าสุด"); ?></span>
-                </a>
                 <a href="index.php?analytics_mode=month&analytics_month=<?php echo date('Y-m'); ?>" class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 <?php echo ($analytics_mode === 'month' && $analytics_month === date('Y-m')) ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-zinc-950 font-bold shadow-md shadow-amber-500/20' : 'text-zinc-300 hover:text-white hover:bg-zinc-800/60'; ?>">
                     <span class="material-symbols-outlined text-base">calendar_view_month</span>
                     <span><?php echo t("This Month", "เดือนนี้"); ?></span>
