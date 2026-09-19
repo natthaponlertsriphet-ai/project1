@@ -6,6 +6,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Security Check: Redirect if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
 // Temporary Translation Helper (defined locally before admin_header.php load)
 if (!function_exists('t')) {
     function t($en, $th) {

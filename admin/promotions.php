@@ -12,6 +12,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Role-based Access Control: STAFF is restricted to index.php and tables.php
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'STAFF') {
+    header("Location: index.php");
+    exit;
+}
+
 // Temporary Translation Helper (defined locally before admin_header.php load)
 if (!function_exists('t')) {
     function t($en, $th) {
