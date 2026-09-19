@@ -350,7 +350,8 @@ if (!function_exists('formatDateStr')) {
         ];
         
         global $lang;
-        if ($lang === 'th') {
+        $current_lang = $lang ?? ($_SESSION['lang'] ?? 'th');
+        if ($current_lang === 'th') {
             $thai_year = $year + 543;
             return $day . ' ' . $thai_months[$month] . ' ' . substr($thai_year, 2);
         } else {
@@ -378,7 +379,8 @@ if (!function_exists('formatMonth')) {
         ];
         
         global $lang;
-        if ($lang === 'th') {
+        $current_lang = $lang ?? ($_SESSION['lang'] ?? 'th');
+        if ($current_lang === 'th') {
             $thai_year = $year + 543;
             return $thai_months[$month] . ' ' . $thai_year;
         } else {
@@ -1478,12 +1480,14 @@ function submitAdminCancel() {
 
 function submitCalendarFilter(type, val) {
     if (!val) return;
+    const activeTab = '<?php echo htmlspecialchars($active_tab); ?>';
+    const tabParam = activeTab ? `&tab=${encodeURIComponent(activeTab)}` : '';
     if (type === 'day') {
-        window.location.href = `index.php?analytics_mode=day&analytics_start=${encodeURIComponent(val)}`;
+        window.location.href = `index.php?analytics_mode=day&analytics_start=${encodeURIComponent(val)}${tabParam}`;
     } else if (type === 'month') {
-        window.location.href = `index.php?analytics_mode=month&analytics_month=${encodeURIComponent(val)}`;
+        window.location.href = `index.php?analytics_mode=month&analytics_month=${encodeURIComponent(val)}${tabParam}`;
     } else if (type === 'year') {
-        window.location.href = `index.php?analytics_mode=year&analytics_year=${encodeURIComponent(val)}`;
+        window.location.href = `index.php?analytics_mode=year&analytics_year=${encodeURIComponent(val)}${tabParam}`;
     }
 }
 
