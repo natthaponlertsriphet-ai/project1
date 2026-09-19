@@ -806,7 +806,7 @@ require_once 'header.php';
                         </label>
                         <div class="input-group-smooth d-flex align-items-center">
                             <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">schedule</span>
-                            <input type="time" name="time_slot" id="booking-time" required class="form-control text-light font-sans py-2.5 px-0" onchange="updateAvailability()" value="19:00">
+                            <input type="time" name="time_slot" id="booking-time" required class="form-control text-light font-sans py-2.5 px-0" onchange="updateAvailability()" value="17:00">
                         </div>
                     </div>
 
