@@ -399,6 +399,8 @@ $all_beers = $stmt->fetchAll();
             </a>
         </div>
     </div>
+</div>
+
 <script>
 function toggleBeerStatusRealtime(event, beerId, el) {
     if (event) event.preventDefault();
@@ -409,31 +411,40 @@ function toggleBeerStatusRealtime(event, beerId, el) {
     const currentActive = linkEl.getAttribute('data-beer-active') === '1';
     const newActive = !currentActive;
 
-    // Instant optimistic update (0ms)
-    linkEl.setAttribute('data-beer-active', newActive ? '1' : '0');
-    if (badgeSpan) {
-        if (newActive) {
-            badgeSpan.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-            badgeSpan.style.border = '1px solid rgba(16, 185, 129, 0.25)';
-            badgeSpan.style.color = '#34d399';
-            badgeSpan.innerText = '<?php echo t("ACTIVE", "เปิดขาย"); ?>';
-        } else {
-            badgeSpan.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-            badgeSpan.style.border = '1px solid rgba(239, 68, 68, 0.25)';
-            badgeSpan.style.color = '#f87171';
-            badgeSpan.innerText = '<?php echo t("SOLD OUT", "หมด / ปิดขาย"); ?>';
+    function renderStatus(isActive) {
+        if (badgeSpan) {
+            if (isActive) {
+                badgeSpan.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
+                badgeSpan.style.border = '1px solid rgba(16, 185, 129, 0.25)';
+                badgeSpan.style.color = '#34d399';
+                badgeSpan.innerText = '<?php echo t("ACTIVE", "เปิดขาย"); ?>';
+            } else {
+                badgeSpan.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                badgeSpan.style.border = '1px solid rgba(239, 68, 68, 0.25)';
+                badgeSpan.style.color = '#f87171';
+                badgeSpan.innerText = '<?php echo t("SOLD OUT", "หมด / ปิดขาย"); ?>';
+            }
         }
     }
+
+    // Instant optimistic update (0ms)
+    linkEl.setAttribute('data-beer-active', newActive ? '1' : '0');
+    renderStatus(newActive);
 
     fetch(`beers.php?action=toggle_status&id=${encodeURIComponent(beerId)}&ajax=1`)
         .then(res => res.json())
         .then(data => {
-            if (!data.success) {
+            if (!data || !data.success) {
                 // Revert on failure
                 linkEl.setAttribute('data-beer-active', currentActive ? '1' : '0');
+                renderStatus(currentActive);
             }
         })
-        .catch(err => console.error("Error toggling beer status:", err));
+        .catch(err => {
+            console.error("Error toggling beer status:", err);
+            linkEl.setAttribute('data-beer-active', currentActive ? '1' : '0');
+            renderStatus(currentActive);
+        });
 }
 </script>
 
