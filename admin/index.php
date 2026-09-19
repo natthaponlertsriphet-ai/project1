@@ -1156,8 +1156,26 @@ foreach ($chart_monthly as $m) {
 }
 ?>
 
-<!-- Charts Section (3 Columns) -->
-<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+<?php 
+$show_chart_today   = in_array($analytics_mode, ['all', '7days', 'today', 'day']);
+$show_chart_monthly = in_array($analytics_mode, ['all', '7days', 'month', 'year']);
+$show_chart_yearly  = in_array($analytics_mode, ['all', 'year']);
+
+$chart_cols_count = ($show_chart_today ? 1 : 0) + ($show_chart_monthly ? 1 : 0) + ($show_chart_yearly ? 1 : 0);
+$chart_grid_class = "grid grid-cols-1 " . ($chart_cols_count == 2 ? "md:grid-cols-2" : ($chart_cols_count == 3 ? "xl:grid-cols-3" : "")) . " gap-6 mb-8";
+
+$show_summary_daily   = in_array($analytics_mode, ['all', '7days', 'today', 'day', 'month']);
+$show_summary_monthly = in_array($analytics_mode, ['all', 'month']);
+$show_summary_yearly  = in_array($analytics_mode, ['all']);
+
+$summary_cols_count = ($show_summary_daily ? 1 : 0) + ($show_summary_monthly ? 1 : 0) + ($show_summary_yearly ? 1 : 0);
+$summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid-cols-2" : ($summary_cols_count == 3 ? "lg:grid-cols-3" : "")) . " gap-6 mb-8 font-sans";
+?>
+
+<?php if ($chart_cols_count > 0): ?>
+<!-- Charts Section -->
+<div class="<?php echo $chart_grid_class; ?>">
+    <?php if ($show_chart_today): ?>
     <!-- Today Booking Chart (1 Day) -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
@@ -1168,7 +1186,9 @@ foreach ($chart_monthly as $m) {
             <canvas id="todayChart"></canvas>
         </div>
     </div>
+    <?php endif; ?>
 
+    <?php if ($show_chart_monthly): ?>
     <!-- 1 Month Booking Chart -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
@@ -1179,7 +1199,9 @@ foreach ($chart_monthly as $m) {
             <canvas id="dailyChart"></canvas>
         </div>
     </div>
+    <?php endif; ?>
 
+    <?php if ($show_chart_yearly): ?>
     <!-- 1 Year Booking Chart -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
@@ -1190,11 +1212,15 @@ foreach ($chart_monthly as $m) {
             <canvas id="monthlyChart"></canvas>
         </div>
     </div>
+    <?php endif; ?>
 </div>
+<?php endif; ?>
 
-<!-- Booking Summaries (Day, Month, Year) Grid -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 font-sans">
+<?php if ($summary_cols_count > 0): ?>
+<!-- Booking Summaries Grid -->
+<div class="<?php echo $summary_grid_class; ?>">
     
+    <?php if ($show_summary_daily): ?>
     <!-- Daily Summary Card -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
@@ -1230,7 +1256,9 @@ foreach ($chart_monthly as $m) {
             </table>
         </div>
     </div>
+    <?php endif; ?>
 
+    <?php if ($show_summary_monthly): ?>
     <!-- Monthly Summary Card -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
@@ -1266,7 +1294,9 @@ foreach ($chart_monthly as $m) {
             </table>
         </div>
     </div>
+    <?php endif; ?>
 
+    <?php if ($show_summary_yearly): ?>
     <!-- Yearly Summary Card -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
@@ -1302,8 +1332,10 @@ foreach ($chart_monthly as $m) {
             </table>
         </div>
     </div>
+    <?php endif; ?>
 
 </div>
+<?php endif; ?>
 <?php endif; ?>
 
 
@@ -1468,163 +1500,169 @@ function submitCalendarFilter(type, val) {
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'): ?>
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Today Chart (1 Day)
-    const todayCtx = document.getElementById('todayChart').getContext('2d');
-    new Chart(todayCtx, {
-        type: 'bar',
-        data: {
-            labels: <?php echo json_encode($today_labels); ?>,
-            datasets: [
-                {
-                    label: '<?php echo t("Total", "ยอดจอง"); ?>',
-                    data: <?php echo json_encode($today_total); ?>,
-                    backgroundColor: 'rgba(234, 179, 8, 0.8)',
-                    borderColor: '#eab308',
-                    borderWidth: 1
-                },
-                {
-                    label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
-                    data: <?php echo json_encode($today_confirmed); ?>,
-                    backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                    borderColor: '#10b981',
-                    borderWidth: 1
-                },
-                {
-                    label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
-                    data: <?php echo json_encode($today_cancelled); ?>,
-                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                    borderColor: '#ef4444',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
-                }
+    const todayEl = document.getElementById('todayChart');
+    if (todayEl) {
+        new Chart(todayEl.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($today_labels); ?>,
+                datasets: [
+                    {
+                        label: '<?php echo t("Total", "ยอดจอง"); ?>',
+                        data: <?php echo json_encode($today_total); ?>,
+                        backgroundColor: 'rgba(234, 179, 8, 0.8)',
+                        borderColor: '#eab308',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
+                        data: <?php echo json_encode($today_confirmed); ?>,
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: '#10b981',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
+                        data: <?php echo json_encode($today_cancelled); ?>,
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1
+                    }
+                ]
             },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
+                    }
                 },
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     // 2. 1 Month Trend Chart (Daily points over 30 days)
-    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
-    new Chart(dailyCtx, {
-        type: 'line',
-        data: {
-            labels: <?php echo json_encode($daily_labels); ?>,
-            datasets: [
-                {
-                    label: '<?php echo t("Total", "ยอดจอง"); ?>',
-                    data: <?php echo json_encode($daily_total); ?>,
-                    backgroundColor: 'rgba(234, 179, 8, 0.2)',
-                    borderColor: '#eab308',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
-                    data: <?php echo json_encode($daily_confirmed); ?>,
-                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                    borderColor: '#10b981',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                },
-                {
-                    label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
-                    data: <?php echo json_encode($daily_cancelled); ?>,
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    borderColor: '#ef4444',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
-                }
+    const dailyEl = document.getElementById('dailyChart');
+    if (dailyEl) {
+        new Chart(dailyEl.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode($daily_labels); ?>,
+                datasets: [
+                    {
+                        label: '<?php echo t("Total", "ยอดจอง"); ?>',
+                        data: <?php echo json_encode($daily_total); ?>,
+                        backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                        borderColor: '#eab308',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
+                        data: <?php echo json_encode($daily_confirmed); ?>,
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
+                        data: <?php echo json_encode($daily_cancelled); ?>,
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        borderColor: '#ef4444',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
             },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
+                    }
                 },
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 
     // 3. 1 Year Trend Chart (Monthly points over 12 months)
-    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-    new Chart(monthlyCtx, {
-        type: 'bar',
-        data: {
-            labels: <?php echo json_encode($monthly_labels); ?>,
-            datasets: [
-                {
-                    label: '<?php echo t("Total", "ยอดจอง"); ?>',
-                    data: <?php echo json_encode($monthly_total); ?>,
-                    backgroundColor: 'rgba(234, 179, 8, 0.8)',
-                    borderColor: '#eab308',
-                    borderWidth: 1
-                },
-                {
-                    label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
-                    data: <?php echo json_encode($monthly_confirmed); ?>,
-                    backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                    borderColor: '#10b981',
-                    borderWidth: 1
-                },
-                {
-                    label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
-                    data: <?php echo json_encode($monthly_cancelled); ?>,
-                    backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                    borderColor: '#ef4444',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
-                }
+    const monthlyEl = document.getElementById('monthlyChart');
+    if (monthlyEl) {
+        new Chart(monthlyEl.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($monthly_labels); ?>,
+                datasets: [
+                    {
+                        label: '<?php echo t("Total", "ยอดจอง"); ?>',
+                        data: <?php echo json_encode($monthly_total); ?>,
+                        backgroundColor: 'rgba(234, 179, 8, 0.8)',
+                        borderColor: '#eab308',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '<?php echo t("Approved", "ยืนยันแล้ว"); ?>',
+                        data: <?php echo json_encode($monthly_confirmed); ?>,
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: '#10b981',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '<?php echo t("Cancelled", "ยกเลิกแล้ว"); ?>',
+                        data: <?php echo json_encode($monthly_cancelled); ?>,
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1
+                    }
+                ]
             },
-            scales: {
-                x: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'rgba(255, 255, 255, 0.7)', font: { family: 'IBM Plex Sans Thai' } }
+                    }
                 },
-                y: {
-                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { family: 'IBM Plex Sans Thai' } }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', stepSize: 1, precision: 0 }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 });
 <?php endif; ?>
 
