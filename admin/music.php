@@ -296,9 +296,15 @@ require_once 'admin_header.php';
                         <span><?php echo t("Day", "วันแสดง"); ?></span>
                     </label>
                     <select name="day" required oninvalid="this.setCustomValidity('<?php echo t('⚠️ Please select the live performance day.', '⚠️ กรุณาระบุวันแสดงดนตรีสด'); ?>')" onchange="this.setCustomValidity('')" class="shadcn-input border-zinc-700 bg-zinc-950 text-zinc-100 focus:border-amber-400">
-                        <?php foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $d): ?>
+                        <?php 
+                        $day_options_th = [
+                            'Mon' => 'วันจันทร์ (Mon)', 'Tue' => 'วันอังคาร (Tue)', 'Wed' => 'วันพุธ (Wed)',
+                            'Thu' => 'วันพฤหัสบดี (Thu)', 'Fri' => 'วันศุกร์ (Fri)', 'Sat' => 'วันเสาร์ (Sat)', 'Sun' => 'วันอาทิตย์ (Sun)'
+                        ];
+                        foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $d): 
+                        ?>
                             <option value="<?php echo $d; ?>" <?php echo $day === $d ? 'selected' : ''; ?>>
-                                <?php echo t($d, $d); ?>
+                                <?php echo t($d, $day_options_th[$d] ?? $d); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -368,9 +374,15 @@ require_once 'admin_header.php';
                                 </td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($music_events as $event): ?>
+                            <?php 
+                            $day_table_th = [
+                                'Mon' => 'วันจันทร์', 'Tue' => 'วันอังคาร', 'Wed' => 'วันพุธ',
+                                'Thu' => 'วันพฤหัสบดี', 'Fri' => 'วันศุกร์', 'Sat' => 'วันเสาร์', 'Sun' => 'วันอาทิตย์'
+                            ];
+                            foreach ($music_events as $event): 
+                            ?>
                                 <tr>
-                                    <td class="font-anton text-amber-400 text-base"><?php echo t($event['day'], $event['day']); ?></td>
+                                    <td class="font-anton text-amber-400 text-base"><?php echo t($event['day'], $day_table_th[$event['day']] ?? $event['day']); ?></td>
                                     <td class="text-zinc-200"><?php echo htmlspecialchars($event['time']); ?></td>
                                     <td class="font-semibold text-zinc-100"><?php echo htmlspecialchars($event['artist']); ?></td>
                                     <td class="text-zinc-400" style="max-width: 200px;"><?php echo htmlspecialchars($event['description']); ?></td>
