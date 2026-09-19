@@ -207,7 +207,7 @@ $all_beers = $stmt->fetchAll();
             <form action="beers.php" method="POST" class="flex flex-col gap-4">
                 <input type="hidden" name="action" value="<?php echo $is_editing ? 'update_beer' : 'create_beer'; ?>">
                 <?php if ($is_editing): ?>
-                    <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
+                    <input type="hidden" name="edit_id" value="<?php echo htmlspecialchars($edit_id, ENT_QUOTES); ?>">
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
@@ -308,7 +308,7 @@ $all_beers = $stmt->fetchAll();
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="beers.php?action=edit&id=<?php echo $b['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="javascript:void(0)" onclick="confirmDeleteBeer('<?php echo $b['id']; ?>', '<?php echo htmlspecialchars($b['tap_number']); ?>', '<?php echo htmlspecialchars($b['name']); ?>', '<?php echo htmlspecialchars($b['abv']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Beer Tap', 'ลบเบียร์แท็ป'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeleteBeer('<?php echo htmlspecialchars($b['id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($b['tap_number'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($b['name'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($b['abv'], ENT_QUOTES); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Beer Tap', 'ลบเบียร์แท็ป'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                 </tr>
