@@ -193,7 +193,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $table_id = trim($_POST['table_id'] ?? '');
     
     if (!$customer_name || !$customer_phone || !$date || !$time_slot || $pax <= 0 || !$table_id) {
-        $booking_error = "Please fill in all fields and select a table.";
+        $booking_error = t("Please fill in all fields and select a table.", "กรุณากรอกข้อมูลให้ครบถ้วนและเลือกโต๊ะนั่ง");
+    } elseif ($date < date('Y-m-d')) {
+        $booking_error = t("Cannot select a past date for booking.", "ไม่สามารถจองโต๊ะย้อนหลังได้ กรุณาเลือกวันที่ปัจจุบันหรืออนาคต");
     } elseif (!preg_match('/^\+?[0-9\s\-()]+$/', $customer_phone)) {
         $booking_error = t("Invalid phone number format.", "เบอร์โทรไม่ถูกต้อง");
     } else {
@@ -203,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $stmt->execute([$date, $time_slot, $table_id]);
             
             if ($stmt->fetchColumn() > 0) {
-                $booking_error = "This table has already been reserved for the selected timeslot.";
+                $booking_error = t("This table has already been reserved for the selected timeslot.", "โต๊ะนี้ถูกจองในช่วงเวลาดังกล่าวแล้ว กรุณาเลือกโต๊ะอื่นหรือช่วงเวลาอื่น");
             } else {
                 // Fetch table details to verify capacity and status
                 $stmt = $pdo->prepare("SELECT capacity, table_number AS number, table_status AS status FROM `table` WHERE table_id = ?");
@@ -211,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $table = $stmt->fetch();
                 
                 if (!$table) {
-                    $booking_error = "Invalid table selected.";
+                    $booking_error = t("Invalid table selected.", "โต๊ะที่เลือกไม่ถูกต้อง");
                 } elseif ($table['status'] === 'OCCUPIED') {
                     $booking_error = t("This table is currently unavailable. It has been occupied or closed by staff.", "ขออภัย โต๊ะนี้ไม่สามารถจองได้เนื่องจากถูกปิดบริการหรือทำเครื่องหมายเป็นไม่ว่างโดยพนักงานร้าน");
                 } elseif ($pax > $table['capacity']) {
