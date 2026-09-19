@@ -1,6 +1,18 @@
 <?php
 require_once 'db.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Ensure translation helper is available before header.php is loaded (e.g. for AJAX calls)
+if (!function_exists('t')) {
+    function t($en, $th) {
+        $lang = $_SESSION['lang'] ?? 'th';
+        return $lang === 'th' ? $th : $en;
+    }
+}
+
 // Fetch all live music schedules
 try {
     $stmt = $pdo->query("SELECT * FROM music ORDER BY 
@@ -551,22 +563,23 @@ require_once 'header.php';
             .then(html => {
                 const container = document.getElementById('timetable-container');
                 if (container) {
-                    const normalizedHtml = html.trim().replace(/\s+/g, ' ');
-                    const currentNormalizedHtml = container.innerHTML.trim().replace(/\s+/g, ' ');
-                    if (normalizedHtml !== currentNormalizedHtml) {
+                    const cleanNewHtml = html.trim().replace(/\s+/g, ' ').replace(/style="display:\s*(none|block);?"/gi, '');
+                    const cleanCurrentHtml = container.innerHTML.trim().replace(/\s+/g, ' ').replace(/style="display:\s*(none|block);?"/gi, '');
+
+                    if (cleanNewHtml !== cleanCurrentHtml) {
                         container.innerHTML = html;
+                        
+                        // Restore visibility of active day
+                        const dayContents = container.querySelectorAll('.schedule-tab-content');
+                        dayContents.forEach(content => {
+                            const day = content.id.replace('schedule-day-', '');
+                            if (day === activeDay) {
+                                content.style.display = 'block';
+                            } else {
+                                content.style.display = 'none';
+                            }
+                        });
                     }
-                    
-                    // Restore visibility of active day
-                    const dayContents = container.querySelectorAll('.schedule-tab-content');
-                    dayContents.forEach(content => {
-                        const day = content.id.replace('schedule-day-', '');
-                        if (day === activeDay) {
-                            content.style.display = 'block';
-                        } else {
-                            content.style.display = 'none';
-                        }
-                    });
                 }
             })
             .catch(err => console.error("Error polling live timetable:", err));
