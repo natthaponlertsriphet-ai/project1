@@ -402,12 +402,6 @@ if ($analytics_mode === 'today') {
     $analytics_where_clauses[] = "reservation_date = ?";
     $analytics_params[] = date('Y-m-d');
     $analytics_label_summary = t("Today", "ประจำวันนี้") . " (" . formatDateStr(date('Y-m-d')) . ")";
-} elseif ($analytics_mode === '7days') {
-    $seven_days_ago = date('Y-m-d', strtotime('-6 days'));
-    $analytics_where_clauses[] = "reservation_date >= ? AND reservation_date <= ?";
-    $analytics_params[] = $seven_days_ago;
-    $analytics_params[] = date('Y-m-d');
-    $analytics_label_summary = t("7 Days Range", "7 วันล่าสุด") . " (" . formatDateStr($seven_days_ago) . " - " . formatDateStr(date('Y-m-d')) . ")";
 } elseif ($analytics_mode === 'day' && !empty($analytics_start)) {
     $analytics_where_clauses[] = "reservation_date = ?";
     $analytics_params[] = $analytics_start;
@@ -1153,14 +1147,14 @@ foreach ($chart_monthly as $m) {
 ?>
 
 <?php 
-$show_chart_today   = in_array($analytics_mode, ['all', '7days', 'today', 'day']);
-$show_chart_monthly = in_array($analytics_mode, ['all', '7days', 'month', 'year']);
+$show_chart_today   = in_array($analytics_mode, ['all', 'today', 'day']);
+$show_chart_monthly = in_array($analytics_mode, ['all', 'month', 'year']);
 $show_chart_yearly  = in_array($analytics_mode, ['all', 'year']);
 
 $chart_cols_count = ($show_chart_today ? 1 : 0) + ($show_chart_monthly ? 1 : 0) + ($show_chart_yearly ? 1 : 0);
 $chart_grid_class = "grid grid-cols-1 " . ($chart_cols_count == 2 ? "md:grid-cols-2" : ($chart_cols_count == 3 ? "xl:grid-cols-3" : "")) . " gap-6 mb-8";
 
-$show_summary_daily   = in_array($analytics_mode, ['all', '7days', 'today', 'day', 'month']);
+$show_summary_daily   = in_array($analytics_mode, ['all', 'today', 'day', 'month']);
 $show_summary_monthly = in_array($analytics_mode, ['all', 'month']);
 $show_summary_yearly  = in_array($analytics_mode, ['all']);
 
