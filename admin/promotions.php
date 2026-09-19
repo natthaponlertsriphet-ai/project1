@@ -412,31 +412,40 @@ function togglePromoStatusRealtime(event, promoId, el) {
     const currentActive = linkEl.getAttribute('data-promo-active') === '1';
     const newActive = !currentActive;
 
-    // Instant optimistic UI update (0ms)
-    linkEl.setAttribute('data-promo-active', newActive ? '1' : '0');
-    if (badgeSpan) {
-        if (newActive) {
-            badgeSpan.style.backgroundColor = 'rgba(25, 135, 84, 0.1)';
-            badgeSpan.style.border = '1px solid rgba(25, 135, 84, 0.25)';
-            badgeSpan.style.color = '#75b798';
-            badgeSpan.innerText = '<?php echo t("Active", "กำลังจัดอยู่"); ?>';
-        } else {
-            badgeSpan.style.backgroundColor = 'rgba(63, 63, 70, 0.2)';
-            badgeSpan.style.border = '1px solid rgba(63, 63, 70, 0.3)';
-            badgeSpan.style.color = '#a1a1aa';
-            badgeSpan.innerText = '<?php echo t("Expired", "หมดเขต"); ?>';
+    function renderStatus(isActive) {
+        if (badgeSpan) {
+            if (isActive) {
+                badgeSpan.style.backgroundColor = 'rgba(25, 135, 84, 0.1)';
+                badgeSpan.style.border = '1px solid rgba(25, 135, 84, 0.25)';
+                badgeSpan.style.color = '#75b798';
+                badgeSpan.innerText = '<?php echo t("Active", "กำลังจัดอยู่"); ?>';
+            } else {
+                badgeSpan.style.backgroundColor = 'rgba(63, 63, 70, 0.2)';
+                badgeSpan.style.border = '1px solid rgba(63, 63, 70, 0.3)';
+                badgeSpan.style.color = '#a1a1aa';
+                badgeSpan.innerText = '<?php echo t("Expired", "หมดเขต"); ?>';
+            }
         }
     }
+
+    // Instant optimistic UI update (0ms)
+    linkEl.setAttribute('data-promo-active', newActive ? '1' : '0');
+    renderStatus(newActive);
 
     fetch(`promotions.php?action=toggle_status&id=${encodeURIComponent(promoId)}&ajax=1`)
         .then(res => res.json())
         .then(data => {
-            if (!data.success) {
+            if (!data || !data.success) {
                 // Revert on failure
                 linkEl.setAttribute('data-promo-active', currentActive ? '1' : '0');
+                renderStatus(currentActive);
             }
         })
-        .catch(err => console.error("Error toggling promo status:", err));
+        .catch(err => {
+            console.error("Error toggling promo status:", err);
+            linkEl.setAttribute('data-promo-active', currentActive ? '1' : '0');
+            renderStatus(currentActive);
+        });
 }
 
     function confirmDeletePromo(promoId, promoTitle, promoPeriod) {
