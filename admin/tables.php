@@ -258,7 +258,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $stmt = $pdo->prepare("SELECT COUNT(*) FROM `table` WHERE table_number = ?");
                     $stmt->execute([$number]);
                     if ($stmt->fetchColumn() > 0) {
-                        $error = "This Table Number already exists.";
+                        $error = t("This Table Number already exists.", "หมายเลขโต๊ะนี้มีอยู่ในระบบแล้ว");
                     } else {
                         $id = 'tbl_' . uniqid();
                         $stmt = $pdo->prepare("INSERT INTO `table` (table_id, table_number, zone, capacity, table_status, image) VALUES (?, ?, ?, ?, ?, ?)");
@@ -283,7 +283,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $stmt = $pdo->prepare("SELECT COUNT(*) FROM `table` WHERE table_number = ? AND table_id != ?");
                     $stmt->execute([$number, $id]);
                     if ($stmt->fetchColumn() > 0) {
-                        $error = "This Table Number is already in use.";
+                        $error = t("This Table Number is already in use.", "หมายเลขโต๊ะนี้ถูกใช้งานแล้ว");
                     } else {
                         $stmt = $pdo->prepare("UPDATE `table` SET table_number = ?, zone = ?, capacity = ?, table_status = ?, image = ? WHERE table_id = ?");
                         $stmt->execute([$number, $zone, $capacity, $status, $image_path, $id]);
@@ -540,14 +540,15 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                                     <td class="font-anton text-warning text-lg"><?php echo htmlspecialchars($t['number']); ?></td>
                                     <td class="font-semibold text-zinc-100">
                                         <?php 
-                                        if ($t['zone'] === 'INDOOR') echo t("Indoor AC Room", "ห้องแอร์ด้านใน");
-                                        elseif ($t['zone'] === 'OUTDOOR') echo t("Outdoor Breeze", "ลานระเบียงด้านนอก");
-                                        elseif ($t['zone'] === 'STAGE') echo t("Stage Front", "หน้าเวทีการแสดง");
-                                        elseif ($t['zone'] === 'INDOOR_WINDOW') echo t("Indoor Window", "ติดกระจก");
-                                        elseif ($t['zone'] === 'INDOOR_CENTER') echo t("Indoor Center", "ตรงกลาง");
-                                        elseif ($t['zone'] === 'BAR') echo t("Bar Front", "หน้าบาร์");
-                                        elseif ($t['zone'] === 'WALKWAY') echo t("Walkway Zone", "โซนทางเดิน");
-                                        else echo htmlspecialchars($t['zone'] ?? 'N/A');
+                                        $zone_display = $t['zone'] ?? 'N/A';
+                                        if ($t['zone'] === 'INDOOR') $zone_display = t("Indoor AC Room", "ห้องแอร์ด้านใน");
+                                        elseif ($t['zone'] === 'OUTDOOR') $zone_display = t("Outdoor Breeze", "ลานระเบียงด้านนอก");
+                                        elseif ($t['zone'] === 'STAGE') $zone_display = t("Stage Front", "หน้าเวทีการแสดง");
+                                        elseif ($t['zone'] === 'INDOOR_WINDOW') $zone_display = t("Indoor Window", "ติดกระจก");
+                                        elseif ($t['zone'] === 'INDOOR_CENTER') $zone_display = t("Indoor Center", "ตรงกลาง");
+                                        elseif ($t['zone'] === 'BAR') $zone_display = t("Bar Front", "หน้าบาร์");
+                                        elseif ($t['zone'] === 'WALKWAY') $zone_display = t("Walkway Zone", "โซนทางเดิน");
+                                        echo htmlspecialchars($zone_display);
                                         ?>
                                     </td>
                                     <td class="text-center text-zinc-400"><?php echo $t['capacity']; ?> Guests</td>
@@ -564,7 +565,7 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                                     <td class="text-center">
                                         <div class="flex justify-center gap-1">
                                             <a href="tables.php?action=edit&id=<?php echo $t['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
-                                            <a href="javascript:void(0)" onclick="confirmDeleteTable('<?php echo $t['id']; ?>', '<?php echo htmlspecialchars($t['number']); ?>', '<?php echo htmlspecialchars($t['zone']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Table', 'ลบโต๊ะ'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                            <a href="javascript:void(0)" onclick="confirmDeleteTable('<?php echo $t['id']; ?>', '<?php echo htmlspecialchars($t['number']); ?>', '<?php echo htmlspecialchars($zone_display); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Table', 'ลบโต๊ะ'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                         </div>
                                     </td>
                                     <?php endif; ?>
@@ -654,46 +655,27 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                 </div>
                 <div>
                     <h3 class="font-anton text-warning tracking-wider text-lg uppercase m-0 leading-none">
-                        <?php echo t("Confirm Table Deletion", "ยืนยันการลบข้อมูลผังที่นั่ง"); ?>
+                        <?php echo t("Confirm Table Deletion", "ยืนยันการลบโต๊ะ"); ?>
                     </h3>
-                    <span class="text-zinc-400 text-xs font-mono block mt-1">
-                        <?php echo t("Remove table from system floorplan", "ลบหมายเลขโต๊ะออกจากผังร้าน"); ?>
-                    </span>
                 </div>
             </div>
-            <button onclick="closeDeleteTableModal()" type="button" class="text-zinc-400 hover:text-white transition-colors">
+            <button type="button" onclick="closeDeleteTableModal()" class="text-zinc-400 hover:text-zinc-100 p-1 rounded-lg transition-colors">
                 <span class="material-symbols-outlined text-xl">close</span>
             </button>
         </div>
-
         <!-- Modal Body -->
-        <div class="p-5">
-            <p class="text-zinc-300 text-sm mb-4 font-sans leading-relaxed">
-                <?php echo t("Are you sure you want to delete this table from the floorplan?", "คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลโต๊ะนี้ออกจากผังที่นั่งของร้าน?"); ?>
+        <div class="p-6 space-y-3">
+            <p class="text-zinc-300 text-sm">
+                <?php echo t("Are you sure you want to delete this table? This action cannot be undone.", "คุณแน่ใจหรือไม่ว่าต้องการลบโต๊ะนี้? การดำเนินการนี้ไม่สามารถย้อนกลับได้"); ?>
             </p>
-
-            <!-- Table Info Badge -->
-            <div class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 mb-4 font-mono text-xs space-y-1.5">
-                <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
-                    <span class="text-zinc-400"><?php echo t("Table Number:", "หมายเลขโต๊ะ:"); ?></span>
-                    <span id="delete-table-num-display" class="font-anton text-warning text-base font-bold"></span>
-                </div>
-                <div class="flex justify-between items-center pt-1">
-                    <span class="text-zinc-400"><?php echo t("Zone Location:", "โซนที่ตั้ง:"); ?></span>
-                    <span id="delete-table-zone-display" class="text-zinc-200 font-semibold"></span>
-                </div>
-            </div>
-
-            <!-- Caution Alert -->
-            <div class="bg-red-950/40 border border-red-900/60 text-red-300 p-3 rounded-lg text-xs font-mono flex items-start gap-2">
-                <span class="material-symbols-outlined text-sm leading-none mt-0.5 shrink-0 text-red-400">warning</span>
-                <span><?php echo t("Action cannot be undone. Any associated historical table data will be updated.", "การดำเนินการนี้จะไม่สามารถย้อนกลับได้ โปรดตรวจสอบความถูกต้องก่อนยืนยัน"); ?></span>
+            <div class="bg-zinc-900/80 border border-zinc-800 rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+                <span id="delete-table-num-display" class="font-bold text-amber-400 text-sm"></span>
+                <span id="delete-table-zone-display" class="text-zinc-400"></span>
             </div>
         </div>
-
         <!-- Modal Footer -->
-        <div class="bg-zinc-900/60 px-5 py-3.5 border-t border-zinc-800 flex items-center justify-end gap-2.5">
-            <button onclick="closeDeleteTableModal()" type="button" class="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-xl text-xs font-mono transition-colors">
+        <div class="bg-zinc-900/50 px-5 py-4 border-t border-zinc-800 flex items-center justify-end gap-3">
+            <button type="button" onclick="closeDeleteTableModal()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium rounded-xl text-xs transition-all">
                 <?php echo t("Cancel", "ยกเลิก"); ?>
             </button>
             <a id="confirm-delete-table-btn" href="#" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs font-mono transition-all flex items-center gap-1.5 shadow-lg shadow-red-600/20 active:scale-95 text-decoration-none">
@@ -702,78 +684,88 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
             </a>
         </div>
     </div>
+</div>
+
 <script>
+function renderTableUIState(tableId, targetStatus) {
+    const elements = document.querySelectorAll(`[data-table-id="${tableId}"]`);
+    if (!elements || elements.length === 0) return;
+
+    elements.forEach(linkEl => {
+        linkEl.setAttribute("data-table-status", targetStatus);
+
+        const innerCard = linkEl.querySelector(".table-card-inner") || linkEl.querySelector("div");
+        const statusDot = linkEl.querySelector(".table-status-dot");
+        const rowBadge = linkEl.querySelector(".table-row-badge") || document.getElementById(`table-row-badge-${tableId}`);
+
+        if (innerCard) {
+            if (targetStatus === "AVAILABLE") {
+                innerCard.style.backgroundColor = "rgba(34, 197, 94, 0.05)";
+                innerCard.style.borderColor = "rgba(34, 197, 94, 0.2)";
+                innerCard.style.color = "#4ade80";
+            } else {
+                innerCard.style.backgroundColor = "rgba(239, 68, 68, 0.05)";
+                innerCard.style.borderColor = "rgba(239, 68, 68, 0.2)";
+                innerCard.style.color = "#f87171";
+            }
+        }
+        if (statusDot) {
+            if (targetStatus === "AVAILABLE") {
+                statusDot.style.backgroundColor = "#22c55e";
+                statusDot.style.boxShadow = "0 0 8px #22c55e";
+            } else {
+                statusDot.style.backgroundColor = "#ef4444";
+                statusDot.style.boxShadow = "0 0 8px #ef4444";
+            }
+        }
+        if (rowBadge) {
+            if (targetStatus === "AVAILABLE") {
+                rowBadge.style.backgroundColor = "rgba(34, 197, 94, 0.1)";
+                rowBadge.style.border = "1px solid rgba(34, 197, 94, 0.25)";
+                rowBadge.style.color = "#4ade80";
+                rowBadge.innerText = "<?php echo t("AVAILABLE", "โต๊ะว่าง"); ?>";
+            } else {
+                rowBadge.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                rowBadge.style.border = "1px solid rgba(239, 68, 68, 0.25)";
+                rowBadge.style.color = "#f87171";
+                rowBadge.innerText = "<?php echo t("OCCUPIED", "ไม่ว่าง"); ?>";
+            }
+        }
+    });
+}
+
 function toggleTableStatusRealtime(event, tableId, el) {
     if (event) event.preventDefault();
 
     const elements = document.querySelectorAll(`[data-table-id="${tableId}"]`);
     if (!elements || elements.length === 0) return;
 
-    let currentStatus = 'AVAILABLE';
+    let currentStatus = "AVAILABLE";
     elements.forEach(linkEl => {
-        if (linkEl.getAttribute('data-table-status')) {
-            currentStatus = linkEl.getAttribute('data-table-status');
+        if (linkEl.getAttribute("data-table-status")) {
+            currentStatus = linkEl.getAttribute("data-table-status");
         }
     });
 
-    const newStatus = (currentStatus === 'AVAILABLE') ? 'OCCUPIED' : 'AVAILABLE';
+    const newStatus = (currentStatus === "AVAILABLE") ? "OCCUPIED" : "AVAILABLE";
 
     // 1. Instant Optimistic Real-Time UI Update for all occurrences
-    elements.forEach(linkEl => {
-        linkEl.setAttribute('data-table-status', newStatus);
-        
-        const innerCard = linkEl.querySelector('.table-card-inner') || linkEl.querySelector('div');
-        const statusDot = linkEl.querySelector('.table-status-dot');
-        const rowBadge = linkEl.querySelector('.table-row-badge') || document.getElementById(`table-row-badge-${tableId}`);
-
-        if (innerCard) {
-            if (newStatus === 'AVAILABLE') {
-                innerCard.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
-                innerCard.style.borderColor = 'rgba(34, 197, 94, 0.2)';
-                innerCard.style.color = '#4ade80';
-            } else {
-                innerCard.style.backgroundColor = 'rgba(239, 68, 68, 0.05)';
-                innerCard.style.borderColor = 'rgba(239, 68, 68, 0.2)';
-                innerCard.style.color = '#f87171';
-            }
-        }
-        if (statusDot) {
-            if (newStatus === 'AVAILABLE') {
-                statusDot.style.backgroundColor = '#22c55e';
-                statusDot.style.boxShadow = '0 0 8px #22c55e';
-            } else {
-                statusDot.style.backgroundColor = '#ef4444';
-                statusDot.style.boxShadow = '0 0 8px #ef4444';
-            }
-        }
-        if (rowBadge) {
-            if (newStatus === 'AVAILABLE') {
-                rowBadge.style.backgroundColor = 'rgba(34, 197, 94, 0.1)';
-                rowBadge.style.border = '1px solid rgba(34, 197, 94, 0.25)';
-                rowBadge.style.color = '#4ade80';
-                rowBadge.innerText = '<?php echo t("AVAILABLE", "โต๊ะว่าง"); ?>';
-            } else {
-                rowBadge.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                rowBadge.style.border = '1px solid rgba(239, 68, 68, 0.25)';
-                rowBadge.style.color = '#f87171';
-                rowBadge.innerText = '<?php echo t("OCCUPIED", "ไม่ว่าง"); ?>';
-            }
-        }
-    });
+    renderTableUIState(tableId, newStatus);
 
     // 2. Perform AJAX background update
     fetch(`tables.php?action=toggle_status&id=${encodeURIComponent(tableId)}&ajax=1`)
         .then(res => res.json())
         .then(data => {
-            if (!data.success) {
+            if (!data || !data.success) {
                 // Revert on failure
-                elements.forEach(linkEl => {
-                    linkEl.setAttribute('data-table-status', currentStatus);
-                });
+                renderTableUIState(tableId, currentStatus);
             }
         })
-        .catch(err => console.error("Error toggling table status:", err));
+        .catch(err => {
+            console.error("Error toggling table status:", err);
+            renderTableUIState(tableId, currentStatus);
+        });
 }
 </script>
 
-<?php require_once 'admin_footer.php'; ?>
+<?php require_once "admin_footer.php"; ?>
