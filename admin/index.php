@@ -1180,7 +1180,7 @@ $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
             <span class="material-symbols-outlined text-base text-amber-400">today</span>
-            <span><?php echo t("Today Booking Trend (Last 1 Day)", "แนวโน้มยอดจองรายวัน (1 วันล่าสุด)"); ?></span>
+            <span><?php echo t("Today Booking Trend (Last 1 Day)", "แนวโน้มยอดจองรายวัน ย้อนหลัง 1 วัน"); ?></span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="todayChart"></canvas>
@@ -1193,7 +1193,7 @@ $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
             <span class="material-symbols-outlined text-base text-amber-400">show_chart</span>
-            <span><?php echo t("1 Month Booking Trend", "แนวโน้มยอดจองรายเดือน (1 เดือนล่าสุด)"); ?></span>
+            <span><?php echo t("1 Month Booking Trend", "แนวโน้มยอดจองรายเดือน ย้อนหลัง 1 เดือน"); ?></span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="dailyChart"></canvas>
@@ -1206,7 +1206,7 @@ $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
             <span class="material-symbols-outlined text-base text-amber-400">bar_chart</span>
-            <span><?php echo t("1 Year Booking Trend", "แนวโน้มยอดจองรายปี (1 ปีล่าสุด)"); ?></span>
+            <span><?php echo t("1 Year Booking Trend", "แนวโน้มยอดจองรายปี ย้อนหลัง 1 ปี"); ?></span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="monthlyChart"></canvas>
