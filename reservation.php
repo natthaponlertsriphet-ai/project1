@@ -191,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $time_slot = trim($_POST['time_slot'] ?? '');
     $pax = (int)($_POST['pax'] ?? 0);
     $table_id = trim($_POST['table_id'] ?? '');
-    
+
     if (!$customer_name || !$customer_phone || !$date || !$time_slot || $pax <= 0 || !$table_id) {
         $booking_error = t("Please fill in all fields and select a table.", "กรุณากรอกข้อมูลให้ครบถ้วนและเลือกโต๊ะนั่ง");
     } elseif ($date < date('Y-m-d')) {
@@ -200,48 +200,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $booking_error = t("Invalid phone number format.", "เบอร์โทรไม่ถูกต้อง");
     } else {
         try {
-            // Check double booking
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM reservation WHERE reservation_date = ? AND reservation_time = ? AND table_id = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED')");
-            $stmt->execute([$date, $time_slot, $table_id]);
-            
-            if ($stmt->fetchColumn() > 0) {
-                $booking_error = t("This table has already been reserved for the selected timeslot.", "โต๊ะนี้ถูกจองในช่วงเวลาดังกล่าวแล้ว กรุณาเลือกโต๊ะอื่นหรือช่วงเวลาอื่น");
+            // Check rapid duplicate submission within 15 seconds (e.g. Mobile Chrome double tap/picker event)
+            $stmtDup = $pdo->prepare("SELECT reservation_id FROM reservation WHERE customer_phone = ? AND reservation_date = ? AND reservation_time = ? AND table_id = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED') AND created_at >= NOW() - INTERVAL 15 SECOND");
+            $stmtDup->execute([$customer_phone, $date, $time_slot, $table_id]);
+            $existing_dup = $stmtDup->fetch();
+
+            if ($existing_dup) {
+                // Return existing booking without duplicate DB insert or LINE push
+                $stmt = $pdo->prepare("SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, b.updated_at, t.table_number, t.zone AS table_zone FROM reservation b LEFT JOIN `table` t ON b.table_id = t.table_id WHERE b.reservation_id = ?");
+                $stmt->execute([$existing_dup['reservation_id']]);
+                $dup_b = $stmt->fetch();
+
+                $booking_success = [
+                    'id' => $existing_dup['reservation_id'],
+                    'name' => $customer_name,
+                    'phone' => $customer_phone,
+                    'date' => $date,
+                    'time_slot' => $time_slot,
+                    'pax' => $pax,
+                    'table_number' => $dup_b['table_number'] ?? 'N/A'
+                ];
             } else {
-                // Fetch table details to verify capacity and status
-                $stmt = $pdo->prepare("SELECT capacity, table_number AS number, table_status AS status FROM `table` WHERE table_id = ?");
-                $stmt->execute([$table_id]);
-                $table = $stmt->fetch();
-                
-                if (!$table) {
-                    $booking_error = t("Invalid table selected.", "โต๊ะที่เลือกไม่ถูกต้อง");
-                } elseif ($table['status'] === 'OCCUPIED') {
-                    $booking_error = t("This table is currently unavailable. It has been occupied or closed by staff.", "ขออภัย โต๊ะนี้ไม่สามารถจองได้เนื่องจากถูกปิดบริการหรือทำเครื่องหมายเป็นไม่ว่างโดยพนักงานร้าน");
-                } elseif ($pax > $table['capacity']) {
-                    $booking_error = "Selected table capacity is too small for {$pax} guests (Max: {$table['capacity']}).";
+                // Check double booking for table
+                $stmt = $pdo->prepare("SELECT COUNT(*) FROM reservation WHERE reservation_date = ? AND reservation_time = ? AND table_id = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED')");
+                $stmt->execute([$date, $time_slot, $table_id]);
+
+                if ($stmt->fetchColumn() > 0) {
+                    $booking_error = t("This table has already been reserved for the selected timeslot.", "โต๊ะนี้ถูกจองในช่วงเวลาดังกล่าวแล้ว กรุณาเลือกโต๊ะอื่นหรือช่วงเวลาอื่น");
                 } else {
-                    // Create booking
-                    $booking_id = 'CHITHOLECNX_' . uniqid();
-                    
-                    $stmt = $pdo->prepare("INSERT INTO reservation (reservation_id, customer_name, customer_phone, reservation_date, reservation_time, guest_count, table_id, reservation_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING')");
-                    $stmt->execute([$booking_id, $customer_name, $customer_phone, $date, $time_slot, $pax, $table_id]);
-                    
-                    // Send LINE notification (Admin Only)
-                    $stmt = $pdo->prepare("SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, b.updated_at, t.table_number, t.zone AS table_zone FROM reservation b LEFT JOIN `table` t ON b.table_id = t.table_id WHERE b.reservation_id = ?");
-                    $stmt->execute([$booking_id]);
-                    $new_b = $stmt->fetch();
-                    if ($new_b) {
-                        notifyAdminNewBooking($new_b);
+                    // Fetch table details to verify capacity and status
+                    $stmt = $pdo->prepare("SELECT capacity, table_number AS number, table_status AS status FROM `table` WHERE table_id = ?");
+                    $stmt->execute([$table_id]);
+                    $table = $stmt->fetch();
+
+                    if (!$table) {
+                        $booking_error = t("Invalid table selected.", "โต๊ะที่เลือกไม่ถูกต้อง");
+                    } elseif ($table['status'] === 'OCCUPIED') {
+                        $booking_error = t("This table is currently unavailable. It has been occupied or closed by staff.", "ขออภัย โต๊ะนี้ไม่สามารถจองได้เนื่องจากถูกปิดบริการหรือทำเครื่องหมายเป็นไม่ว่างโดยพนักงานร้าน");
+                    } elseif ($pax > $table['capacity']) {
+                        $booking_error = t("Selected table capacity is too small for {$pax} guests (Max: {$table['capacity']}).", "จำนวนผู้ร่วมโต๊ะ ({$pax} ท่าน) เกินกว่าความจุของโต๊ะที่เลือก (สูงสุด {$table['capacity']} ท่าน)");
+                    } else {
+                        // Create booking
+                        $booking_id = 'CHITHOLECNX_' . uniqid();
+
+                        $stmt = $pdo->prepare("INSERT INTO reservation (reservation_id, customer_name, customer_phone, reservation_date, reservation_time, guest_count, table_id, reservation_status) VALUES (?, ?, ?, ?, ?, ?, ?, 'PENDING')");
+                        $stmt->execute([$booking_id, $customer_name, $customer_phone, $date, $time_slot, $pax, $table_id]);
+
+                        // Send LINE notification (Admin Only)
+                        $stmt = $pdo->prepare("SELECT b.reservation_id AS id, b.customer_name, b.customer_phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, b.table_id, b.reservation_status AS status, b.cancel_reason, b.created_at, b.updated_at, t.table_number, t.zone AS table_zone FROM reservation b LEFT JOIN `table` t ON b.table_id = t.table_id WHERE b.reservation_id = ?");
+                        $stmt->execute([$booking_id]);
+                        $new_b = $stmt->fetch();
+                        if ($new_b) {
+                            notifyAdminNewBooking($new_b);
+                        }
+
+                        $booking_success = [
+                            'id' => $booking_id,
+                            'name' => $customer_name,
+                            'phone' => $customer_phone,
+                            'date' => $date,
+                            'time_slot' => $time_slot,
+                            'pax' => $pax,
+                            'table_number' => $table['number']
+                        ];
                     }
-                    
-                    $booking_success = [
-                        'id' => $booking_id,
-                        'name' => $customer_name,
-                        'phone' => $customer_phone,
-                        'date' => $date,
-                        'time_slot' => $time_slot,
-                        'pax' => $pax,
-                        'table_number' => $table['number']
-                    ];
                 }
             }
         } catch (Exception $e) {
@@ -798,7 +820,7 @@ require_once 'header.php';
                         </label>
                         <div class="input-group-smooth d-flex align-items-center">
                             <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">calendar_today</span>
-                            <input type="date" name="date" id="booking-date" required class="form-control text-light font-sans py-2.5 px-0" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
+                            <input type="date" name="date" id="booking-date" required class="form-control text-light font-sans py-2.5 px-0" onkeydown="if(event.key==='Enter'){event.preventDefault();}" min="<?php echo date('Y-m-d'); ?>" value="<?php echo date('Y-m-d'); ?>" onchange="updateAvailability()">
                         </div>
                     </div>
 
@@ -808,7 +830,7 @@ require_once 'header.php';
                         </label>
                         <div class="input-group-smooth d-flex align-items-center">
                             <span class="material-symbols-outlined text-warning fs-5 me-2 shrink-0 opacity-90">schedule</span>
-                            <input type="time" name="time_slot" id="booking-time" required class="form-control text-light font-sans py-2.5 px-0" onchange="updateAvailability()" value="17:00">
+                            <input type="time" name="time_slot" id="booking-time" required class="form-control text-light font-sans py-2.5 px-0" onkeydown="if(event.key==='Enter'){event.preventDefault();}" onchange="updateAvailability()" value="17:00">
                         </div>
                     </div>
 
@@ -1131,7 +1153,13 @@ require_once 'header.php';
     }
 
     // Form Validator with Custom Inline Alert (no browser native popups)
+    let isFormSubmitting = false;
+
     function validateBookingForm() {
+        if (isFormSubmitting) {
+            return false;
+        }
+
         // 1. Customer Name Check
         const nameInput = document.querySelector('input[name="customer_name"]');
         const name = nameInput ? nameInput.value.trim() : '';
@@ -1196,6 +1224,17 @@ require_once 'header.php';
             }
         }
         hideInlineFormAlert();
+
+        // Lock form submission to prevent Mobile Chrome / touch double submit
+        isFormSubmitting = true;
+        const submitBtn = document.querySelector('form[action="reservation.php"] button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            submitBtn.style.pointerEvents = 'none';
+            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span><?php echo t("Submitting...", "กำลังบันทึกการจอง..."); ?></span>`;
+        }
+
         return true;
     }
 
