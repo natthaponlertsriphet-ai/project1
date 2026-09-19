@@ -42,7 +42,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     
     // Prevent self-deletion
     if ($del_id === $_SESSION['user_id']) {
-        $error = "You cannot delete your own account.";
+        $error = t("You cannot delete your own account.", "คุณไม่สามารถลบบัญชีของตัวเองได้");
     } else {
         try {
             $stmt = $pdo->prepare("DELETE FROM admin WHERE admin_id = ?");
@@ -88,11 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $role = trim($_POST['role'] ?? 'STAFF');
     
     if (!$name || !$email) {
-        $error = "Please fill in all required fields.";
+        $error = t("Please fill in all required fields.", "กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน");
     } else {
         if ($_POST['action'] === 'create_staff') {
             if (!$password) {
-                $error = "Password is required for new accounts.";
+                $error = t("Password is required for new accounts.", "กรุณาระบุรหัสผ่านสำหรับบัญชีใหม่");
             } else {
                 try {
                     // Check duplicate email in both tables
@@ -101,8 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $stmt2 = $pdo->prepare("SELECT COUNT(*) FROM staff WHERE staff_email = ?");
                     $stmt2->execute([$email]);
                     
-                    if ($stmt1->fetchColumn() > 0 || $stmt2->fetchColumn() > 0) {
-                        $error = "This Email Address is already registered.";
+                    if ($id === $_SESSION['user_id'] && $role !== 'ADMIN') {
+                    $error = t("You cannot change your own ADMIN role.", "คุณไม่สามารถลดระดับสิทธิ์ ADMIN ของตัวเองได้");
+                } elseif ($stmt1->fetchColumn() > 0 || $stmt2->fetchColumn() > 0) {
+                        $error = t("This Email Address is already registered.", "อีเมลนี้ถูกลงทะเบียนในระบบแล้ว");
                     } else {
                         $pw_hash = password_hash($password, PASSWORD_DEFAULT);
                         if ($role === 'ADMIN') {
@@ -134,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $stmt2->execute([$email, $id]);
                 
                 if ($stmt1->fetchColumn() > 0 || $stmt2->fetchColumn() > 0) {
-                    $error = "This Email Address is already registered to another user.";
+                    $error = t("This Email Address is already registered to another user.", "อีเมลนี้ถูกใช้งานโดยพนักงานคนอื่นแล้ว");
                 } else {
                     // Fetch existing hash first
                     $stmtCheckA = $pdo->prepare("SELECT admin_password_hash FROM admin WHERE admin_id = ?");
@@ -223,7 +225,7 @@ require_once 'admin_header.php';
             <form action="staff.php" method="POST" class="flex flex-col gap-4">
                 <input type="hidden" name="action" value="<?php echo $is_editing ? 'update_staff' : 'create_staff'; ?>">
                 <?php if ($is_editing): ?>
-                    <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
+                    <input type="hidden" name="edit_id" value="<?php echo htmlspecialchars($edit_id, ENT_QUOTES); ?>">
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
@@ -320,7 +322,7 @@ require_once 'admin_header.php';
                                         <div class="flex justify-center gap-1">
                                             <a href="staff.php?action=edit&id=<?php echo $usr['id']; ?>" class="p-1 text-zinc-400 hover:text-warning transition-colors" title="Edit"><span class="material-symbols-outlined text-lg leading-none">edit</span></a>
                                             <?php if ($usr['id'] !== $_SESSION['user_id']): ?>
-                                                <a href="javascript:void(0)" onclick="confirmDeleteStaff('<?php echo $usr['id']; ?>', '<?php echo htmlspecialchars($usr['name']); ?>', '<?php echo htmlspecialchars($usr['email']); ?>', '<?php echo htmlspecialchars($usr['role']); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Staff Account', 'ลบข้อมูลพนักงาน'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
+                                                <a href="javascript:void(0)" onclick="confirmDeleteStaff('<?php echo htmlspecialchars($usr['id'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($usr['name'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($usr['email'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($usr['role'], ENT_QUOTES); ?>')" class="p-1 text-zinc-400 hover:text-red-400 transition-colors" title="<?php echo t('Delete Staff Account', 'ลบข้อมูลพนักงาน'); ?>"><span class="material-symbols-outlined text-lg leading-none">delete</span></a>
                                             <?php else: ?>
                                                 <span class="p-1 text-zinc-600 opacity-50" title="Self-Account (Locked)"><span class="material-symbols-outlined text-lg leading-none">lock</span></span>
                                             <?php endif; ?>
