@@ -112,7 +112,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
         $stmt->execute([$del_id]);
         $_SESSION['action_success'] = t("Table deleted successfully.", "ลบโต๊ะเรียบร้อยแล้ว.");
     } catch (Exception $e) {
-        $_SESSION['action_error'] = "Error: " . $e->getMessage();
+        if ($e->getCode() == 23000 || strpos($e->getMessage(), "1451") !== false || strpos(strtolower($e->getMessage()), "foreign key") !== false) {
+            $_SESSION["action_error"] = t("Cannot delete this table because it has reservation records linked to it.", "ไม่สามารถลบโต๊ะนี้ได้ เนื่องจากมีประวัติการจองในระบบ");
+        } else {
+            $_SESSION["action_error"] = "Error: " . $e->getMessage();
+        }
     }
     header("Location: tables.php");
     exit;
@@ -370,7 +374,7 @@ $show_form = isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'ADMIN'
                 <input type="hidden" name="action" value="<?php echo $is_editing ? 'update_table' : 'create_table'; ?>">
                 <input type="hidden" name="image_url" value="<?php echo htmlspecialchars($image); ?>">
                 <?php if ($is_editing): ?>
-                    <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
+                    <input type="hidden" name="edit_id" value="<?php echo htmlspecialchars($edit_id); ?>">
                 <?php endif; ?>
 
                 <div class="flex flex-col gap-1.5">
