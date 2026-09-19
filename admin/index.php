@@ -1154,9 +1154,9 @@ $show_chart_yearly  = in_array($analytics_mode, ['all', 'year']);
 $chart_cols_count = ($show_chart_today ? 1 : 0) + ($show_chart_monthly ? 1 : 0) + ($show_chart_yearly ? 1 : 0);
 $chart_grid_class = "grid grid-cols-1 " . ($chart_cols_count == 2 ? "md:grid-cols-2" : ($chart_cols_count == 3 ? "xl:grid-cols-3" : "")) . " gap-6 mb-8";
 
-$show_summary_daily   = in_array($analytics_mode, ['all', 'today', 'day', 'month']);
-$show_summary_monthly = in_array($analytics_mode, ['all', 'month']);
-$show_summary_yearly  = in_array($analytics_mode, ['all']);
+$show_summary_daily   = in_array($analytics_mode, ['all', 'today', 'day', 'month', 'year']);
+$show_summary_monthly = in_array($analytics_mode, ['all', 'month', 'year']);
+$show_summary_yearly  = in_array($analytics_mode, ['all', 'year']);
 
 $summary_cols_count = ($show_summary_daily ? 1 : 0) + ($show_summary_monthly ? 1 : 0) + ($show_summary_yearly ? 1 : 0);
 $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid-cols-2" : ($summary_cols_count == 3 ? "lg:grid-cols-3" : "")) . " gap-6 mb-8 font-sans";
