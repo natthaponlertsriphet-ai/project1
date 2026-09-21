@@ -454,38 +454,50 @@ try {
 
 // Fetch filtered summaries
 try {
-    $sql = "
+    $daily_sql = "
         SELECT reservation_date AS date, COUNT(*) as total, 
                SUM(CASE WHEN reservation_status = 'CONFIRMED' THEN 1 ELSE 0 END) as confirmed,
                SUM(CASE WHEN reservation_status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
                SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
         FROM reservation 
-        {$where_sql}
-        GROUP BY reservation_date 
-        ORDER BY reservation_date DESC 
-        LIMIT 30
     ";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($analytics_params);
+    $daily_params = [];
+    if ($analytics_mode === 'month' && !empty($analytics_month)) {
+        $daily_sql .= " WHERE SUBSTR(reservation_date, 1, 7) = ? GROUP BY reservation_date ORDER BY reservation_date ASC ";
+        $daily_params[] = $analytics_month;
+    } elseif ($analytics_mode === 'year' && !empty($analytics_year)) {
+        $daily_sql .= " WHERE SUBSTR(reservation_date, 1, 4) = ? GROUP BY reservation_date ORDER BY reservation_date DESC LIMIT 30 ";
+        $daily_params[] = $analytics_year;
+    } elseif ($analytics_mode === 'day' && !empty($analytics_start)) {
+        $daily_sql .= " WHERE reservation_date <= ? GROUP BY reservation_date ORDER BY reservation_date DESC LIMIT 30 ";
+        $daily_params[] = $analytics_start;
+    } else {
+        $daily_sql .= " GROUP BY reservation_date ORDER BY reservation_date DESC LIMIT 30 ";
+    }
+    $stmt = $pdo->prepare($daily_sql);
+    $stmt->execute($daily_params);
     $daily_summary = $stmt->fetchAll();
 } catch (Exception $e) {
     $daily_summary = [];
 }
 
 try {
-    $sql = "
+    $monthly_sql = "
         SELECT SUBSTR(reservation_date, 1, 7) as month, COUNT(*) as total, 
                SUM(CASE WHEN reservation_status = 'CONFIRMED' THEN 1 ELSE 0 END) as confirmed,
                SUM(CASE WHEN reservation_status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
                SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
         FROM reservation 
-        {$where_sql}
-        GROUP BY month 
-        ORDER BY month DESC 
-        LIMIT 12
     ";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($analytics_params);
+    $monthly_params = [];
+    if ($analytics_mode === 'year' && !empty($analytics_year)) {
+        $monthly_sql .= " WHERE SUBSTR(reservation_date, 1, 4) = ? GROUP BY month ORDER BY month ASC ";
+        $monthly_params[] = $analytics_year;
+    } else {
+        $monthly_sql .= " GROUP BY month ORDER BY month DESC LIMIT 12 ";
+    }
+    $stmt = $pdo->prepare($monthly_sql);
+    $stmt->execute($monthly_params);
     $monthly_summary = $stmt->fetchAll();
 } catch (Exception $e) {
     $monthly_summary = [];
@@ -498,19 +510,25 @@ try {
                SUM(CASE WHEN reservation_status = 'COMPLETED' THEN 1 ELSE 0 END) as completed,
                SUM(CASE WHEN reservation_status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelled
         FROM reservation 
-        {$where_sql}
         GROUP BY year 
         ORDER BY year DESC
     ";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($analytics_params);
+    $stmt = $pdo->query($sql);
     $yearly_summary = $stmt->fetchAll();
 } catch (Exception $e) {
     $yearly_summary = [];
 }
 
+// Target date for Time Slot Chart (todayChart)
+if ($analytics_mode === 'day' && !empty($analytics_start)) {
+    $target_chart_date = $analytics_start;
+} elseif ($analytics_mode === 'today') {
+    $target_chart_date = date('Y-m-d');
+} else {
+    $target_chart_date = date('Y-m-d');
+}
+
 try {
-    $today_date = date('Y-m-d');
     $sql = "
         SELECT reservation_time AS time_slot, COUNT(*) as total, 
                SUM(CASE WHEN reservation_status IN ('CONFIRMED','COMPLETED') THEN 1 ELSE 0 END) as completed,
@@ -521,15 +539,19 @@ try {
         ORDER BY reservation_time ASC
     ";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$today_date]);
+    $stmt->execute([$target_chart_date]);
     $today_summary = $stmt->fetchAll();
     
-    if (empty($today_summary)) {
+    // Fallback only if mode is NOT 'day' and target date has no bookings
+    if (empty($today_summary) && $analytics_mode !== 'day') {
         $stmt_latest = $pdo->query("SELECT MAX(reservation_date) FROM reservation");
-        $latest_d = $stmt_latest->fetchColumn() ?: date('Y-m-d');
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$latest_d]);
-        $today_summary = $stmt->fetchAll();
+        $latest_d = $stmt_latest->fetchColumn();
+        if ($latest_d) {
+            $target_chart_date = $latest_d;
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$target_chart_date]);
+            $today_summary = $stmt->fetchAll();
+        }
     }
 } catch (Exception $e) {
     $today_summary = [];
@@ -1168,11 +1190,19 @@ $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid
 <!-- Charts Section -->
 <div class="<?php echo $chart_grid_class; ?>">
     <?php if ($show_chart_today): ?>
-    <!-- Today Booking Chart (1 Day) -->
+    <!-- Time Slot Breakdown Chart -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
-            <span class="material-symbols-outlined text-base text-amber-400">today</span>
-            <span><?php echo t("Today Booking Trend (Last 1 Day)", "แนวโน้มยอดจองรายวัน ย้อนหลัง 1 วัน"); ?></span>
+            <span class="material-symbols-outlined text-base text-amber-400">schedule</span>
+            <span>
+                <?php 
+                if ($analytics_mode === 'day') {
+                    echo t("Timeslot Breakdown for ", "สถิติการจองตามช่วงเวลา ประจำวันที่ ") . formatDateStr($target_chart_date);
+                } else {
+                    echo t("Timeslot Breakdown (", "สถิติการจองตามช่วงเวลา (") . formatDateStr($target_chart_date) . ")";
+                }
+                ?>
+            </span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="todayChart"></canvas>
@@ -1181,11 +1211,19 @@ $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid
     <?php endif; ?>
 
     <?php if ($show_chart_monthly): ?>
-    <!-- 1 Month Booking Chart -->
+    <!-- Daily Trend Chart -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
             <span class="material-symbols-outlined text-base text-amber-400">show_chart</span>
-            <span><?php echo t("1 Month Booking Trend", "แนวโน้มยอดจองรายเดือน ย้อนหลัง 1 เดือน"); ?></span>
+            <span>
+                <?php 
+                if ($analytics_mode === 'month' && !empty($analytics_month)) {
+                    echo t("Daily Trend for ", "แนวโน้มยอดจองรายวัน ประจำเดือน ") . formatMonth($analytics_month);
+                } else {
+                    echo t("Daily Booking Trend", "แนวโน้มยอดจองรายวัน (30 วันล่าสุด)");
+                }
+                ?>
+            </span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="dailyChart"></canvas>
@@ -1194,11 +1232,19 @@ $summary_grid_class = "grid grid-cols-1 " . ($summary_cols_count == 2 ? "lg:grid
     <?php endif; ?>
 
     <?php if ($show_chart_yearly): ?>
-    <!-- 1 Year Booking Chart -->
+    <!-- Monthly Trend Chart -->
     <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-5">
         <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-4 flex items-center gap-2 text-sm border-b border-zinc-800 pb-2">
             <span class="material-symbols-outlined text-base text-amber-400">bar_chart</span>
-            <span><?php echo t("1 Year Booking Trend", "แนวโน้มยอดจองรายปี ย้อนหลัง 1 ปี"); ?></span>
+            <span>
+                <?php 
+                if ($analytics_mode === 'year' && !empty($analytics_year)) {
+                    echo t("Monthly Trend for ", "แนวโน้มยอดจองรายเดือน ประจำปี ค.ศ. ") . $analytics_year;
+                } else {
+                    echo t("Monthly Booking Trend", "แนวโน้มยอดจองรายเดือน (12 เดือนล่าสุด)");
+                }
+                ?>
+            </span>
         </h3>
         <div style="position: relative; height:220px;">
             <canvas id="monthlyChart"></canvas>
