@@ -49,8 +49,8 @@ try {
     $hosts = array_unique(array_filter($hosts));
     $connected = false;
 
-    // First attempt: Connect directly with dbname=chithole_db or candidate DB names
-    $db_candidates = array_unique(array_filter([$db, 'chithole_db', 'chithole']));
+    // First attempt: Connect directly with dbname=chithole or candidate DB names
+    $db_candidates = array_unique(array_filter([$db, 'chithole']));
     foreach ($hosts as $h) {
         foreach ($db_candidates as $target_db) {
             try {
