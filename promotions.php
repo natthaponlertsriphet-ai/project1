@@ -171,7 +171,7 @@ require_once 'header.php';
                                     <div class="position-absolute bottom-0 start-0 m-3 z-3">
                                         <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-50 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
                                             <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
-                                            <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                            <span><?php echo t("Click to View", "คลิกเพื่อดูรูป"); ?></span>
                                         </span>
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@ require_once 'header.php';
                                 <div class="position-absolute bottom-0 start-0 m-3 z-3">
                                     <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-50 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
                                         <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
-                                        <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                        <span><?php echo t("Click to View", "คลิกเพื่อดูรูป"); ?></span>
                                     </span>
                                 </div>
                             </div>
@@ -296,7 +296,7 @@ require_once 'header.php';
                                     <div class="position-absolute bottom-0 start-0 m-3 z-3">
                                         <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-50 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
                                             <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
-                                            <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                            <span><?php echo t("Click to View", "คลิกเพื่อดูรูป"); ?></span>
                                         </span>
                                     </div>
                                 </div>
@@ -319,7 +319,7 @@ require_once 'header.php';
                                 <div class="position-absolute bottom-0 start-0 m-3 z-3">
                                     <span class="badge bg-dark bg-opacity-75 text-warning border border-warning border-opacity-25 px-2.5 py-1.5 rounded-pill font-mono small d-inline-flex align-items-center gap-1 shadow-sm">
                                         <span class="material-symbols-outlined" style="font-size: 14px;">zoom_in</span>
-                                        <span><?php echo t("Click to View", "คลิกเพื่อดูรูปใหญ่"); ?></span>
+                                        <span><?php echo t("Click to View", "คลิกเพื่อดูรูป"); ?></span>
                                     </span>
                                 </div>
                             </div>
