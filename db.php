@@ -31,15 +31,18 @@ try {
     $hosts = array_unique(array_filter($hosts));
     $connected = false;
 
-    // First attempt: Connect directly with dbname=chithole_db
+    // First attempt: Connect directly with dbname=chithole_db or candidate DB names
+    $db_candidates = array_unique(array_filter([$db, 'chithole_db', 'chithole']));
     foreach ($hosts as $h) {
-        try {
-            $dsn = "mysql:host=$h;port=$port;dbname=$db;charset=$charset";
-            $pdo = new PDO($dsn, $user, $pass, $options);
-            $connected = true;
-            break;
-        } catch (\PDOException $ex) {
-            continue;
+        foreach ($db_candidates as $target_db) {
+            try {
+                $dsn = "mysql:host=$h;port=$port;dbname=$target_db;charset=$charset";
+                $pdo = new PDO($dsn, $user, $pass, $options);
+                $connected = true;
+                break 2;
+            } catch (\PDOException $ex) {
+                continue;
+            }
         }
     }
 
