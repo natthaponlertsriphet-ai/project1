@@ -349,7 +349,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <!-- Form -->
-        <form action="login" method="POST" novalidate class="flex flex-col gap-4">
+        <form action="login.php" method="POST" novalidate class="flex flex-col gap-4">
             
             <!-- Email Field -->
             <div class="input-wrapper flex flex-col gap-1.5">
