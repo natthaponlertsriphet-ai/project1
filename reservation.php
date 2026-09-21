@@ -184,6 +184,36 @@ unset($_SESSION['booking_error']);
 $booking_success_msg = $_SESSION['booking_success_msg'] ?? null;
 unset($_SESSION['booking_success_msg']);
 
+// Handle GET confirmation view (PRG Pattern)
+if (isset($_GET['booking_confirmed']) && !empty($_GET['id'])) {
+    $confirmed_id = trim($_GET['id']);
+    if (isset($_SESSION['booking_success']) && is_array($_SESSION['booking_success']) && ($_SESSION['booking_success']['id'] ?? '') === $confirmed_id) {
+        $booking_success = $_SESSION['booking_success'];
+    } else {
+        try {
+            $stmtConf = $pdo->prepare("
+                SELECT b.reservation_id AS id, b.customer_name AS name, b.customer_phone AS phone, b.reservation_date AS date, b.reservation_time AS time_slot, b.guest_count AS pax, t.table_number 
+                FROM reservation b 
+                LEFT JOIN `table` t ON b.table_id = t.table_id 
+                WHERE b.reservation_id = ?
+            ");
+            $stmtConf->execute([$confirmed_id]);
+            $fetched_b = $stmtConf->fetch();
+            if ($fetched_b) {
+                $booking_success = [
+                    'id' => $fetched_b['id'],
+                    'name' => $fetched_b['name'],
+                    'phone' => $fetched_b['phone'],
+                    'date' => $fetched_b['date'],
+                    'time_slot' => $fetched_b['time_slot'],
+                    'pax' => $fetched_b['pax'],
+                    'table_number' => $fetched_b['table_number'] ?? 'N/A'
+                ];
+            }
+        } catch (Exception $e) {}
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create_booking') {
     $customer_name = trim($_POST['customer_name'] ?? '');
     $customer_phone = trim($_POST['customer_phone'] ?? '');
@@ -270,6 +300,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         } catch (Exception $e) {
             $booking_error = "System error: " . $e->getMessage();
         }
+    }
+
+    if ($booking_error) {
+        $_SESSION['booking_error'] = $booking_error;
+        header("Location: reservation.php#booking-form-section");
+        exit;
+    } elseif ($booking_success) {
+        $_SESSION['booking_success'] = $booking_success;
+        header("Location: reservation.php?booking_confirmed=1&id=" . urlencode($booking_success['id']) . "#confirmation-result");
+        exit;
     }
 }
 
@@ -579,7 +619,7 @@ require_once 'header.php';
     <?php endif; ?>
 
     <?php if ($booking_success): ?>
-        <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5 shadow-lg">
+        <div class="alert alert-success bg-success bg-opacity-20 border border-success text-light p-4 rounded-3 mb-5 shadow-lg" id="confirmation-result">
             <h4 class="font-anton text-warning text-uppercase tracking-wider mb-3 d-flex align-items-center gap-2">
                 <span class="material-symbols-outlined text-warning fs-4">confirmation_number</span>
                 <span><?php echo t("BOOKING DETAILS & STATUS", "รายละเอียดข้อมูลการจอง"); ?></span>
