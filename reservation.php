@@ -239,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     } elseif ($table['status'] === 'OCCUPIED') {
                         $booking_error = t("This table is currently unavailable. It has been occupied or closed by staff.", "ขออภัย โต๊ะนี้ไม่สามารถจองได้เนื่องจากถูกปิดบริการหรือทำเครื่องหมายเป็นไม่ว่างโดยพนักงานร้าน");
                     } elseif ($pax > $table['capacity']) {
-                        $booking_error = t("Selected table capacity is too small for {$pax} guests (Max: {$table['capacity']}).", "จำนวนผู้ร่วมโต๊ะ ({$pax} ท่าน) เกินกว่าความจุของโต๊ะที่เลือก (สูงสุด {$table['capacity']} ท่าน)");
+                        $booking_error = t("Selected table capacity is smaller than your group size ({$pax} guests, Max: {$table['capacity']}). If you need to combine tables for a larger group, please contact us at 064-954-6616.", "จำนวนคนที่จองมากกว่าขนาดความจุสูงสุดของโต๊ะนี้ ({$pax} ท่าน / สูงสุด {$table['capacity']} ท่าน) หากต้องการรวมหรือต่อโต๊ะสำหรับกลุ่มใหญ่ กรุณาติดต่อสอบถามทางร้านได้ที่เบอร์ 064-954-6616");
                     } else {
                         // Create booking
                         $booking_id = 'CHITHOLECNX_' . uniqid();
@@ -1220,7 +1220,7 @@ require_once 'header.php';
             
             if (pax > capacity) {
                 showInlineFormAlert(
-                    "<?php echo t('Error: The selected table capacity is smaller than your group size.', 'ข้อผิดพลาด: จำนวนคนที่จองมากกว่าขนาดความจุสูงสุดของโต๊ะนี้'); ?>",
+                    "<?php echo t('Selected table capacity is smaller than your group size. If you need to combine tables for a larger group, please contact us at 064-954-6616.', 'จำนวนคนที่จองมากกว่าขนาดความจุสูงสุดของโต๊ะนี้ หากต้องการรวมหรือต่อโต๊ะสำหรับกลุ่มใหญ่ กรุณาติดต่อสอบถามทางร้านได้ที่เบอร์ 064-954-6616'); ?>",
                     "<?php echo t('Capacity Exceeded', 'ความจุโต๊ะไม่เพียงพอ'); ?>",
                     'error'
                 );
