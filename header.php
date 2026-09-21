@@ -123,50 +123,37 @@ function is_active($page) {
         }
         @keyframes navLoginPulse {
             0%, 100% {
-                box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
-                transform: translateY(0);
+                box-shadow: 0 0 12px rgba(245, 158, 11, 0.35), 0 0 4px rgba(255, 215, 130, 0.2);
+                transform: translateY(0) scale(1);
             }
             50% {
-                box-shadow: 0 0 18px rgba(245, 158, 11, 0.6), 0 4px 12px rgba(245, 158, 11, 0.3);
-                transform: translateY(-2px);
+                box-shadow: 0 0 24px rgba(245, 158, 11, 0.75), 0 4px 15px rgba(245, 158, 11, 0.4);
+                transform: translateY(-3px) scale(1.03);
             }
         }
         .admin-nav-btn {
-            animation: navLoginPulse 2.6s ease-in-out infinite;
-            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                        max-width 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                        box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                        padding 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                        margin 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(20, 20, 24, 0.8) 100%) !important;
+            border: 1.5px solid #f59e0b !important;
+            color: #ffd782 !important;
+            animation: navLoginPulse 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
             white-space: nowrap;
-            will-change: opacity, max-width, transform;
+            will-change: transform, box-shadow;
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
         .admin-nav-btn:hover {
             animation: none !important;
-            transform: translateY(-3px) scale(1.05) !important;
-            box-shadow: 0 0 25px rgba(245, 158, 11, 0.75) !important;
+            background: linear-gradient(135deg, #f59e0b 0%, #ffd782 100%) !important;
+            color: #000000 !important;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.9), 0 0 15px rgba(255, 255, 255, 0.6) !important;
+            transform: translateY(-4px) scale(1.06) !important;
         }
-        .navbar-custom.scrolled .admin-nav-btn {
-            opacity: 0 !important;
-            max-width: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            border-width: 0 !important;
-            pointer-events: none;
-            transform: scale(0.85);
-            animation: none !important;
-        }
-        .navbar-custom.at-top .admin-nav-btn {
-            opacity: 1;
-            max-width: 160px;
-            pointer-events: auto;
+        .admin-nav-btn:active {
+            transform: translateY(-1px) scale(0.98) !important;
         }
 
         /* Header Navbar Staggered 70ms Entrance Reveal Animation */
