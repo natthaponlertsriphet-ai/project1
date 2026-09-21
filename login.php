@@ -336,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 CHIT HOLE CNX
             </h1>
             <p class="text-zinc-400 text-xs font-sans tracking-wide">
-                <?php echo t("Sign in to access restaurant management console", "เข้าสู่ระบบเพื่อจัดการจองโต๊ะ เบียร์สด และข้อมูลร้าน"); ?>
+                <?php echo t("Sign in for staff and system administrators", "เข้าสู่ระบบสำหรับเจ้าหน้าที่และผู้ดูแลระบบ"); ?>
             </p>
         </div>
 
