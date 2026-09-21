@@ -201,8 +201,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
         try {
             // Check rapid duplicate submission within 15 seconds (e.g. Mobile Chrome double tap/picker event)
-            $stmtDup = $pdo->prepare("SELECT reservation_id FROM reservation WHERE customer_phone = ? AND reservation_date = ? AND reservation_time = ? AND table_id = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED') AND created_at >= NOW() - INTERVAL 15 SECOND");
-            $stmtDup->execute([$customer_phone, $date, $time_slot, $table_id]);
+            $fifteen_sec_ago = date('Y-m-d H:i:s', time() - 15);
+            $stmtDup = $pdo->prepare("SELECT reservation_id FROM reservation WHERE customer_phone = ? AND reservation_date = ? AND reservation_time = ? AND table_id = ? AND reservation_status IN ('PENDING', 'CONFIRMED', 'CANCEL_REQUESTED') AND created_at >= ?");
+            $stmtDup->execute([$customer_phone, $date, $time_slot, $table_id, $fifteen_sec_ago]);
             $existing_dup = $stmtDup->fetch();
 
             if ($existing_dup) {
