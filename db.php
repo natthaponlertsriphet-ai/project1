@@ -15,6 +15,13 @@ $options = [
     PDO::ATTR_TIMEOUT            => 3,
 ];
 
+if (defined('PDO::MYSQL_ATTR_SSL_CA')) {
+    $options[PDO::MYSQL_ATTR_SSL_CA] = '';
+}
+if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+    $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+}
+
 $pdo = null;
 
 // 1. Try Primary MySQL Connection
