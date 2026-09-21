@@ -1,6 +1,7 @@
 -- Database Dump for CHIT HOLE CNX Table Booking System
 -- Generated on 2026-09-17 19:07:38
 
+SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `admin`;
