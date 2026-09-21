@@ -671,7 +671,7 @@ require_once 'header.php';
 
                 <div class="text-light text-opacity-80 small d-flex align-items-center gap-2.5 font-sans">
                     <span class="material-symbols-outlined text-warning fs-5 shrink-0 opacity-90">info</span>
-                    <span><?php echo t("Please select Date and Time Slot first to see live availability status.", "กรุณาเลือกวันที่และเวลาจองเพื่ออัปเดตสถานะความว่างของโต๊ะแบบเรียลไทม์"); ?></span>
+                    <span><?php echo t("Table layout may be adjusted at the venue depending on actual arrangements. We apologize for any inconvenience.", "ผังโต๊ะอาจมีการปรับเปลี่ยนตามหน้างาน ขออภัยในความไม่สะดวกมา ณ ที่นี้"); ?></span>
                 </div>
             </div>
             
