@@ -127,21 +127,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600 !important;
         }
 
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4), 0 0 20px rgba(244, 239, 230, 0.3);
+                transform: translateY(0);
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(255, 255, 255, 0.7), 0 0 35px rgba(255, 215, 130, 0.6);
+                transform: translateY(-4px);
+            }
+        }
         .pearl-white-btn {
             background: linear-gradient(135deg, #ffffff 0%, #f4efe6 100%) !important;
             color: #111113 !important;
             border: 1px solid #ffffff !important;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4), 0 0 25px rgba(244, 239, 230, 0.3) !important;
+            animation: pulseGlow 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         .pearl-white-btn:hover {
+            animation: none !important;
             background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%) !important;
             color: #000000 !important;
-            box-shadow: 0 0 35px rgba(255, 255, 255, 0.85), 0 0 15px rgba(255, 255, 255, 0.6) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.95), 0 0 25px rgba(255, 215, 130, 0.8) !important;
+            transform: translateY(-5px) scale(1.02) !important;
         }
         .pearl-white-btn:active {
-            transform: translateY(0) !important;
+            transform: translateY(-1px) scale(0.99) !important;
         }
         .pearl-white-btn span {
             color: #111113 !important;

@@ -121,10 +121,22 @@ function is_active($page) {
             padding-top: 0.65rem !important;
             padding-bottom: 0.65rem !important;
         }
+        @keyframes navLoginPulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+                transform: translateY(0);
+            }
+            50% {
+                box-shadow: 0 0 18px rgba(245, 158, 11, 0.6), 0 4px 12px rgba(245, 158, 11, 0.3);
+                transform: translateY(-2px);
+            }
+        }
         .admin-nav-btn {
+            animation: navLoginPulse 2.6s ease-in-out infinite;
             transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
                         max-width 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                         padding 0.9s cubic-bezier(0.22, 1, 0.36, 1),
                         margin 0.9s cubic-bezier(0.22, 1, 0.36, 1);
             display: inline-flex;
@@ -133,6 +145,11 @@ function is_active($page) {
             overflow: hidden;
             white-space: nowrap;
             will-change: opacity, max-width, transform;
+        }
+        .admin-nav-btn:hover {
+            animation: none !important;
+            transform: translateY(-3px) scale(1.05) !important;
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.75) !important;
         }
         .navbar-custom.scrolled .admin-nav-btn {
             opacity: 0 !important;
@@ -144,12 +161,12 @@ function is_active($page) {
             border-width: 0 !important;
             pointer-events: none;
             transform: scale(0.85);
+            animation: none !important;
         }
         .navbar-custom.at-top .admin-nav-btn {
             opacity: 1;
             max-width: 160px;
             pointer-events: auto;
-            transform: scale(1);
         }
 
         /* Header Navbar Staggered 70ms Entrance Reveal Animation */
