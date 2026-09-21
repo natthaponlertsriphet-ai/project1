@@ -982,6 +982,9 @@ require_once 'header.php';
     let selectedTableBtn = null;
     
     function selectTable(element) {
+        const tooltip = document.getElementById('table-tooltip');
+        if (tooltip) tooltip.classList.add('d-none');
+
         if (element.classList.contains('table-reserved')) {
             const tableNum = element.getAttribute('data-number') || '';
             const title = "<?php echo t('TABLE UNAVAILABLE', 'โต๊ะนี้ไม่ว่างในรอบเวลานี้'); ?>";
@@ -1491,8 +1494,14 @@ require_once 'header.php';
         const isTh = "<?php echo $lang === 'th' ? '1' : '0'; ?>" === '1';
         const zoneNames = isTh ? zoneNamesTh : zoneNamesEn;
 
+        const isTouchDevice = () => {
+            return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 768);
+        };
+
         document.querySelectorAll('.table-btn').forEach(btn => {
             btn.addEventListener('mouseenter', (e) => {
+                if (isTouchDevice()) return;
+
                 const number = btn.getAttribute('data-number');
                 const capacity = parseInt(btn.getAttribute('data-capacity'));
                 const zone = btn.getAttribute('data-zone');
@@ -1526,6 +1535,8 @@ require_once 'header.php';
             });
 
             btn.addEventListener('mousemove', (e) => {
+                if (isTouchDevice()) return;
+
                 const xOffset = 15;
                 const yOffset = 15;
                 
@@ -1547,7 +1558,19 @@ require_once 'header.php';
             btn.addEventListener('mouseleave', () => {
                 tooltip.classList.add('d-none');
             });
+
+            btn.addEventListener('click', () => {
+                if (tooltip) tooltip.classList.add('d-none');
+            });
+
+            btn.addEventListener('touchstart', () => {
+                if (tooltip) tooltip.classList.add('d-none');
+            }, { passive: true });
         });
+
+        window.addEventListener('scroll', () => {
+            if (tooltip) tooltip.classList.add('d-none');
+        }, { passive: true });
     });
 
     // Live Real-Time Polling of Booking Statuses
