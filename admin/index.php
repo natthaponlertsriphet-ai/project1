@@ -463,7 +463,7 @@ try {
     ";
     $daily_params = [];
     if ($analytics_mode === 'month' && !empty($analytics_month)) {
-        $daily_sql .= " WHERE SUBSTR(reservation_date, 1, 7) = ? GROUP BY reservation_date ORDER BY reservation_date ASC ";
+        $daily_sql .= " WHERE SUBSTR(reservation_date, 1, 7) = ? GROUP BY reservation_date ORDER BY reservation_date DESC ";
         $daily_params[] = $analytics_month;
     } elseif ($analytics_mode === 'year' && !empty($analytics_year)) {
         $daily_sql .= " WHERE SUBSTR(reservation_date, 1, 4) = ? GROUP BY reservation_date ORDER BY reservation_date DESC LIMIT 30 ";
@@ -491,7 +491,7 @@ try {
     ";
     $monthly_params = [];
     if ($analytics_mode === 'year' && !empty($analytics_year)) {
-        $monthly_sql .= " WHERE SUBSTR(reservation_date, 1, 4) = ? GROUP BY month ORDER BY month ASC ";
+        $monthly_sql .= " WHERE SUBSTR(reservation_date, 1, 4) = ? GROUP BY month ORDER BY month DESC ";
         $monthly_params[] = $analytics_year;
     } else {
         $monthly_sql .= " GROUP BY month ORDER BY month DESC LIMIT 12 ";
