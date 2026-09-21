@@ -70,8 +70,8 @@ function notifyAdminNewBooking($booking) {
 
     $altText = "🆕 มีคิวจองโต๊ะใหม่เข้ามาจากคุณ " . $name;
 
-    // Detect server host dynamically (supports chitholecnx.me, Render, ngrok, localhost, etc.)
-    $host = $_SERVER['HTTP_HOST'] ?? 'chitholecnx.me';
+    // Detect server host dynamically (supports Azure App Service chitholecnx.azurewebsites.net, Render, ngrok, localhost, etc.)
+    $host = $_SERVER['HTTP_HOST'] ?? 'chitholecnx.azurewebsites.net';
     $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
                (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
                (strpos($host, 'localhost') === false);
