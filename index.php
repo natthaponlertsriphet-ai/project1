@@ -410,9 +410,13 @@ if (is_dir($atmosphere_dir)) {
 
 <script>
 function openPhotoModal(imgUrl) {
-    document.getElementById('modalImageDisplay').src = imgUrl;
-    var photoModal = new bootstrap.Modal(document.getElementById('photoModal'));
-    photoModal.show();
+    const displayImg = document.getElementById('modalImageDisplay');
+    if (displayImg) displayImg.src = imgUrl;
+    const modalEl = document.getElementById('photoModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const photoModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        photoModal.show();
+    }
 }
 
 // Cinematic Smooth Scroll Entrance Reveal Script
