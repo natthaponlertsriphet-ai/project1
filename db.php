@@ -1,9 +1,27 @@
 <?php
 date_default_timezone_set('Asia/Bangkok');
 
+if (file_exists(__DIR__ . '/.env')) {
+    $env_lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($env_lines as $env_line) {
+        $env_line = trim($env_line);
+        if (strpos($env_line, '#') === 0 || empty($env_line)) continue;
+        if (strpos($env_line, '=') !== false) {
+            list($env_name, $env_value) = explode('=', $env_line, 2);
+            $env_name = trim($env_name);
+            $env_value = trim($env_value, " \t\n\r\0\x0B\"'");
+            if (getenv($env_name) === false || getenv($env_name) === '') {
+                putenv("{$env_name}={$env_value}");
+                $_ENV[$env_name] = $env_value;
+                $_SERVER[$env_name] = $env_value;
+            }
+        }
+    }
+}
+
 $host = getenv('DB_HOST') ?: '127.0.0.1';
 $port = getenv('DB_PORT') ?: '3306';
-$db   = getenv('DB_NAME') ?: 'chithole_db';
+$db   = getenv('DB_NAME') ?: 'chithole';
 $user = getenv('DB_USER') ?: 'root';
 $pass = getenv('DB_PASS') ?: '';
 $charset = 'utf8mb4';
