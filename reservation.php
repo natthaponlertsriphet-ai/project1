@@ -946,7 +946,7 @@ require_once 'header.php';
                         <?php echo t("Booking Conditions", "เงื่อนไขการจอง"); ?>
                     </div>
                     <ul class="mb-2 ps-3">
-                        <li><?php echo t("Please arrive 1 hour prior to your booking time.", "มารับโต๊ะ ก่อน 1 ชั่วโมง"); ?></li>
+                        <li><?php echo t("Please arrive 15 minutes prior to your booking time.", "กรุณามารับโต๊ะก่อนเวลาจอง 15 นาที"); ?></li>
                         <li><?php echo t("Guests must be 20 years of age or older.", "อายุ 20 ปี บริบูรณ์ขึ้นไป"); ?></li>
                     </ul>
                     <div class="font-sans text-warning mt-2 small d-flex align-items-center gap-1">
