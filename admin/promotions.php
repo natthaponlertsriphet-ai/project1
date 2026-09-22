@@ -199,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     // Reset
                     $title = $description = $offer = $period = $image = '';
                     $active = 1;
-                    $success = t("Promotion registered successfully!", "สร้างโปรโมชั่นใหม่เรียบร้อยแล้ว!");
+                    $success = t("Promotion registered successfully!", "เพิ่มโปรโมชั่นใหม่เรียบร้อยแล้ว!");
                 } catch (Exception $e) {
                     $error = "Error: " . $e->getMessage();
                 }
@@ -260,7 +260,7 @@ require_once 'admin_header.php';
         <div class="shadcn-card border border-amber-500/30 bg-zinc-900/90 shadow-xl shadow-amber-500/5 rounded-xl p-6">
             <h3 class="font-anton text-amber-400 text-uppercase tracking-wider mb-6 flex items-center gap-2 text-lg border-b border-zinc-800 pb-3">
                 <span class="material-symbols-outlined text-amber-400 text-xl leading-none">local_offer</span>
-                <span><?php echo $is_editing ? t("Edit Promo Properties", "แก้ไขข้อมูลโปรโมชั่น") : t("Create Promotion Offer", "สร้างโปรโมชั่นใหม่"); ?></span>
+                <span><?php echo $is_editing ? t("Edit Promo Properties", "แก้ไขข้อมูลโปรโมชั่น") : t("Create Promotion Offer", "เพิ่มโปรโมชั่นใหม่"); ?></span>
             </h3>
             
             <form action="promotions.php" method="POST" enctype="multipart/form-data" class="flex flex-col gap-4">
