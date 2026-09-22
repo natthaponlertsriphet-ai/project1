@@ -149,6 +149,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete_photo' && isset($_GET[
     
     if ($is_ajax) {
         header('Content-Type: application/json');
+        header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
         echo json_encode(['success' => true, 'message' => t("Photo deleted successfully.", "ลบรูปภาพเรียบร้อยแล้ว.")]);
         exit;
     }

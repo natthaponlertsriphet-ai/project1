@@ -23,6 +23,9 @@ if (!function_exists('t')) {
 // AJAX Live Polling Endpoint for Real-time Dashboard Counts
 if (isset($_GET['action']) && $_GET['action'] === 'get_live_dashboard_counts') {
     header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
     try {
         $p_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'PENDING'")->fetchColumn();
         $c_count = (int)$pdo->query("SELECT COUNT(*) FROM reservation WHERE reservation_status = 'CONFIRMED'")->fetchColumn();
@@ -1993,7 +1996,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <script>
     // Live Dashboard Counter Auto-Poller (Updates tab numbers in real-time without page refresh)
     function pollLiveDashboardCounts() {
-        fetch('index.php?action=get_live_dashboard_counts')
+        fetch('index.php?action=get_live_dashboard_counts&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data && typeof data.p_count !== 'undefined') {

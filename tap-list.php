@@ -4,6 +4,9 @@ require_once 'db.php';
 // AJAX Request to fetch full live beer list for real-time board updates
 if (isset($_GET['action']) && $_GET['action'] === 'get_beers_status') {
     header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
     try {
         $stmt = $pdo->query("SELECT menu_id, tap_number, menu_name, beer_type, abv, is_active FROM menu ORDER BY CAST(tap_number AS UNSIGNED)");
         $beers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -379,7 +382,7 @@ require_once 'header.php';
     let previousBeersHash = '';
 
     function syncLiveBeerList() {
-        fetch('tap-list.php?action=get_beers_status')
+        fetch('tap-list.php?action=get_beers_status&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (!data.success || !Array.isArray(data.beers)) return;

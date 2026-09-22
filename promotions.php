@@ -4,6 +4,9 @@ require_once 'db.php';
 // Live Real-Time AJAX Sync Endpoint
 if (isset($_GET['action']) && $_GET['action'] === 'get_live_promotions') {
     header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
     try {
         $stmt = $pdo->query("SELECT promo_id AS id, promo_title AS title, description, offer, promo_period AS period, image_path AS image FROM promotion WHERE is_active = 1 ORDER BY promo_id DESC");
         $live_promos = $stmt->fetchAll();
@@ -338,7 +341,7 @@ require_once 'header.php';
     }
 
     function checkLivePromotions() {
-        fetch('promotions.php?action=get_live_promotions')
+        fetch('promotions.php?action=get_live_promotions&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(res => {
                 if (res.success && res.data) {
