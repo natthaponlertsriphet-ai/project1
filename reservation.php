@@ -149,7 +149,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'poll_booking_statuses') {
     exit;
 }
 
-// AJAX Request to fetch booked tables for a specific date and time slot
+// AJAX Request to fetch booked tables and active table layout for a specific date and time slot
 if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
     header('Content-Type: application/json');
     header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
@@ -159,7 +159,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
     $time_slot = $_GET['time_slot'] ?? '';
     
     if (!$date || !$time_slot) {
-        echo json_encode([]);
+        echo json_encode(['booked_ids' => [], 'tables' => []]);
         exit;
     }
     
@@ -181,9 +181,45 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
         // Convert all IDs to string so JS strict matching works across drivers
         $reserved_ids = array_map('strval', array_values($reserved_ids));
 
-        echo json_encode($reserved_ids);
+        // Fetch current active tables from database to sync map additions/deletions in real-time
+        $stmtTables = $pdo->query("SELECT table_id AS id, table_number AS number, zone, capacity, table_status AS status, image FROM `table` ORDER BY table_number ASC");
+        $all_tables_raw = $stmtTables->fetchAll(PDO::FETCH_ASSOC);
+
+        usort($all_tables_raw, function($a, $b) {
+            $numA = (string)$a['number'];
+            $numB = (string)$b['number'];
+            if (is_numeric($numA) && is_numeric($numB)) {
+                return (int)$numA - (int)$numB;
+            }
+            return strcmp($numA, $numB);
+        });
+
+        $all_tables = [];
+        foreach ($all_tables_raw as $tbl) {
+            $img_src = $tbl['image'] ?? '';
+            if (!$img_src) {
+                $fmt_num = strtolower($tbl['number']);
+                $def_path = "images/tables/table_{$fmt_num}.jpg";
+                if (file_exists(__DIR__ . '/' . $def_path)) {
+                    $img_src = $def_path;
+                }
+            }
+            $all_tables[] = [
+                'id' => (string)$tbl['id'],
+                'number' => (string)$tbl['number'],
+                'zone' => (string)$tbl['zone'],
+                'capacity' => (int)$tbl['capacity'],
+                'status' => (string)$tbl['status'],
+                'image' => (string)$img_src
+            ];
+        }
+
+        echo json_encode([
+            'booked_ids' => $reserved_ids,
+            'tables' => $all_tables
+        ]);
     } catch (Exception $e) {
-        echo json_encode([]);
+        echo json_encode(['booked_ids' => [], 'tables' => []]);
     }
     exit;
 }
@@ -694,7 +730,7 @@ require_once 'header.php';
                 </div>
 
                 <!-- Visual Grid Layout Container -->
-                <div class="d-flex flex-wrap justify-content-start gap-2 p-3.5 border border-secondary border-opacity-30 rounded-4 mb-4 shadow-inner" style="background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(12px);">
+                <div id="table-grid-container" class="d-flex flex-wrap justify-content-start gap-2 p-3.5 border border-secondary border-opacity-30 rounded-4 mb-4 shadow-inner" style="background: rgba(18, 18, 22, 0.85); backdrop-filter: blur(12px);">
                     <?php foreach ($tables as $t): ?>
                         <?php 
                         $table_img_src = $t['image'] ?? '';
@@ -1097,17 +1133,24 @@ require_once 'header.php';
         hideInlineFormAlert();
     }
 
+    let currentActiveZone = 'ALL';
+
     // 3. Zone Filters
     function filterZone(zone, button) {
+        currentActiveZone = zone;
         // Toggle active button
         const buttons = button.parentNode.querySelectorAll('button');
         buttons.forEach(b => b.classList.remove('active'));
         button.classList.add('active');
         
+        applyZoneFilter();
+    }
+
+    function applyZoneFilter() {
         const tableBtns = document.querySelectorAll('.table-btn');
         tableBtns.forEach(btn => {
             const btnZone = btn.getAttribute('data-zone');
-            if (zone === 'ALL' || btnZone === zone) {
+            if (currentActiveZone === 'ALL' || btnZone === currentActiveZone) {
                 btn.style.display = 'inline-flex';
             } else {
                 btn.style.display = 'none';
@@ -1115,7 +1158,7 @@ require_once 'header.php';
         });
     }
 
-    // 4. Update table reservation availability via Fetch AJAX
+    // 4. Update table reservation availability & layout structure via Fetch AJAX (Real-Time)
     function updateAvailability(isPolling = false) {
         const date = document.getElementById('booking-date').value;
         const timeSlot = document.getElementById('booking-time').value;
@@ -1137,8 +1180,81 @@ require_once 'header.php';
         
         fetch(`reservation.php?action=get_booked_tables&date=${date}&time_slot=${timeSlot}&_t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
-            .then(rawBookedIds => {
+            .then(resData => {
+                let rawBookedIds = [];
+                let activeTables = null;
+
+                if (Array.isArray(resData)) {
+                    rawBookedIds = resData;
+                } else if (resData && typeof resData === 'object') {
+                    rawBookedIds = resData.booked_ids || resData.booked_table_ids || [];
+                    activeTables = resData.tables || null;
+                }
+
                 const bookedTableIds = (rawBookedIds || []).map(String);
+                const container = document.getElementById('table-grid-container');
+
+                // 1. Sync Table Layout Elements (Real-Time Add/Delete sync from Admin)
+                if (activeTables && Array.isArray(activeTables) && container) {
+                    const activeTableMap = new Map();
+                    activeTables.forEach(t => activeTableMap.set(String(t.id), t));
+
+                    // Remove deleted tables from DOM
+                    const existingBtns = container.querySelectorAll('.table-btn');
+                    existingBtns.forEach(btn => {
+                        const btnId = String(btn.getAttribute('data-id'));
+                        if (!activeTableMap.has(btnId)) {
+                            if (selectedTableBtn && String(selectedTableBtn.getAttribute('data-id')) === btnId) {
+                                selectedTableBtn.classList.remove('table-selected');
+                                selectedTableBtn = null;
+                                document.getElementById('form-table-id').value = '';
+                                document.getElementById('selection-summary').innerHTML = `
+                                    <div class="d-flex align-items-center gap-2 py-1 text-secondary small">
+                                        <span class="material-symbols-outlined text-secondary fs-5">ads_click</span>
+                                        <span><?php echo t("Click any table on the left layout map", "กรุณาเลือกโต๊ะจากผังทางด้านซ้าย"); ?></span>
+                                    </div>
+                                `;
+                                showInlineFormAlert(
+                                    "<?php echo t('The table you selected has been modified or removed by staff. Please select another table.', 'ขออภัย โต๊ะที่คุณเลือกถูกปรับเปลี่ยนหรือลบโดยระบบ กรุณาเลือกโต๊ะอื่น'); ?>",
+                                    "<?php echo t('Table Removed', 'โต๊ะถูกยกเลิก/ลบ'); ?>",
+                                    'error'
+                                );
+                            }
+                            btn.remove();
+                        } else {
+                            // Update table attributes in case properties were edited
+                            const tData = activeTableMap.get(btnId);
+                            btn.setAttribute('data-number', tData.number);
+                            btn.setAttribute('data-capacity', tData.capacity);
+                            btn.setAttribute('data-zone', tData.zone);
+                            btn.setAttribute('data-image', tData.image);
+                        }
+                    });
+
+                    // Append newly added tables to DOM
+                    activeTables.forEach(tData => {
+                        const tId = String(tData.id);
+                        let btn = container.querySelector(`.table-btn[data-id="${tId}"]`);
+                        if (!btn) {
+                            btn = document.createElement('div');
+                            btn.id = `table-${tId}`;
+                            btn.className = 'table-btn table-available';
+                            btn.setAttribute('data-id', tId);
+                            btn.setAttribute('data-number', tData.number);
+                            btn.setAttribute('data-capacity', tData.capacity);
+                            btn.setAttribute('data-zone', tData.zone);
+                            btn.setAttribute('data-image', tData.image);
+                            btn.onclick = function() { selectTable(this); };
+                            btn.innerHTML = `<span>${tData.number}</span><span class="table-capacity">${tData.capacity} P</span>`;
+                            container.appendChild(btn);
+                        }
+                    });
+
+                    // Ensure Zone Filter is applied to any updated or new elements
+                    applyZoneFilter();
+                }
+
+                // 2. Update Availability Status (Reserved vs Available)
                 const tableBtns = document.querySelectorAll('.table-btn');
                 tableBtns.forEach(btn => {
                     const id = String(btn.getAttribute('data-id'));
@@ -1166,12 +1282,12 @@ require_once 'header.php';
             });
     }
 
-    // Initialize availability status and setup real-time polling (every 5 seconds)
+    // Initialize availability status and setup real-time polling (every 3 seconds)
     window.addEventListener('load', () => {
         updateAvailability(false);
         setInterval(() => {
             updateAvailability(true);
-        }, 5000);
+        }, 3000);
     });
 
     // Inline Form Alert System
