@@ -84,6 +84,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'request_cancel') {
 // AJAX Request for Instant Live Booking Search
 if (isset($_GET['action']) && $_GET['action'] === 'ajax_search_booking') {
     header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
     $q = trim($_GET['q'] ?? '');
     if ($q === '') {
         echo json_encode(['error' => t('Please enter a Booking Ref ID or Phone Number', 'กรุณากรอกรหัสการจอง หรือ เบอร์โทรศัพท์'), 'bookings' => []]);
@@ -118,6 +121,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'ajax_search_booking') {
 // AJAX Request to fetch live booking statuses for a search query
 if (isset($_GET['action']) && $_GET['action'] === 'poll_booking_statuses') {
     header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
     $q = trim($_GET['q'] ?? '');
     if ($q === '') {
         echo json_encode([]);
@@ -146,6 +152,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'poll_booking_statuses') {
 // AJAX Request to fetch booked tables for a specific date and time slot
 if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
     header('Content-Type: application/json');
+    header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
     $date = $_GET['date'] ?? '';
     $time_slot = $_GET['time_slot'] ?? '';
     
@@ -169,7 +178,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'get_booked_tables') {
             $reserved_ids = $booked_table_ids;
         }
 
-        echo json_encode(array_values($reserved_ids));
+        // Convert all IDs to string so JS strict matching works across drivers
+        $reserved_ids = array_map('strval', array_values($reserved_ids));
+
+        echo json_encode($reserved_ids);
     } catch (Exception $e) {
         echo json_encode([]);
     }
@@ -1123,18 +1135,19 @@ require_once 'header.php';
             `;
         }
         
-        fetch(`reservation.php?action=get_booked_tables&date=${date}&time_slot=${timeSlot}`)
+        fetch(`reservation.php?action=get_booked_tables&date=${date}&time_slot=${timeSlot}&_t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
-            .then(bookedTableIds => {
+            .then(rawBookedIds => {
+                const bookedTableIds = (rawBookedIds || []).map(String);
                 const tableBtns = document.querySelectorAll('.table-btn');
                 tableBtns.forEach(btn => {
-                    const id = btn.getAttribute('data-id');
+                    const id = String(btn.getAttribute('data-id'));
                     if (bookedTableIds.includes(id)) {
                         btn.classList.remove('table-available');
                         btn.classList.add('table-reserved');
                         
                         // If the currently selected table has become reserved/occupied, reset it
-                        if (selectedTableBtn && selectedTableBtn.getAttribute('data-id') === id) {
+                        if (selectedTableBtn && String(selectedTableBtn.getAttribute('data-id')) === id) {
                             selectedTableBtn.classList.remove('table-selected');
                             selectedTableBtn = null;
                             document.getElementById('form-table-id').value = '';
@@ -1298,7 +1311,7 @@ require_once 'header.php';
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> ' + "<?php echo t('Searching...', 'กำลังค้นหา...'); ?>";
         }
 
-        fetch('reservation.php?action=ajax_search_booking&q=' + encodeURIComponent(query))
+        fetch('reservation.php?action=ajax_search_booking&q=' + encodeURIComponent(query) + '&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (submitBtn) {
@@ -1630,7 +1643,7 @@ require_once 'header.php';
     function pollBookingStatuses() {
         if (!activeSearchQuery) return;
 
-        fetch(`reservation.php?action=poll_booking_statuses&q=${encodeURIComponent(activeSearchQuery)}`)
+        fetch(`reservation.php?action=poll_booking_statuses&q=${encodeURIComponent(activeSearchQuery)}&_t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
             .then(bookings => {
                 if (!Array.isArray(bookings)) return;
