@@ -851,7 +851,7 @@ require_once 'header.php';
                     <span><?php echo t("Booking Details", "รายละเอียดการจอง"); ?></span>
                 </h3>
                 
-                <form action="reservation.php" method="POST" onsubmit="return validateBookingForm()" novalidate>
+                <form id="create-booking-form" action="reservation.php" method="POST" onsubmit="return validateBookingForm()" novalidate>
                     <input type="hidden" name="action" value="create_booking">
                     <input type="hidden" name="table_id" id="form-table-id" value="">
 
@@ -1271,7 +1271,7 @@ require_once 'header.php';
 
         // Lock form submission to prevent Mobile Chrome / touch double submit
         isFormSubmitting = true;
-        const submitBtn = document.querySelector('form[action="reservation.php"] button[type="submit"]');
+        const submitBtn = document.querySelector('#create-booking-form button[type="submit"]') || document.querySelector('form[action*="reservation"] button[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
