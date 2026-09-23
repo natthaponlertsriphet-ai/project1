@@ -1996,6 +1996,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <script>
     // Live Dashboard Counter Auto-Poller (Updates tab numbers in real-time without page refresh)
     function pollLiveDashboardCounts() {
+        if (document.hidden) return;
         fetch('index.php?action=get_live_dashboard_counts&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {

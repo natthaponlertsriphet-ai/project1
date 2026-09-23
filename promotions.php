@@ -341,6 +341,7 @@ require_once 'header.php';
     }
 
     function checkLivePromotions() {
+        if (document.hidden) return;
         fetch('promotions.php?action=get_live_promotions&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(res => {

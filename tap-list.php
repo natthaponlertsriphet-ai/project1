@@ -382,6 +382,7 @@ require_once 'header.php';
     let previousBeersHash = '';
 
     function syncLiveBeerList() {
+        if (document.hidden) return;
         fetch('tap-list.php?action=get_beers_status&_t=' + Date.now(), { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {

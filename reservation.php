@@ -1160,6 +1160,7 @@ require_once 'header.php';
 
     // 4. Update table reservation availability & layout structure via Fetch AJAX (Real-Time)
     function updateAvailability(isPolling = false) {
+        if (isPolling && document.hidden) return;
         const date = document.getElementById('booking-date').value;
         const timeSlot = document.getElementById('booking-time').value;
         
@@ -1757,7 +1758,7 @@ require_once 'header.php';
     }
 
     function pollBookingStatuses() {
-        if (!activeSearchQuery) return;
+        if (!activeSearchQuery || document.hidden) return;
 
         fetch(`reservation.php?action=poll_booking_statuses&q=${encodeURIComponent(activeSearchQuery)}&_t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
